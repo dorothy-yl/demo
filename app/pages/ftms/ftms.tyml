@@ -1,0 +1,44 @@
+<view class="container">
+  <view class="icon-section">
+    <image class="main-icon" src="/app/images/icons/connect.svg" mode="widthFix"></image>
+    <!-- Animation dots could go here if needed, using Ellipse 12.svg -->
+    <view class="dots-container" ty:if="{{ftmsEnabled}}">
+       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
+       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
+       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
+    </view>
+  </view>
+
+  <view class="controls-wrapper">
+    <view class="control-row">
+      <text class="control-label">FTMS</text>
+      <switch 
+        checked="{{ftmsEnabled}}" 
+        bindchange="toggleFTMS" 
+        color="#A8E600"
+      />
+    </view>
+
+    <view class="slider-card">
+      <text class="slider-value">{{resistance}}%</text>
+      <view class="slider-body">
+        <slider 
+          min="-50" 
+          max="50" 
+          value="{{resistance}}" 
+          activeColor="#A8E600" 
+          backgroundColor="#4A5568" 
+          block-size="24" 
+          block-color="#A8E600"
+          bindchanging="changeResistance"
+          bindchange="changeResistance"
+        />
+      </view>
+      <view class="slider-labels">
+        <text>-50</text>
+        <text>+50</text>
+      </view>
+    </view>
+  </view>
+</view>
+

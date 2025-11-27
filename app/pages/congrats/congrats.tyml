@@ -1,0 +1,82 @@
+<view class="container">
+  <image class="bg-image" src="/app/images/Sportswoman.png" mode="aspectFill"></image>
+  <view class="overlay"></view>
+
+  <view class="content">
+    <text class="page-title">Congratulations!</text>
+
+    <view class="user-header">
+      <view class="avatar-circle">
+        <image class="avatar-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
+      </view>
+      <view class="user-info">
+        <text class="user-name">{{userName}}</text>
+        <text class="date">{{date}}</text>
+      </view>
+    </view>
+
+    <view class="main-circle-section">
+      <view class="progress-ring">
+        <!-- CSS Gradient Ring Approximation -->
+        <view class="ring-bg"></view>
+        <view class="ring-fill"></view>
+        <view class="ring-content">
+          <view class="ring-value-row">
+             <text class="ring-value">{{caloriesBurned}}</text>
+             <text class="ring-unit">kcal</text>
+          </view>
+          <text class="ring-label">Burn calories</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="stats-container">
+      <!-- Top Wide Card -->
+      <view class="stats-card wide-card">
+        <view class="stat-item">
+          <text class="stat-value">{{duration}}</text>
+          <text class="stat-label">Total duration</text>
+        </view>
+        <view class="vertical-line"></view>
+        <view class="stat-item">
+          <text class="stat-value">{{rpm}}</text>
+          <text class="stat-label">RPM</text>
+        </view>
+      </view>
+
+      <!-- Bottom Grid -->
+      <view class="bottom-grid">
+        <!-- Left Big Card -->
+        <view class="stats-card big-card">
+          <text class="card-title">Average speed</text>
+          <image class="card-icon" src="/app/images/icons/Vector 1.svg" mode="aspectFit"></image>
+          <view class="big-value-row">
+            <text class="big-value">{{avgSpeed}}</text>
+            <text class="unit">km/h</text>
+          </view>
+        </view>
+
+        <!-- Right Column -->
+        <view class="right-column">
+          <view class="stats-card small-card">
+            <text class="card-title">Calories</text>
+            <image class="card-icon-small" src="/app/images/icons/Vector 2.svg" mode="aspectFit"></image>
+            <view class="small-value-row">
+              <text class="medium-value">{{secondaryCalories}}</text>
+              <text class="unit">kcal</text>
+            </view>
+          </view>
+          <view class="stats-card small-card">
+            <text class="card-title">Distance</text>
+            <image class="card-icon-small" src="/app/images/icons/Group 11.svg" mode="aspectFit"></image>
+            <view class="small-value-row">
+              <text class="medium-value">{{distance}}</text>
+              <text class="unit">km</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+

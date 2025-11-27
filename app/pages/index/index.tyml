@@ -1,0 +1,86 @@
+<view class="container">
+  <!-- 顶部状态栏 -->
+  <view class="status-bar">
+    <text class="time">9:41</text>
+    <view class="status-icons">
+      <view class="signal-icon"></view>
+      <view class="wifi-icon"></view>
+      <view class="battery-icon"></view>
+    </view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-title">Front page</view>
+
+  <!-- 运动数据摘要区域 -->
+  <view class="exercise-summary">
+    <view class="summary-left">
+      <view class="summary-item">
+        <text class="summary-value">{{exerciseTime}}</text>
+        <text class="summary-label">Exercise time</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-value">{{distance}}</text>
+        <text class="summary-label">Distance (km)</text>
+      </view>
+    </view>
+    <view class="summary-right">
+      <view class="bicycle-circle-outer">
+        <view class="bicycle-circle-inner">
+          <image class="bicycle-image" src="/app/images/Bicycle.png" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常用功能区域 -->
+  <view class="common-functions">
+    <view class="section-title">Common functions</view>
+    <view class="function-grid">
+      <view class="function-item" bindtap="goToExercise">
+        <view class="function-icon-wrapper quick-start">
+          <image class="function-icon" src="/app/images/icons/Quick Start.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">Quick Start</text>
+      </view>
+      
+      <view class="function-item" bindtap="goToGoal">
+        <view class="function-icon-wrapper target-pattern">
+          <image class="function-icon" src="/app/images/icons/Target patterm.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">Target pattern</text>
+      </view>
+      <view class="function-item" bindtap="goToFTMS">
+        <view class="function-icon-wrapper ftms">
+          <image class="function-icon" src="/app/images/icons/ftms.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">FTMS</text>
+      </view>
+      <view class="function-item" bindtap="goToTirp">
+        <view class="function-icon-wrapper tirp">
+          <image class="function-icon" src="/app/images/icons/Trip.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">Tirp</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 连接状态 -->
+  <!-- <view class="connection-status">
+    <view class="status-indicator"></view>
+    <text class="status-text">已连接</text>
+  </view> -->
+
+  <!-- 底部导航栏 -->
+  <view class="bottom-nav">
+    <view class="nav-item active" bindtap="goToHome">
+      <image class="nav-icon" src="/app/images/icons/index_1.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-item" bindtap="goToHistory">
+      <image class="nav-icon" src="/app/images/icons/recodes.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-item" bindtap="goToSettings">
+      <image class="nav-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
+    </view>
+  </view>
+</view>

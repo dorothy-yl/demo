@@ -1,0 +1,145 @@
+.container {
+  background-color: #0A0E27;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 88px; /* Status bar + Navigation bar roughly */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: #0A0E27;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.header-left {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.back-icon {
+  font-size: 32px;
+  color: #fff;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px; /* Align with icons */
+}
+
+.header-right {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  /* Avoid overlapping with capsule if present, but on custom nav page, capsule is usually there.
+     We might need to adjust padding-right if capsule is covering it. 
+     Standard capsule is on the right. We'll place our + button to the left of it or below it?
+     Usually custom nav bar puts elements *in* the bar.
+     If we want it exactly like the screenshot, we put it on the right.
+  */
+  margin-right: 80px; /* Approximate width of capsule + padding */
+}
+
+.add-icon {
+  font-size: 30px;
+  color: #52C41A; /* Green color */
+  font-weight: bold;
+}
+
+.content-wrapper {
+  padding-top: 88px; /* Push content down */
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh; /* Adjusted for header */
+}
+
+.empty-content {
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.empty-desc {
+  font-size: 16px;
+  color: #8E8E93;
+}
+
+.alarm-list {
+  padding: 20px;
+}
+
+.alarm-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.alarm-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.alarm-time-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+
+.alarm-time {
+  font-size: 40px;
+  font-weight: 300;
+  margin-right: 10px;
+}
+
+.alarm-tag {
+  font-size: 14px;
+  color: #8E8E93;
+}
+
+.alarm-repeat {
+  font-size: 14px;
+  color: #8E8E93;
+  display: block;
+}
+
+.alarm-actions {
+  display: flex;
+  align-items: center;
+}
+
+.delete-btn {
+  background-color: #FF4D4F;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  font-size: 14px;
+}

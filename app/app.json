@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/goal/goal",
+    "pages/exercise/exercise",
+    "pages/history/history",
+    "pages/settings/settings",
+    "pages/ftms/ftms",
+    "pages/congrats/congrats",
+    "pages/history-detail/history-detail",
+    "pages/alarm/index/index",
+    "pages/alarm/add/add",
+    "pages/alarm/repeat/repeat"
+  ],
+  "window": {
+    "navigationBarTitleText": "单车",
+    "navigationBarBackgroundColor": "#0A0E27",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0A0E27"
+  },
+  "networkTimeout": {
+    "request": 10000
+  }
+}
+

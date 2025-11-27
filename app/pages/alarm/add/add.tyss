@@ -1,0 +1,75 @@
+.container {
+  background-color: #000; /* Darker background for add page as per screenshot */
+  min-height: 100vh;
+  color: #fff;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #1A1D35;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.action-btn {
+  font-size: 16px;
+}
+
+.action-btn.cancel {
+  color: #FFA500; /* Orange color from screenshot */
+}
+
+.action-btn.save {
+  color: #FFA500; /* Orange color from screenshot */
+}
+
+.picker-container {
+  background-color: #1A1D35; /* Match background slightly lighter than black */
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.settings-list {
+  background-color: #1A1D35;
+  border-radius: 10px;
+  margin: 0 16px;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.item-label {
+  font-size: 16px;
+}
+
+.item-right {
+  display: flex;
+  align-items: center;
+}
+
+.item-value {
+  font-size: 16px;
+  color: #8E8E93;
+  margin-right: 10px;
+}
+
+.arrow {
+  color: #8E8E93;
+  font-size: 20px;
+}
+

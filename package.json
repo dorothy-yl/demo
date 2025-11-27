@@ -1,0 +1,14 @@
+{
+  "name": "bicycle-miniapp",
+  "version": "1.0.0",
+  "description": "单车小程序",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "@tuya-miniapp/miniapp-components-plus": "^2.10.4",
+    "@tuya-miniapp/miniapp-gesture": "^2.0.3",
+    "@tuya-miniapp/redux-connect-page": "^0.0.3"
+  }
+}

@@ -1,0 +1,262 @@
+/* Base Styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #222832; /* Dark Blue/Gray Background */
+  min-height: 100vh;
+  color: #FFFFFF;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 44px 0 20px 0; /* Top padding for status bar area */
+}
+
+.back-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.back-icon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(100); /* Make it white if it's not */
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.header-placeholder {
+  width: 40px;
+}
+
+/* Top Row: Speed & Heart Rate */
+.top-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.top-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.value-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.top-stat-value {
+  font-size: 48px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.top-stat-label {
+  font-size: 14px;
+  color: #8E97A3;
+  margin-top: 4px;
+}
+
+.vertical-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #3A4452;
+  margin: 0 20px;
+}
+
+/* Cards Common */
+.card {
+  background-color: #2B3240;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-label {
+  font-size: 14px;
+  color: #8E97A3;
+  margin-bottom: 8px;
+}
+
+/* Timer Card */
+.timer-card {
+  margin-bottom: 16px;
+  padding: 25px 20px;
+}
+
+.timer-display {
+  font-size: 48px;
+  font-weight: bold;
+  font-family: monospace;
+  letter-spacing: 2px;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 15px 10px;
+}
+
+.card-value {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* Gauge Section */
+.gauge-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.gauge-wrapper {
+  width: 220px;
+  height: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 225deg, #3A4452 0deg, #3A4452 270deg, transparent 270deg);
+  mask: radial-gradient(transparent 60%, black 61%);
+  -webkit-mask: radial-gradient(transparent 60%, black 61%);
+}
+
+.gauge-progress {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  /* background is set via inline style */
+  mask: radial-gradient(transparent 60%, black 61%);
+  -webkit-mask: radial-gradient(transparent 60%, black 61%);
+}
+
+.gauge-center-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.gauge-center-value {
+  font-size: 56px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.gauge-center-label {
+  font-size: 16px;
+  color: #8E97A3;
+  margin-top: 5px;
+}
+
+/* Knob styles */
+.gauge-knob-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.gauge-knob {
+  width: 16px;
+  height: 16px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  position: absolute;
+  top: 10px; /* Adjust based on radius to sit on the arc */
+  left: 50%;
+  margin-left: -8px; /* Center the knob */
+  /* This positioning places it at the top (0 deg in CSS usually), we rotate the container to move it */
+}
+
+/* Because 0deg is usually top in CSS transforms, and our radius is ~110px (220/2)
+   If we place it at top: 0 (relative to container), it's at 12 o'clock.
+   Our logic uses 225deg as start.
+   225 degrees from 12 o'clock clockwise is bottom-left.
+   Wait, CSS rotate(0deg) is usually 12 o'clock or 3 o'clock?
+   Standard Transform rotate is clockwise from 12 o'clock (if element is upright).
+   Let's verify.
+   If I place knob at top: 0, left: 50%. That is 12 o'clock.
+   rotate(225deg) will move it to bottom-left.
+   So my logic seems correct.
+*/
+
+.gauge-labels {
+  width: 240px;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 20px;
+  font-size: 16px;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* Footer Button */
+.footer {
+  width: 100%;
+  padding-bottom: 30px;
+}
+
+.main-action-btn {
+  background-color: #FFFFFF;
+  color: #000000;
+  border-radius: 30px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}

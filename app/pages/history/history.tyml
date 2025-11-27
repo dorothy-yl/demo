@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="date-selector">
+    <view class="arrow-btn left" bindtap="prevDate">
+      <image class="arrow-icon" src="/app/images/icons/Vector 1.svg" mode="aspectFit"></image>
+    </view>
+    <view class="current-date">
+      <text>{{currentDate}}</text>
+      <view class="triangle-down">▼</view>
+    </view>
+    <view class="arrow-btn right" bindtap="nextDate">
+      <image class="arrow-icon" src="/app/images/icons/Vector 2.svg" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <scroll-view class="record-list" scroll-y="true">
+    <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item">
+      <view class="card-header">
+        <view class="duration-group">
+          <text class="duration-val">{{item.duration}}</text>
+          <text class="duration-unit">min</text>
+        </view>
+        <text class="record-date">{{item.date}}</text>
+      </view>
+      
+      <view class="card-stats">
+        <view class="stat-item">
+          <text class="stat-label">Speed(km/h)</text>
+          <text class="stat-val">{{item.speed}}</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-label">Calories</text>
+          <text class="stat-val">{{item.calories}}</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-label">Distance</text>
+          <text class="stat-val">{{item.distance}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- Bottom Navigation -->
+  <view class="bottom-nav">
+    <view class="nav-item" bindtap="goToHome">
+      <image class="nav-icon" src="/app/images/icons/index_1.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-item active" bindtap="goToHistory">
+      <image class="nav-icon" src="/app/images/icons/recodes.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-item" bindtap="goToSettings">
+      <image class="nav-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
+    </view>
+  </view>
+</view>

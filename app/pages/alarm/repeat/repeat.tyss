@@ -1,0 +1,68 @@
+.container {
+  background-color: #000;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10px;
+  background-color: #1A1D35;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  color: #FFA500;
+}
+
+.back-arrow {
+  font-size: 24px;
+  margin-right: 5px;
+}
+
+.back-text {
+  font-size: 16px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.placeholder {
+  width: 60px;
+}
+
+.days-list {
+  background-color: #1A1D35;
+  margin-top: 20px;
+  border-radius: 10px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.day-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.day-item:last-child {
+  border-bottom: none;
+}
+
+.day-name {
+  font-size: 16px;
+}
+
+.check-mark {
+  color: #FFA500;
+  font-size: 18px;
+  font-weight: bold;
+}
+

@@ -1,0 +1,285 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #1e2335;
+}
+
+.bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(16, 20, 40, 0.7); /* Dark blue overlay */
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.page-title {
+  color: #ffffff;
+  font-size: 24px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-weight: normal;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #d8d8d8; /* Placeholder gray */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.avatar-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.date {
+  color: #a0a4b0;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.main-circle-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.progress-ring {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Simple gradient border simulation */
+  background: conic-gradient(#4CD964 0% 70%, rgba(255,255,255,0.1) 70% 100%);
+  padding: 15px; /* Thickness of ring */
+  border-radius: 50%;
+}
+
+.ring-bg {
+  /* Inner cutout */
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  background-color: transparent; /* Transparent to show bg image? No, screenshot has overlay */
+  background: rgba(16, 20, 40, 0.8); /* Match overlay somewhat or just transparent center */
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* Better approach for ring: transparent center */
+.progress-ring::before {
+  content: "";
+  position: absolute;
+  inset: 15px; /* Thickness */
+  border-radius: 50%;
+  background: rgba(16, 20, 40, 0.0); /* Actually we want to see through? Screenshot center is dark. */
+  background-color: #2c3044; /* Fallback dark */
+  /* To match screenshot transparency we might need mask, but let's stick to solid center for now matching background somewhat */
+  background: linear-gradient(180deg, rgba(40,44,65,0.9) 0%, rgba(20,24,40,0.9) 100%);
+  z-index: 1;
+}
+
+.ring-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ring-value-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.ring-value {
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.ring-unit {
+  color: #a0a4b0;
+  font-size: 14px;
+  margin-left: 4px;
+}
+
+.ring-label {
+  color: #a0a4b0;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+
+.stats-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats-card {
+  background: rgba(30, 35, 55, 0.8);
+  border-radius: 8px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.wide-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.stat-label {
+  color: #a0a4b0;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.vertical-line {
+  width: 1px;
+  height: 30px;
+  background-color: #4a4e60;
+}
+
+.bottom-grid {
+  display: flex;
+  gap: 12px;
+}
+
+.big-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.small-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.card-title {
+  color: #a0a4b0;
+  font-size: 12px;
+}
+
+.card-icon {
+  width: 20px;
+  height: 20px;
+  margin-top: 8px;
+}
+.card-icon-small {
+  width: 16px;
+  height: 16px;
+  margin-top: 6px;
+  opacity: 0.8;
+}
+
+.big-value-row {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end; /* Align right like screenshot */
+}
+
+.small-value-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+}
+
+.big-value {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.medium-value {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.unit {
+  color: #a0a4b0;
+  font-size: 12px;
+  margin-left: 4px;
+}

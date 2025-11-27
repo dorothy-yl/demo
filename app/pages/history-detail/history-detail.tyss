@@ -1,0 +1,127 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0A0E27 0%, #1A1D35 100%);
+  padding: 40px 20px;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.date-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #1A1D35 0%, #252840 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.date-text {
+  font-size: 20px;
+  color: #8E8E93;
+  margin-bottom: 8px;
+}
+
+.time-text {
+  font-size: 36px;
+  font-weight: bold;
+  color: #4A90E2;
+  font-variant-numeric: tabular-nums;
+}
+
+.main-data-section {
+  width: 100%;
+}
+
+.main-data-card {
+  background: linear-gradient(135deg, #1A1D35 0%, #252840 100%);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.main-data-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.main-data-label {
+  font-size: 14px;
+  color: #8E8E93;
+  margin-bottom: 12px;
+}
+
+.main-data-value {
+  font-size: 48px;
+  font-weight: bold;
+  color: #4A90E2;
+  font-variant-numeric: tabular-nums;
+}
+
+.main-data-unit {
+  font-size: 16px;
+  color: #8E8E93;
+  margin-top: 4px;
+}
+
+.main-data-divider {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(180deg, transparent 0%, #2A2D45 50%, transparent 100%);
+  margin: 0 24px;
+}
+
+.details-section {
+  width: 100%;
+}
+
+.details-card {
+  background: linear-gradient(135deg, #1A1D35 0%, #252840 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.detail-label {
+  font-size: 16px;
+  color: #8E8E93;
+}
+
+.detail-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4A90E2;
+}
+
+.detail-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #2A2D45 50%, transparent 100%);
+  margin: 8px 0;
+}
+

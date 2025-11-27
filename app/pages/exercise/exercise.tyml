@@ -1,0 +1,76 @@
+<view class="container">
+  <!-- Header -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <image class="back-icon" src="/app/images/icons/index_1.svg" style="transform: rotate(90deg);" /> 
+    </view>
+    <text class="header-title">Quick Start</text>
+    <view class="header-placeholder"></view>
+  </view>
+
+  <!-- Speed and Heart Rate Row -->
+  <view class="top-row">
+    <view class="top-stat-item">
+      <text class="top-stat-value">{{speed}}</text>
+      <text class="top-stat-label">Speed(mi/h)</text>
+    </view>
+    <view class="vertical-divider"></view>
+    <view class="top-stat-item">
+      <view class="value-icon-row">
+        <text class="top-stat-value">{{heartRate}}</text>
+        <image class="heart-icon" src="/app/images/icons/love.svg" />
+      </view>
+      <text class="top-stat-label">Heart Rate</text>
+    </view>
+  </view>
+
+  <!-- Exercise Time Card -->
+  <view class="card timer-card">
+    <text class="card-label">Exercise time</text>
+    <text class="timer-display">{{formattedTime}}</text>
+  </view>
+
+  <!-- 3-Column Stats Grid -->
+  <view class="stats-grid">
+    <view class="card stat-card">
+      <text class="card-label">RPM</text>
+      <text class="card-value">{{rpm}}</text>
+    </view>
+    <view class="card stat-card">
+      <text class="card-label">Calories</text>
+      <text class="card-value">{{calories}}</text>
+    </view>
+    <view class="card stat-card">
+      <text class="card-label">Watt</text>
+      <text class="card-value">{{watt}}</text>
+    </view>
+  </view>
+
+  <!-- Load Gauge Section -->
+  <view class="gauge-section">
+    <view class="gauge-wrapper">
+      <!-- Background Arc -->
+      <view class="gauge-background"></view>
+      <!-- Progress Arc (Dynamic) -->
+      <view class="gauge-progress" style="{{gaugeProgressStyle}}"></view>
+      <!-- Center Text -->
+      <view class="gauge-center-cover">
+        <text class="gauge-center-value">{{load}}</text>
+        <text class="gauge-center-label">Load</text>
+      </view>
+      <!-- Gauge Knob -->
+      <view class="gauge-knob-container" style="transform: rotate({{knobAngle}}deg);">
+         <view class="gauge-knob"></view>
+      </view>
+    </view>
+    <view class="gauge-labels">
+      <text>0</text>
+      <text>100</text>
+    </view>
+  </view>
+
+  <!-- Bottom Button -->
+  <view class="footer">
+    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">Pause/Hold Stop</button>
+  </view>
+</view>

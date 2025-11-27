@@ -1,0 +1,213 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: #2C3246; /* Dark background from screenshot */
+  padding: 0;
+  padding-bottom: 80px; /* Space for bottom nav */
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0px;
+  background: #2C3246;
+}
+
+.page-title {
+  font-size: 18px;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Date Selector */
+.date-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.arrow-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1); /* Circle background for arrows */
+}
+
+.arrow-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.current-date {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #FFFFFF;
+  margin: 0 20px;
+}
+
+.triangle-down {
+  font-size: 10px;
+  margin-left: 6px;
+  color: #FFFFFF;
+}
+
+/* Record List */
+.record-list {
+  flex: 1;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.record-card {
+  background: #363C52;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.duration-group {
+  display: flex;
+  align-items: baseline;
+}
+
+.duration-val {
+  font-size: 36px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.duration-unit {
+  font-size: 16px;
+  color: #FFFFFF;
+  margin-left: 4px;
+}
+
+.record-date {
+  font-size: 12px;
+  color: #B0B0B0;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #B0B0B0;
+  margin-bottom: 8px;
+}
+
+.stat-val {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Bottom Nav - Shared Styles */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #1A1D35;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid #2A2D45;
+  z-index: 100;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+}
+
+.nav-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Active State Styling */
+.nav-item.active .nav-icon {
+  /* Make it green */
+  /* Use filter to change color to #B8F533 (Lime Green from screenshot) */
+  /* This is an approximation using hue-rotate or similar if icon is not white */
+  /* If icon is white, we can use filter: invert... */
+  /* Assuming SVG is white, let's just tint it or rely on a different way */
+  
+  /* Actually, let's try a simple background circle for active state if that matches screenshot 
+     Screenshot shows just the icon is green (lime).
+     If the icon is white SVG:
+  */
+  filter: sepia(100%) saturate(300%) hue-rotate(50deg) brightness(1.2); 
+  /* This tries to make it greenish. Better to use a green version of the icon if available, 
+     or ensure the SVG currentColor works and set color: #B8F533 */
+}
+
+/* If SVGs use 'fill="currentColor"', we can do this: */
+/* .nav-item.active { color: #B8F533; } */
+/* .nav-icon { fill: currentColor; } */
+/* But usually these are img tags. */
+
+/* Let's try a solid background circle green for active item IF that was the design?
+   The user said "clock turns green".
+   The screenshot bottom nav is cut off but usually it's just the icon color.
+*/
+
+.nav-item.active {
+  /* Target the circle wrapper if exists? No wrapper in HTML */
+}
+
+/* Override specific icon color if possible with CSS filter */
+/* Green lime color approx #CCFF00 */
+.nav-item.active .nav-icon {
+   filter: invert(77%) sepia(61%) saturate(483%) hue-rotate(33deg) brightness(102%) contrast(101%);
+}
+
+.nav-item:not(.active) .nav-icon {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}

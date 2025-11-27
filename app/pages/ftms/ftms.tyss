@@ -1,0 +1,103 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #222832;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.icon-section {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  min-height: 200px;
+}
+
+.main-icon {
+  width: 200px;
+  height: auto;
+}
+
+.dots-container {
+  display: flex;
+  gap: 10px;
+  position: absolute;
+  /* Adjust position to overlay or sit between router and screen if they were separate */
+  /* Since connect.svg likely contains the whole image, we might not need this, 
+     but user provided Ellipse 12.svg so maybe dots are dynamic */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: dotFade 1.5s infinite;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.5s; }
+.dot:nth-child(3) { animation-delay: 1s; }
+
+@keyframes dotFade {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.controls-wrapper {
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+.control-row {
+  background-color: #2B3240;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.control-label {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.slider-card {
+  background-color: #2B3240;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.slider-value {
+  color: #FFFFFF;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.slider-body {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #8E97A3;
+  font-size: 14px;
+}
+

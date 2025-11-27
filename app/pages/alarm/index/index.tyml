@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- Custom Header -->
+  <view class="custom-header">
+    <view class="header-left" bindtap="onBack">
+      <text class="back-icon">‹</text>
+    </view>
+    <text class="header-title">Front page</text>
+    <view class="header-right" bindtap="onAdd">
+      <text class="add-icon">+</text>
+    </view>
+  </view>
+
+  <!-- Content Wrapper to offset header -->
+  <view class="content-wrapper">
+    <!-- Empty State -->
+    <view class="empty-state" ty:if="{{!hasAlarms}}">
+      <view class="empty-content">
+        <text class="empty-title">Exercise reminder</text>
+        <text class="empty-desc">Click "Add" in the upper right corner.</text>
+      </view>
+    </view>
+
+    <!-- Alarm List -->
+    <scroll-view scroll-y="true" class="alarm-list" ty:if="{{hasAlarms}}">
+      <view class="alarm-section-title">其他</view>
+      
+      <view class="alarm-item" ty:for="{{alarms}}" ty:key="id">
+        <view class="alarm-content">
+          <view class="alarm-time-row">
+            <text class="alarm-time">{{item.timeStr}}</text>
+            <text class="alarm-tag">{{item.tag || '闹钟'}}</text>
+          </view>
+          <text class="alarm-repeat">{{item.repeatStr}}</text>
+        </view>
+        
+        <view class="alarm-actions">
+          <switch checked="{{item.enabled}}" bindchange="onToggleAlarm" data-id="{{item.id}}" color="#52C41A"/>
+          <!-- Delete button simulation for swipe or direct delete -->
+          <view class="delete-btn" bindtap="onDelete" data-id="{{item.id}}">删除</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

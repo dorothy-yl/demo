@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="header">
+    <text class="page-title">运动详情</text>
+  </view>
+
+  <view class="content" ty:if="{{record}}">
+    <!-- 日期和时间 -->
+    <view class="date-section">
+      <text class="date-text">{{record.date}}</text>
+      <text class="time-text">{{formattedTime}}</text>
+    </view>
+
+    <!-- 主要数据卡片 -->
+    <view class="main-data-section">
+      <view class="main-data-card">
+        <view class="main-data-item">
+          <text class="main-data-label">总距离</text>
+          <text class="main-data-value">{{record.distance}}</text>
+          <text class="main-data-unit">公里</text>
+        </view>
+        <view class="main-data-divider"></view>
+        <view class="main-data-item">
+          <text class="main-data-label">消耗热量</text>
+          <text class="main-data-value">{{record.calories}}</text>
+          <text class="main-data-unit">卡路里</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 详细数据 -->
+    <view class="details-section">
+      <view class="details-card">
+        <view class="detail-row">
+          <text class="detail-label">运动时长</text>
+          <text class="detail-value">{{formattedTime}}</text>
+        </view>
+        <view class="detail-divider"></view>
+        <view class="detail-row">
+          <text class="detail-label">平均速度</text>
+          <text class="detail-value">{{record.avgSpeed}} km/h</text>
+        </view>
+        <view class="detail-divider"></view>
+        <view class="detail-row">
+          <text class="detail-label">最大速度</text>
+          <text class="detail-value">{{record.maxSpeed || record.avgSpeed}} km/h</text>
+        </view>
+        <view class="detail-divider"></view>
+        <view class="detail-row">
+          <text class="detail-label">平均心率</text>
+          <text class="detail-value">{{record.heartRate}} bpm</text>
+        </view>
+        <view class="detail-divider"></view>
+        <view class="detail-row">
+          <text class="detail-label">阻力等级</text>
+          <text class="detail-value">{{record.resistance}} 级</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+

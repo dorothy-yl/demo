@@ -1,0 +1,46 @@
+<view class="container">
+  <image class="background-image" src="/app/images/Sportsman .png" mode="aspectFill"></image>
+  <view class="overlay"></view>
+
+  <!-- Custom Navigation Bar -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="goBack">
+        <image src="/app/images/icons/index_1.svg" class="back-icon" style="transform: rotate(180deg); filter: invert(1);"></image>
+      </view>
+      <text class="nav-title">Set goals</text>
+    </view>
+  </view>
+
+  <!-- Goal Selection View -->
+  <view class="content" wx:if="{{!showPicker}}">
+    <view class="goal-buttons">
+      <button class="goal-btn primary" bindtap="showTimePicker">Exercise time</button>
+      <button class="goal-btn secondary" bindtap="showCaloriesPicker">Calories</button>
+      <button class="goal-btn secondary" bindtap="showDistancePicker">Distance</button>
+    </view>
+  </view>
+
+  <!-- Time Picker View -->
+  <view class="picker-content" wx:if="{{showPicker}}">
+    <view class="picker-header">
+      <text class="picker-title">Exercise time</text>
+      <text class="picker-display">{{hoursStr}}:{{minutesStr}}:{{secondsStr}}</text>
+    </view>
+
+    <picker-view class="time-picker" indicator-class="picker-indicator" value="{{timeValue}}" bindchange="onTimeChange">
+      <picker-view-column>
+        <view class="picker-item" wx:for="{{hours}}" wx:key="*this">{{item}} <text class="unit">时</text></view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="picker-item" wx:for="{{minutes}}" wx:key="*this">{{item}} <text class="unit">分</text></view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="picker-item" wx:for="{{seconds}}" wx:key="*this">{{item}} <text class="unit">秒</text></view>
+      </picker-view-column>
+    </picker-view>
+
+    <button class="sure-btn" bindtap="confirmTime">Sure</button>
+  </view>
+</view>
+

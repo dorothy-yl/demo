@@ -1,0 +1,173 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+}
+
+/* Custom Nav */
+.custom-nav {
+  width: 100%;
+  z-index: 10;
+}
+
+.nav-content {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center title */
+  position: relative;
+  padding: 0 16px;
+}
+
+.back-btn {
+  position: absolute;
+  left: 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 10px; /* Touch area */
+}
+
+.back-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-title {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.goal-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.goal-btn {
+  width: 100%;
+  height: 80px;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.goal-btn.primary {
+  background-color: #C1E734; /* Light green from screenshot */
+  color: #000000;
+}
+
+.goal-btn.secondary {
+  background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+  color: #FFFFFF;
+  backdrop-filter: blur(10px);
+}
+
+/* Picker Styles */
+.picker-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.picker-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.picker-title {
+  font-size: 18px;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.picker-display {
+  font-size: 60px;
+  font-weight: bold;
+  color: #FFFFFF;
+  font-family: monospace;
+}
+
+.time-picker {
+  width: 100%;
+  height: 250px;
+  margin: 20px 0;
+  color: #FFFFFF;
+}
+
+.picker-indicator {
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.picker-item {
+  line-height: 50px;
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 24px;
+}
+
+.unit {
+  font-size: 16px;
+  margin-left: 4px;
+  color: #8E8E93;
+}
+
+.sure-btn {
+  width: 100%;
+  height: 56px;
+  background-color: #C1E734;
+  border-radius: 30px;
+  color: #000000;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
