@@ -101,7 +101,7 @@
 
 .card-label {
   font-size: 14px;
-  color: #8E97A3;
+  color:#151F2F;
   margin-bottom: 8px;
 }
 

@@ -1,14 +1,5 @@
 <view class="container">
   <!-- 顶部状态栏 -->
-  <view class="status-bar">
-    <text class="time">9:41</text>
-    <view class="status-icons">
-      <view class="signal-icon"></view>
-      <view class="wifi-icon"></view>
-      <view class="battery-icon"></view>
-    </view>
-  </view>
-
   <!-- 页面标题 -->
   <view class="page-title">Front page</view>
 
