@@ -77,6 +77,24 @@ Page({
   },
 
   togglePause() {
+ // 启动参数中获取设备 id
+const {
+  query: { deviceId }
+} = ty.getLaunchOptionsSync();
+ 
+ty.device.publishDps({
+  deviceId,
+  dps: { 106:'START'},
+  mode: 1,
+  pipelines: [0, 1, 2, 3, 4, 5, 6],
+  options: {},
+  success: (res) => {
+    console.log('publishDps success', res);
+  },
+  fail: (error) => {
+    console.log('publishDps fail', error);
+  }
+});
     this.setData({
       isPaused: !this.data.isPaused
     });

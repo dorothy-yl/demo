@@ -1,5 +1,5 @@
 .container {
-  background-color: #0A0E27;
+  background-color:rgb(186, 195, 252);
   min-height: 100vh;
   color: #fff;
 }
@@ -16,7 +16,7 @@
   padding-bottom: 10px;
   padding-left: 16px;
   padding-right: 16px;
-  background-color: #0A0E27;
+  background-color:#2C3A4A
   z-index: 100;
   box-sizing: border-box;
 }
