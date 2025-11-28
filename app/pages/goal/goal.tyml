@@ -6,7 +6,7 @@
   <view class="custom-nav" style="padding-top: {{statusBarHeight}}px">
     <view class="nav-content">
       <view class="back-btn" bindtap="goBack">
-        <image src="/app/images/icons/index_1.svg" class="back-icon" style="transform: rotate(180deg); filter: invert(1);"></image>
+        <image src="/app/images/icons/Vector.svg" class="back-icon" ></image>
       </view>
       <text class="nav-title">Set goals</text>
     </view>

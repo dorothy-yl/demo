@@ -2,6 +2,7 @@
   <!-- Header -->
   <view class="header">
     <view class="back-btn" bindtap="goBack">
+      <image class="back-icon" src="/app/images/icons/Vector.svg" />
     </view>
     <text class="header-title">Quick Start</text>
     <view class="header-placeholder"></view>
