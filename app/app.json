@@ -13,13 +13,7 @@
     "pages/alarm/repeat/repeat"
   ],
   "window": {
-    "navigationBarTitleText": "单车",
-    "navigationBarBackgroundColor": "#0A0E27",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#0A0E27"
-  },
-  "networkTimeout": {
-    "request": 10000
+    "navigationStyle": "custom"
   }
 }
 
