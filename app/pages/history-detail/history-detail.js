@@ -1,12 +1,10 @@
 Page({
   data: {
-    record: null,
-    formattedTime: '00:00'
+    record: null
   },
   
   onLoad(options) {
     const id = options.id;
-    const date = options.date;
     
     // 从本地存储或历史记录中获取详情
     const history = ty.getStorageSync('exerciseHistory') || [];
@@ -14,51 +12,41 @@ Page({
     
     if (id) {
       record = history.find(item => item.id === parseInt(id));
-    } else if (date) {
-      record = history.find(item => {
-        const recordDate = new Date(item.date).toISOString().split('T')[0];
-        return recordDate === date;
-      });
     }
     
-    if (record) {
-      this.setData({
-        record: record,
-        formattedTime: this.formatTime(record.duration || 0)
-      });
+    // 如果没有找到，使用默认数据（从历史列表页传递的数据）
+    if (!record) {
+      // 从历史列表页的数据结构构建记录
+      const distance = parseFloat(options.distance) || 0.7;
+      record = {
+        id: parseInt(id) || 1,
+        duration: options.duration || '17',
+        date: options.date || '12月11日 12:01:03',
+        speed: options.speed || '107.29',
+        calories: options.calories || '52',
+        distance: distance.toFixed(1),
+        rpm: options.rpm || '52',
+        watt: options.watt || '50.1',
+        maxResistance: options.maxResistance || '19',
+        minResistance: options.minResistance || '1.3',
+        heartRate: options.heartRate || '60'
+      };
     } else {
-      // 如果没有找到，使用传入的参数构建记录
-      const duration = parseInt(options.duration) || 0;
-      const distance = parseFloat(options.distance) || 0;
-      const calories = parseInt(options.calories) || 0;
-      const heartRate = parseInt(options.heartRate) || 120;
-      const avgSpeed = parseFloat(options.avgSpeed) || 18.5;
-      const resistance = parseInt(options.resistance) || 5;
-      
-      this.setData({
-        record: {
-          date: date || new Date().toISOString().split('T')[0],
-          duration,
-          distance,
-          calories,
-          heartRate,
-          avgSpeed,
-          resistance,
-          maxSpeed: avgSpeed
-        },
-        formattedTime: this.formatTime(duration)
-      });
+      // 确保距离格式正确
+      if (record.distance && typeof record.distance === 'number') {
+        record.distance = record.distance.toFixed(1);
+      }
     }
+    
+    this.setData({
+      record: record
+    });
   },
   
-  formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  goBack() {
+    ty.navigateBack({
+      delta: 1
+    });
   }
 });
 

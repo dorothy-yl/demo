@@ -61,5 +61,25 @@ Page({
     ty.navigateTo({
       url: '/pages/congrats/congrats'
     });
+  },
+
+  goToDetail(e) {
+    const id = e.currentTarget.dataset.id;
+    const record = this.data.records.find(item => item.id === id);
+    
+    if (record) {
+      const params = new URLSearchParams({
+        id: id,
+        duration: record.duration,
+        date: record.date,
+        speed: record.speed,
+        calories: record.calories,
+        distance: record.distance
+      });
+      
+      ty.navigateTo({
+        url: `/pages/history-detail/history-detail?${params.toString()}`
+      });
+    }
   }
 });

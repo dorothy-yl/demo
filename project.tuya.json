@@ -1,7 +1,7 @@
 {
   "projectname": "bicycle",
   "i18n": true,
-  "description": "单车",
+  "description": "",
   "miniprogramRoot": "app/",
   "baseversion": "2.29.6",
   "dependencies": {

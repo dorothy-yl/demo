@@ -8,7 +8,7 @@
   position: fixed;
   top:0;
   left:0;
-  reght:0;
+  right:0;
 }
 
 
@@ -75,7 +75,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px 32px;
+  padding: 0 20px 40px;
 }
 
 .summary-left {
@@ -145,6 +145,7 @@
 /* 常用功能区域 */
 .common-functions {
   padding: 0 20px 20px;
+  margin-top:18px;
 }
 
 .section-title {
@@ -168,7 +169,8 @@
   padding: 20px 16px;
   background: #15192B;
   border-radius: 12px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); */
+  border:2px solid transparent;
+  transition:border 0.2s;
 }
 
 .function-icon-wrapper {
@@ -182,18 +184,6 @@
   background: transparent !important; /* Remove background colors */
 }
 
-/* Icons need to be colored or have backgrounds in SVG. 
-   The screenshot shows colored icons on dark background.
-   Let's assume the SVGs are colored or we use filters/CSS to color them.
-   Or maybe they are just images on dark background.
-   Wait, the previous code had background colors for wrappers. 
-   In the screenshot, the icons are just colored lines on dark background.
-   Wait, the previous code had background colors:
-   .function-icon-wrapper.quick-start { background: #FFB200; }
-   This creates a colored square behind the icon.
-   In the screenshot, the icons are floating, no colored square background.
-   The icons themselves are colored (Yellow runner, Blue target, Blue monitor, Pink bulb).
-*/
 .function-icon-wrapper {
   background: none !important;
 }

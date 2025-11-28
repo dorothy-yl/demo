@@ -29,7 +29,7 @@
     <view class="section-title">Common functions</view>
     <view class="function-grid">
       <view class="function-item" bindtap="goToExercise">
-        <view class="function-icon-wrapper quick-start">
+        <view class="function-icon-wrapper">
           <image class="function-icon" src="/app/images/icons/Quick Start.svg" mode="aspectFit"></image>
         </view>
         <text class="function-label">Quick Start</text>

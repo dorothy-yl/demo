@@ -13,7 +13,7 @@
   </view>
 
   <scroll-view class="record-list" scroll-y="true">
-    <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item">
+    <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item" bindtap="goToDetail" data-id="{{item.id}}">
       <view class="card-header">
         <view class="duration-group">
           <text class="duration-val">{{item.duration}}</text>
