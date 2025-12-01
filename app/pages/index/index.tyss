@@ -166,8 +166,7 @@
   align-items: flex-start; /* Align text to left */
   padding: 24px 20px;
   background: #151925; /* Darker background */
-  border-radius: 24px; /* More rounded corners */
-  border: none;
+  border-radius: 40px 16px 16px 16px; /* Asymmetric border radius */
   position: relative;
   height: 140px; /* Fixed height for consistency */
   box-sizing: border-box;
@@ -191,25 +190,25 @@
   height: 24px;
 }
 
-/* Icon Colors using filters */
-/* Quick Start - Yellow/Orange */
+/* Icon Colors - Removed filters as per user request to use original icon colors */
+/* Quick Start */
 .function-item:nth-child(1) .function-icon {
-  filter: invert(76%) sepia(68%) saturate(1688%) hue-rotate(359deg) brightness(101%) contrast(106%); /* #FFC107 approx */
+  /* filter: invert(76%) sepia(68%) saturate(1688%) hue-rotate(359deg) brightness(101%) contrast(106%); */
 }
 
-/* Target pattern - Cyan */
+/* Target pattern */
 .function-item:nth-child(2) .function-icon {
-  filter: invert(85%) sepia(25%) saturate(969%) hue-rotate(128deg) brightness(96%) contrast(98%); /* #5EEAD4 approx */
+  /* filter: invert(85%) sepia(25%) saturate(969%) hue-rotate(128deg) brightness(96%) contrast(98%); */
 }
 
-/* FTMS - Blue */
+/* FTMS */
 .function-item:nth-child(3) .function-icon {
-  filter: invert(36%) sepia(61%) saturate(2465%) hue-rotate(200deg) brightness(100%) contrast(96%); /* #3B82F6 approx */
+  /* filter: invert(36%) sepia(61%) saturate(2465%) hue-rotate(200deg) brightness(100%) contrast(96%); */
 }
 
-/* Tirp - Pink/Red */
+/* Tirp */
 .function-item:nth-child(4) .function-icon {
-  filter: invert(56%) sepia(39%) saturate(3504%) hue-rotate(315deg) brightness(100%) contrast(96%); /* #F43F5E approx */
+  /* filter: invert(56%) sepia(39%) saturate(3504%) hue-rotate(315deg) brightness(100%) contrast(96%); */
 }
 
 

@@ -7,12 +7,12 @@ Page({
     isPaused: false,
     elapsedTime: 3126, // 52:06 in seconds for demo match
     speed: 7.3,
-    heartRate: 70,
+    heartRate: 0,
     formattedTime: '00:52:06',
     rpm: 61,
     calories: 128,
     watt: 53,
-    load: 32,
+    load: 1,
     gaugeProgressStyle: '',
     knobAngle: 225 // Start angle
   },
@@ -47,7 +47,7 @@ dpID.forEach(element => {
   if(element.code == 105) {
     console.log('速度:', element.value);
     this.setData({
-    speed: element.value/1000
+    speed: (element.value/1000).toFixed(1)
     });
   }
   //心率
@@ -59,7 +59,7 @@ dpID.forEach(element => {
   //rpm 踏率
   if(element.code == 110) {
     this.setData({
-      rpm: element.value/1000
+      rpm: element.value
     });
   }
  // 卡路里
@@ -78,9 +78,11 @@ dpID.forEach(element => {
   }
   //阻力
   if(element.code == 102) {
+    console.log('阻力:', element.value);
     this.setData({
       load: element.value
     });
+    this.updateGauge(element.value);
   } 
 });
 }
@@ -127,22 +129,12 @@ onDpDataChange(_onDpDataChange);
         const newTime = this.data.elapsedTime + 1;
         
         // Simulate small fluctuations
-        const newLoad = Math.min(100, Math.max(0, this.data.load + (Math.random() - 0.5) * 2));
-        
         this.setData({
           elapsedTime: newTime,
           formattedTime: this.formatTime(newTime),
-          rpm: 61 + Math.floor(Math.random() * 10),
-          watt: 53 + Math.floor(Math.random() * 10),
-          heartRate: 70 + Math.floor(Math.random() * 6),
-          speed: (7.3 + Math.random() * 5).toFixed(1)
         });
-        
-        // Update gauge occasionally
-        if (newTime % 2 === 0) {
-          this.updateGauge(Math.round(newLoad));
-        }
-      }
+      
+    }
     }, 1000);
   },
 
@@ -154,26 +146,26 @@ onDpDataChange(_onDpDataChange);
   },
 
   togglePause() {
- // 启动参数中获取设备 id
-const {
-  query: { deviceId }
-} = ty.getLaunchOptionsSync();
- 
-ty.device.publishDps({
-  deviceId,
-  dps: { 106:'START'},
-  mode: 1,
-  pipelines: [0, 1, 2, 3, 4, 5, 6],
-  options: {},
-  success: (res) => {
-    console.log('publishDps success', res);
-  },
-  fail: (error) => {
-    console.log('publishDps fail', error);
-  }
-});
-    this.setData({
-      isPaused: !this.data.isPaused
+    const { query: { deviceId } } = ty.getLaunchOptionsSync();
+    const targetState = !this.data.isPaused;
+    // 替换为硬件实际的暂停/继续指令（如硬件用 0 表示暂停，1 表示继续）
+    const controlCmd = targetState ? 'PAUSE' : 'START'; 
+  
+    ty.device.publishDps({
+      deviceId,
+      dps: { 106: controlCmd }, // 替换为硬件控制暂停/继续的dp点
+      mode: 1,
+      pipelines: [0, 1, 2, 3, 4, 5, 6],
+      success: () => {
+        this.setData({ isPaused: targetState });
+        // 状态提示（可选）
+        const tip = targetState ? '已暂停' : '已继续';
+        ty.showToast({ title: tip, icon: 'none' });
+      },
+      fail: (err) => {
+        console.error('硬件指令发送失败:', err);
+        ty.showToast({ title: '操作失败', icon: 'none' });
+      }
     });
   },
 
@@ -190,22 +182,27 @@ ty.device.publishDps({
     });
   },
 
-  updateGauge(value) {
-    // Gauge range: 0 to 100
-    // Arc range: 270 degrees (from 225deg to 495deg/135deg)
-    // 0 -> 0 deg progress, 225 deg knob
-    // 100 -> 270 deg progress, 495 deg knob
-    
-    const maxAngle = 270;
-    const progressAngle = (value / 100) * maxAngle;
-    const startAngle = 225;
-    const knobAngle = startAngle + progressAngle;
-    
-    this.setData({
-      load: value,
-      // conic-gradient: start color at 0deg (relative to 'from'), end color at progressAngle
-      gaugeProgressStyle: `background: conic-gradient(from ${startAngle}deg, #ADFF2F 0deg, #ADFF2F ${progressAngle}deg, transparent ${progressAngle}deg);`,
-      knobAngle: knobAngle
-    });
-  }
-});
+updateGauge(value) {
+  const maxLoad = 32;
+  const currentValue = Math.min(value, maxLoad);
+  const maxAngle = 270;
+  const progressAngle = (currentValue / maxLoad) * maxAngle;
+  const startAngle = 225;
+  const knobAngle = startAngle + progressAngle;
+
+  // 计算终点坐标（可选）
+  const endRadian = (knobAngle * Math.PI) / 180;
+  const endX = 110 + 110 * Math.cos(endRadian);
+  const endY = 110 + 110 * Math.sin(endRadian);
+  
+  this.setData({
+    load: currentValue,
+    gaugeProgressStyle: `
+      background: conic-gradient(from ${startAngle}deg, #ADFF2F 0deg, #ADFF2F ${progressAngle}deg, transparent ${progressAngle}deg);
+      --end-x: ${endX}px;
+      --end-y: ${endY}px;
+    `,
+    knobAngle: knobAngle
+  });
+}
+})
