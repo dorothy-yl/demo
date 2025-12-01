@@ -2,7 +2,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  background-color: #222832; /* Dark Blue/Gray Background */
+  background-color:#2C3A4A; /* Dark Blue/Gray Background */
   min-height: 100vh;
   color: #FFFFFF;
   padding: 0 20px;
@@ -19,8 +19,8 @@
 }
 
 .back-btn {
-  width: 20px;
-  height: 20px;
+  width: 7px;
+  height: 15px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -100,12 +100,36 @@
 
 .card-label {
   font-size: 14px;
-  color:#151F2F;
+  color:#BABABA;
+  margin-bottom: 8px;
+}
+
+/* Cards Common */
+.card {
+  background-color: #2B3240;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-label {
+  font-size: 14px;
+  color:#BABABA;
   margin-bottom: 8px;
 }
 
 /* Timer Card */
 .timer-card {
+  width:329px;
+  height:114px;
+  display:flex;
+  justify-content: center; /* 修正错误写法：justify -> justify-content */
+  align-items: center;
+  flex-direction: column; /* 让标签和时间垂直排列 */
+  background-color:#151F2F;
   margin-bottom: 16px;
   padding: 25px 20px;
 }
@@ -115,8 +139,8 @@
   font-weight: bold;
   font-family: monospace;
   letter-spacing: 2px;
+  text-align: center; /* 文本自身水平居中兜底 */
 }
-
 /* Stats Grid */
 .stats-grid {
   display: flex;

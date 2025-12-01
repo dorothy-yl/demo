@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #1A1D35 0%, #0A0E27 100%);
+  background: linear-gradient(180deg,#2C3A4A 0%,#2C3A4A 100%);
   padding: 0;
   padding-bottom: 80px;
   box-sizing: border-box;
@@ -112,17 +112,20 @@
 }
 
 /* 自行车圆形背景 */
+/* 外圆：改成透明背景 + 边框 */
 .bicycle-circle-outer {
   width: 212px;
   height: 212px;
   border-radius: 50%;
-  background:#2C3A4A;
+  border: 0.5px solid rgba(144, 147, 174, 0.6); /*#2C3A4A 的RGBA值，透明度0.6 */
+  background: transparent; /* 背景透明 */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
 
+/* 内圆：保持现有样式即可（浅色实心圆） */
 .bicycle-circle-inner {
   width: 160px;
   height: 160px;
@@ -133,7 +136,6 @@
   justify-content: center;
   padding: 12px;
 }
-
 .bicycle-image {
   width: 176px;
   height: 229px;
@@ -167,7 +169,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px 16px;
-  background: #15192B;
+  background:#101828CC;
   border-radius: 12px;
   border:2px solid transparent;
   transition:border 0.2s;
@@ -236,12 +238,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: #1A1D35;
+  height: 53px;
+  background:#101828;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 8px 0;
+  radius:100px;
   border-top: 1px solid #2A2D45;
   z-index: 100;
 }
