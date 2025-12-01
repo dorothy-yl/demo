@@ -8,6 +8,20 @@
   align-items: center;
 }
 
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+  margin-bottom: 20px;
+}
+
+.header-title {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 500;
+}
+
 .icon-section {
   flex: 1;
   display: flex;
@@ -15,30 +29,27 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  position: relative;
   min-height: 200px;
+  margin-bottom: 40px;
+  gap: 40px;
 }
 
-.main-icon {
-  width: 200px;
-  height: auto;
+.device-icon {
+  width: 80px;
+  height: 80px;
 }
 
 .dots-container {
   display: flex;
-  gap: 10px;
-  position: absolute;
-  /* Adjust position to overlay or sit between router and screen if they were separate */
-  /* Since connect.svg likely contains the whole image, we might not need this, 
-     but user provided Ellipse 12.svg so maybe dots are dynamic */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  gap: 16px;
+  align-items: center;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
   opacity: 0;
   animation: dotFade 1.5s infinite;
 }
@@ -48,36 +59,36 @@
 .dot:nth-child(3) { animation-delay: 1s; }
 
 @keyframes dotFade {
-  0% { opacity: 0; }
+  0% { opacity: 0.3; }
   50% { opacity: 1; }
-  100% { opacity: 0; }
+  100% { opacity: 0.3; }
 }
 
 .controls-wrapper {
   width: 100%;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
 }
 
 .control-row {
   background-color: #2B3240;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .control-label {
   color: #FFFFFF;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .slider-card {
   background-color: #2B3240;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
 }
@@ -85,19 +96,20 @@
 .slider-value {
   color: #FFFFFF;
   font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  font-weight: 500;
+  margin-bottom: 24px;
 }
 
 .slider-body {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .slider-labels {
   display: flex;
   justify-content: space-between;
-  color: #8E97A3;
+  color: #FFFFFF;
   font-size: 14px;
+  opacity: 0.8;
 }
 

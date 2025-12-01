@@ -1,5 +1,5 @@
 .container {
-  background-color:rgb(186, 195, 252);
+  background-color:#2C3A4A;
   min-height: 100vh;
   color: #fff;
 }
@@ -33,12 +33,15 @@
   color: #fff;
 }
 
-.header-title {
+.page-title {
   font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 8px; /* Align with icons */
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 12px 0 24px;
+  margin-top: 53px;
 }
+
 
 .header-right {
   width: 40px;

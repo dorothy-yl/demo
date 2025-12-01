@@ -147,61 +147,79 @@
 /* 常用功能区域 */
 .common-functions {
   padding: 0 20px 20px;
-  margin-top:18px;
+  margin-top: 18px;
 }
 
 .section-title {
-  font-size: 16px;
-  color: #B0B0B0;
-  margin-bottom: 20px;
-  text-align: left;
-  font-weight: 400;
+  display: none; /* Screenshot doesn't show the title "Common functions" */
 }
 
 .function-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 12px; /* Slightly tighter gap */
 }
 
 .function-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px 16px;
-  background:#101828CC;
-  border-radius: 12px;
-  border:2px solid transparent;
-  transition:border 0.2s;
+  align-items: flex-start; /* Align text to left */
+  padding: 24px 20px;
+  background: #151925; /* Darker background */
+  border-radius: 24px; /* More rounded corners */
+  border: none;
+  position: relative;
+  height: 140px; /* Fixed height for consistency */
+  box-sizing: border-box;
+  justify-content: space-between;
 }
 
+/* Specific background shapes for icon wrappers */
 .function-icon-wrapper {
   width: 48px;
   height: 48px;
-  /* border-radius: 8px; */
+  border-radius: 50%; /* Circle */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  background: transparent !important; /* Remove background colors */
-}
-
-.function-icon-wrapper {
-  background: none !important;
+  margin-bottom: 0;
+  background: #1E2430 !important; /* Slightly lighter than card bg */
 }
 
 .function-icon {
-  width: 30px;
-  height: 30px;
-  top:400px;
-  left:46px;
+  width: 24px;
+  height: 24px;
 }
 
+/* Icon Colors using filters */
+/* Quick Start - Yellow/Orange */
+.function-item:nth-child(1) .function-icon {
+  filter: invert(76%) sepia(68%) saturate(1688%) hue-rotate(359deg) brightness(101%) contrast(106%); /* #FFC107 approx */
+}
+
+/* Target pattern - Cyan */
+.function-item:nth-child(2) .function-icon {
+  filter: invert(85%) sepia(25%) saturate(969%) hue-rotate(128deg) brightness(96%) contrast(98%); /* #5EEAD4 approx */
+}
+
+/* FTMS - Blue */
+.function-item:nth-child(3) .function-icon {
+  filter: invert(36%) sepia(61%) saturate(2465%) hue-rotate(200deg) brightness(100%) contrast(96%); /* #3B82F6 approx */
+}
+
+/* Tirp - Pink/Red */
+.function-item:nth-child(4) .function-icon {
+  filter: invert(56%) sepia(39%) saturate(3504%) hue-rotate(315deg) brightness(100%) contrast(96%); /* #F43F5E approx */
+}
+
+
 .function-label {
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
   color: #FFFFFF;
-  text-align: center;
-  margin-top: 8px;
+  text-align: left;
+  margin-top: 0;
+  line-height: 1.2;
 }
 
 /* 连接状态 */

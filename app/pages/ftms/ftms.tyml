@@ -1,12 +1,16 @@
 <view class="container">
+  <view class="header">
+    <text class="header-title">FTMS</text>
+  </view>
+
   <view class="icon-section">
-    <image class="main-icon" src="/app/images/icons/connect.svg" mode="widthFix"></image>
-    <!-- Animation dots could go here if needed, using Ellipse 12.svg -->
-    <view class="dots-container" ty:if="{{ftmsEnabled}}">
-       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
-       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
-       <image class="dot" src="/app/images/icons/Ellipse 12.svg"/>
+    <image class="device-icon" src="/app/images/icons/connect.svg" mode="aspectFit"></image>
+    <view class="dots-container">
+       <view class="dot"></view>
+       <view class="dot"></view>
+       <view class="dot"></view>
     </view>
+    <image class="device-icon" src="/app/images/icons/connect2.svg" mode="aspectFit"></image>
   </view>
 
   <view class="controls-wrapper">

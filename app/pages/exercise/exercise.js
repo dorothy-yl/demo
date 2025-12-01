@@ -1,3 +1,7 @@
+function formatDpState(dpState) {
+  return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+}
+
 Page({
   data: {
     isPaused: false,
@@ -14,10 +18,73 @@ Page({
   },
   timer: null,
 
+  
   onLoad() {
     console.log('Exercise Page Load');
     this.startTimer();
     this.updateGauge(this.data.load);
+
+    // 原生调用方式
+const { onDpDataChange, registerDeviceListListener } = ty.device;
+const { getLaunchOptionsSync } = ty;
+// 启动参数中获取设备 id
+const {
+  query: { deviceId }
+} = getLaunchOptionsSync();
+ 
+const _onDpDataChange = (event) => {
+  // console.log(formatDpState(event.dps));
+console.log('dp点数组:'+ JSON.stringify(formatDpState(event.dps)));
+
+dpID.forEach(element => {
+  //速度
+  if(element.code === 105) {
+    this.setData({
+      speed: element.value
+    });
+  }
+  //心率
+  if(element.code === 108) {
+    this.setData({
+      heartRate: element.value
+    });
+  }
+  //rpm 踏率
+  if(element.code === 110) {
+    this.setData({
+      rpm: element.value
+    });
+  }
+  // 卡路里
+  if(element.code === 107) {
+    this.setData({
+      calories: element.value
+    });
+  }
+  //功率
+  if(element.code === 109) {
+    this.setData({
+      watt: element.value
+    });
+  }
+  //阻力
+  if(element.code === 102) {
+    this.setData({
+      load: element.value
+    });
+  } 
+});
+ 
+registerDeviceListListener({
+  deviceIdList: [deviceId],
+  success: () => {
+    console.log('registerDeviceListListener success');
+  },
+  fail: (error) => {
+    console.log('registerDeviceListListener fail', error);
+  }
+  });
+onDpDataChange(_onDpDataChange);
   },
 
   onUnload() {
