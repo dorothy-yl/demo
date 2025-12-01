@@ -7,7 +7,7 @@ Page({
     isPaused: false,
     elapsedTime: 3126, // 52:06 in seconds for demo match
     speed: 7.3,
-    heartRate: 0,
+    heartRate: 71,
     formattedTime: '00:52:06',
     rpm: 61,
     calories: 128,
