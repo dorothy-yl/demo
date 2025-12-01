@@ -65,7 +65,7 @@
     </view>
     <view class="gauge-labels">
       <text>0</text>
-      <text>100</text>
+      <text>32</text>
     </view>
   </view>
 

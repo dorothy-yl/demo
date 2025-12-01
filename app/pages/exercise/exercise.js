@@ -1,18 +1,18 @@
 function formatDpState(dpState) {
-  return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+    return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
 }
 
 Page({
   data: {
     isPaused: false,
     elapsedTime: 3126, // 52:06 in seconds for demo match
-    speed: 92.5,
-    heartRate: 143,
+    speed: 7.3,
+    heartRate: 70,
     formattedTime: '00:52:06',
-    rpm: 514,
+    rpm: 61,
     calories: 128,
-    watt: 320,
-    load: 85,
+    watt: 53,
+    load: 32,
     gaugeProgressStyle: '',
     knobAngle: 225 // Start angle
   },
@@ -35,46 +35,56 @@ const {
 const _onDpDataChange = (event) => {
   // console.log(formatDpState(event.dps));
 console.log('dp点数组:'+ JSON.stringify(formatDpState(event.dps)));
-
+const dpID = formatDpState(event.dps);  //dpID 数组
 dpID.forEach(element => {
-  //速度
-  if(element.code === 105) {
+  // 时间
+  if(element.code == 104) {
     this.setData({
-      speed: element.value
+      elapsedTime: element.value
+    });
+  }
+  //速度
+  if(element.code == 105) {
+    console.log('速度:', element.value);
+    this.setData({
+    speed: element.value/1000
     });
   }
   //心率
-  if(element.code === 108) {
+  if(element.code == 108) {
     this.setData({
       heartRate: element.value
     });
   }
   //rpm 踏率
-  if(element.code === 110) {
+  if(element.code == 110) {
     this.setData({
-      rpm: element.value
+      rpm: element.value/1000
     });
   }
-  // 卡路里
-  if(element.code === 107) {
-    this.setData({
-      calories: element.value
-    });
-  }
+ // 卡路里
+ if(element.code == 107) {
+  console.log('卡路里:', element.value);
+  this.setData({
+    calories: (element.value/1000).toFixed(1)
+  });
+}
   //功率
-  if(element.code === 109) {
+  if(element.code == 109) {
+    console.log('功率:', element.value);
     this.setData({
       watt: element.value
     });
   }
   //阻力
-  if(element.code === 102) {
+  if(element.code == 102) {
     this.setData({
       load: element.value
     });
   } 
 });
- 
+}
+
 registerDeviceListListener({
   deviceIdList: [deviceId],
   success: () => {
@@ -122,10 +132,10 @@ onDpDataChange(_onDpDataChange);
         this.setData({
           elapsedTime: newTime,
           formattedTime: this.formatTime(newTime),
-          rpm: 510 + Math.floor(Math.random() * 10),
-          watt: 315 + Math.floor(Math.random() * 10),
-          heartRate: 140 + Math.floor(Math.random() * 6),
-          speed: (90 + Math.random() * 5).toFixed(1)
+          rpm: 61 + Math.floor(Math.random() * 10),
+          watt: 53 + Math.floor(Math.random() * 10),
+          heartRate: 70 + Math.floor(Math.random() * 6),
+          speed: (7.3 + Math.random() * 5).toFixed(1)
         });
         
         // Update gauge occasionally
