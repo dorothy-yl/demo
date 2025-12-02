@@ -1,8 +1,7 @@
 {
   "navigationStyle": "custom",
   "navigationBarTitleText": "单车",
-  "usingComponents": {}
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
+  }
 }
-
-
-

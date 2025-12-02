@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "Front page",
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
+  }
 }

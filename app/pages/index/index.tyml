@@ -62,16 +62,5 @@
     <text class="status-text">已连接</text>
   </view> -->
 
-  <!-- 底部导航栏 -->
-  <view class="bottom-nav">
-    <view class="nav-item active" bindtap="goToHome">
-      <image class="nav-icon" src="/app/images/icons/index_1.svg" mode="aspectFit"></image>
-    </view>
-    <view class="nav-item" bindtap="goToHistory">
-      <image class="nav-icon" src="/app/images/icons/recodes.svg" mode="aspectFit"></image>
-    </view>
-    <view class="nav-item" bindtap="goToSettings">
-      <image class="nav-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
-    </view>
-  </view>
+  <bottom-nav activeTab="home" />
 </view>

@@ -85,5 +85,6 @@
       </view>
     </view>
   </view>
+  <bottom-nav activeTab="user" />
 </view>
 

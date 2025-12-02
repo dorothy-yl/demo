@@ -1,5 +1,8 @@
 {
   "navigationStyle": "custom",
   "navigationBarTextStyle": "white",
-  "disableScroll": true
+  "disableScroll": true,
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
+  }
 }

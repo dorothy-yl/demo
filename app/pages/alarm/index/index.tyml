@@ -41,4 +41,5 @@
       </view>
     </scroll-view>
   </view>
+  <bottom-nav activeTab="clock" />
 </view>
