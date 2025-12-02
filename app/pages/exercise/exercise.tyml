@@ -48,7 +48,7 @@
 
   <!-- Load Gauge Section -->
   <view class="gauge-section">
-    <view class="gauge-wrapper">
+    <view class="gauge-wrapper" catchtouchmove="handleTouchMove" catchtouchstart="handleTouchMove">
       <!-- Background Arc -->
       <view class="gauge-background"></view>
       <!-- Progress Arc (Dynamic) -->

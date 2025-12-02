@@ -182,27 +182,128 @@ onDpDataChange(_onDpDataChange);
     });
   },
 
-updateGauge(value) {
-  const maxLoad = 32;
-  const currentValue = Math.min(value, maxLoad);
-  const maxAngle = 270;
-  const progressAngle = (currentValue / maxLoad) * maxAngle;
-  const startAngle = 225;
-  const knobAngle = startAngle + progressAngle;
+  onReady() {
+    const query = ty.createSelectorQuery();
+    query.select('.gauge-wrapper').boundingClientRect((rect) => {
+      if (rect) {
+        this.gaugeRect = rect;
+        this.gaugeCenter = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+      }
+    }).exec();
+  },
 
-  // 计算终点坐标（可选）
-  const endRadian = (knobAngle * Math.PI) / 180;
-  const endX = 110 + 110 * Math.cos(endRadian);
-  const endY = 110 + 110 * Math.sin(endRadian);
-  
-  this.setData({
-    load: currentValue,
-    gaugeProgressStyle: `
-      background: conic-gradient(from ${startAngle}deg, #ADFF2F 0deg, #ADFF2F ${progressAngle}deg, transparent ${progressAngle}deg);
-      --end-x: ${endX}px;
-      --end-y: ${endY}px;
-    `,
-    knobAngle: knobAngle
-  });
-}
+  handleTouchMove(e) {
+    if (!this.gaugeCenter) return;
+
+    const touch = e.touches[0];
+    const dx = touch.clientX - this.gaugeCenter.x;
+    const dy = touch.clientY - this.gaugeCenter.y;
+
+    // Calculate angle in degrees
+    // Math.atan2(dy, dx) returns angle from X-axis (3 o'clock).
+    // We want 0 to be Y-axis (12 o'clock) for consistency with CSS rotate.
+    // So we add 90 degrees.
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
+
+    // Our gauge starts at 225deg (bottom-left) and goes 270deg to 135deg (bottom-right)
+    // 225 -> 0 (start)
+    // 360/0 -> transition
+    // 135 -> end
+    
+    // Normalize angle relative to start (225)
+    // If angle is between 0 and 135, add 360 to make it continuous with 225-360
+    // Range becomes 225 (start) to 495 (end)
+    
+    let adjustedAngle = angle;
+    if (angle >= 0 && angle <= 135) {
+      adjustedAngle = angle + 360;
+    }
+
+    // Clamping
+    const startAngle = 225;
+    const maxSweep = 270;
+    const endAngle = startAngle + maxSweep; // 495
+
+    if (adjustedAngle < startAngle) adjustedAngle = startAngle;
+    if (adjustedAngle > endAngle) adjustedAngle = endAngle;
+
+    // Calculate progress (0 to 1)
+    const progress = (adjustedAngle - startAngle) / maxSweep;
+    
+    // Map to Load (0-32)
+    const maxLoad = 32;
+    const newLoad = Math.round(progress * maxLoad);
+
+    if (newLoad !== this.data.load) {
+      this.updateGauge(newLoad);
+      
+      // Send command to device (throttle this in real app, but for now direct)
+      // Assuming 102 is the DP code for resistance/load
+       const { query: { deviceId } } = ty.getLaunchOptionsSync();
+       if (deviceId) {
+           ty.device.publishDps({
+            deviceId,
+            dps: { 102: newLoad },
+            mode: 1,
+            pipelines: [0, 1, 2, 3, 4, 5, 6],
+            success: () => {},
+            fail: () => {}
+          });
+       }
+    }
+  },
+
+  updateGauge(value) {
+    const maxLoad = 32;
+    const currentValue = Math.min(Math.max(value, 0), maxLoad); // Ensure bounds
+    const maxAngle = 270;
+    const progressAngle = (currentValue / maxLoad) * maxAngle;
+    const startAngle = 225;
+    const knobAngle = startAngle + progressAngle;
+
+    // Calculate knob position
+    // Radius is 110px (half of 220px width)
+    // Center is (110, 110) relative to wrapper
+    // Angle needs to be in radians. 
+    // Math.cos/sin take radians where 0 is 3 o'clock.
+    // Our knobAngle is in CSS degrees (0 is 12 o'clock usually? No, standard CSS rotation is from 12 o'clock? 
+    // Wait, let's check the CSS. 
+    // .gauge-knob-container is rotated by knobAngle.
+    // Inside it, .gauge-knob is at top: 10px, left: 50%.
+    // So 0deg rotation puts knob at 12 o'clock.
+    // 225deg rotation puts it at bottom-left.
+    // My calculation in handleTouchMove assumed 0 is 3 o'clock (Math.atan2 standard).
+    // So I need to align these coordinate systems.
+    
+    // Math.atan2(dy, dx): 0 is +x (3 o'clock). +90 is +y (6 o'clock in screen coords).
+    // CSS rotate: 0 is usually 12 o'clock? 
+    // Actually, if I use standard rotation, 0 is 12 o'clock?
+    // Let's re-verify CSS.
+    // .gauge-knob-container { width: 100%; height: 100%; ... }
+    // .gauge-knob { left: 50%; top: 10px; ... } -> This is at 12 o'clock position relative to container.
+    // So yes, 0deg rotation = 12 o'clock.
+    
+    // Math.atan2 returns angle from X axis (3 o'clock).
+    // 3 o'clock is 90 degrees clockwise from 12 o'clock.
+    // So CSS Angle = Math Angle + 90.
+    // Example: 
+    // Point at 12 o'clock (0, -y): atan2(-y, 0) = -90 deg. +90 = 0 deg. Correct.
+    // Point at 3 o'clock (x, 0): atan2(0, x) = 0 deg. +90 = 90 deg. Correct.
+    // Point at 6 o'clock (0, y): atan2(y, 0) = 90 deg. +90 = 180 deg. Correct.
+    // Point at 9 o'clock (-x, 0): atan2(0, -x) = 180 deg. +90 = 270 deg. Correct.
+    
+    // So in handleTouchMove, I should convert Math angle to CSS angle by adding 90.
+    
+    this.setData({
+      load: currentValue,
+      gaugeProgressStyle: `
+        background: conic-gradient(from ${startAngle}deg, #ADFF2F 0deg, #ADFF2F ${progressAngle}deg, transparent ${progressAngle}deg);
+      `,
+      knobAngle: knobAngle
+    });
+  }
 })

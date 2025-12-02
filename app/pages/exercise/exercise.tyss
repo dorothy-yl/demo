@@ -16,15 +16,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 44px 0 20px 0; /* Top padding for status bar area */
+  position: relative; /* Needed for absolute positioning of title */
 }
 
 .back-btn {
-  width: 7px;
-  height: 15px;
+  width: 30px; /* Increased touch area */
+  height: 30px;
   display: flex;
   align-items: center;
   margin-top: 27px;
   justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
 }
 
 .back-icon {
@@ -37,12 +39,16 @@
   font-weight: 500;
   color: #FFFFFF;
   margin-top: 27px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 .header-placeholder {
-  width: 40px;
-  height:25px;
-  
+  width: 30px; /* Match back-btn width for symmetry if we weren't using absolute */
+  height: 25px;
+  visibility: hidden;
 }
 
 /* Top Row: Speed & Heart Rate */
