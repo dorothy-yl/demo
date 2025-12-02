@@ -16,17 +16,14 @@
     </view>
 
     <view class="main-circle-section">
-      <view class="progress-ring">
-        <!-- CSS Gradient Ring Approximation -->
-        <view class="ring-bg"></view>
-        <view class="ring-fill"></view>
-        <view class="ring-content">
-          <view class="ring-value-row">
-             <text class="ring-value">{{caloriesBurned}}</text>
-             <text class="ring-unit">kcal</text>
-          </view>
-          <text class="ring-label">Burn calories</text>
+      <view class="progress-ring"></view>
+      <view class="ring-center-bg"></view>
+      <view class="ring-content">
+        <view class="ring-value-row">
+           <text class="ring-value">{{caloriesBurned}}</text>
+           <text class="ring-unit">kcal</text>
         </view>
+        <text class="ring-label">Burn calories</text>
       </view>
     </view>
 

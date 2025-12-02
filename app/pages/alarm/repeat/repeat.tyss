@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 10px;
-  background-color:#2C3A4A;
+  background-color:#000000; /* Match Add page */
   position: relative;
 }
 

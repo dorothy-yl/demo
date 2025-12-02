@@ -97,36 +97,63 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Simple gradient border simulation */
   background: conic-gradient(#4CD964 0% 70%, rgba(255,255,255,0.1) 70% 100%);
-  padding: 15px; /* Thickness of ring */
-  border-radius: 50%;
+  padding: 0; /* We will use mask or pseudo element for thickness */
+  /* Create the mask to show only the ring */
+  -webkit-mask: radial-gradient(transparent 64%, black 65%);
+  mask: radial-gradient(transparent 64%, black 65%);
 }
+
+/* We need a background for the center content now that the ring is masked? 
+   Actually, using mask makes the center TRANSPARENT. 
+   If we want a dark center, we need a separate element behind or inside. 
+*/
 
 .ring-bg {
-  /* Inner cutout */
   position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  background-color: transparent; /* Transparent to show bg image? No, screenshot has overlay */
-  background: rgba(16, 20, 40, 0.8); /* Match overlay somewhat or just transparent center */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  background: radial-gradient(circle, rgba(20,24,40,0.9) 0%, rgba(20,24,40,0.9) 65%, transparent 65.5%);
+  z-index: -1; /* Behind the ring gradient if ring was transparent? No. */
+}
+
+/* Re-approach: Stacked elements */
+.main-circle-section {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 20px auto 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#4CD964 0% 70%, rgba(255,255,255,0.1) 70% 100%);
+  /* Mask to create the ring shape */
+  -webkit-mask: radial-gradient(transparent 58%, #000 60%);
+  mask: radial-gradient(transparent 58%, #000 60%);
   z-index: 1;
 }
 
-/* Better approach for ring: transparent center */
-.progress-ring::before {
-  content: "";
+.ring-center-bg {
   position: absolute;
-  inset: 15px; /* Thickness */
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
   border-radius: 50%;
-  background: rgba(16, 20, 40, 0.0); /* Actually we want to see through? Screenshot center is dark. */
-  background-color: #2c3044; /* Fallback dark */
-  /* To match screenshot transparency we might need mask, but let's stick to solid center for now matching background somewhat */
-  background: linear-gradient(180deg, rgba(40,44,65,0.9) 0%, rgba(20,24,40,0.9) 100%);
-  z-index: 1;
+  background: linear-gradient(180deg, rgba(40,44,65,0.95) 0%, rgba(20,24,40,0.95) 100%);
+  z-index: 0;
 }
 
 .ring-content {
