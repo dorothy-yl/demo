@@ -1,4 +1,10 @@
 <view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <image class="back-icon" src="/app/images/icons/Vector.svg" />
+    </view>
+    <text class="page-title">Sports records</text>
+  </view>
   <view class="date-selector">
     <view class="arrow-btn left" bindtap="prevDate">
       <image class="arrow-icon" src="/app/images/icons/Vector 1.svg" mode="aspectFit"></image>

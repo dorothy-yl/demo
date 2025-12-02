@@ -2,7 +2,7 @@
   <!-- Custom Header -->
   <view class="custom-header">
     <view class="header-left" bindtap="onBack">
-      <text class="back-icon">‹</text>
+      <image class="back-icon" src="/app/images/icons/Vector.svg" />
     </view>
     <text class="header-title">Front page</text>
     <view class="header-right" bindtap="onAdd">

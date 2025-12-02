@@ -22,23 +22,25 @@
 .back-btn {
   width: 30px; /* Increased touch area */
   height: 30px;
+  position: absolute;
+  margin-top: 53px;
+  left: 8px;
   display: flex;
   align-items: center;
-  margin-top: 27px;
   justify-content: flex-start;
   z-index: 10; /* Ensure above title if overlap */
 }
 
 .back-icon {
-  width: 7px;
-  height: 15px;
+  width: 9px;
+  height: 18px;
 }
 
 .header-title {
   font-size: 18px;
   font-weight: 500;
   color: #FFFFFF;
-  margin-top: 27px;
+  margin-top: 53px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -57,7 +59,7 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .top-stat-item {

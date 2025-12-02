@@ -1,4 +1,4 @@
 {
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "disableScroll": true
 }
-

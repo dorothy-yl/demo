@@ -12,14 +12,34 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: 48px;
+  padding-top: 0;
   margin-bottom: 20px;
+  position: relative;
+  height: 88px; /* Ensure enough height */
+}
+
+.back-btn {
+  width: 30px; /* Increased touch area */
+  height: 30px;
+  position: absolute;
+  margin-top: 53px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
+}
+
+.back-icon {
+  width: 9px;
+  height: 18px;
 }
 
 .header-title {
   color: #FFFFFF;
   font-size: 18px;
   font-weight: 500;
+  margin-top: 53px;
 }
 
 .icon-section {

@@ -9,22 +9,25 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 10px;
-  background-color:#2C3A4A
+  background-color:#2C3A4A;
+  position: relative;
 }
 
 .back-btn {
+  width: 30px; /* Increased touch area */
+  height: 30px;
+  position: absolute;
+  margin-top: 53px;
+  left: 8px;
   display: flex;
   align-items: center;
-  color: #FFA500;
+  justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
 }
 
-.back-arrow {
-  font-size: 24px;
-  margin-right: 5px;
-}
-
-.back-text {
-  font-size: 16px;
+.back-icon {
+  width: 9px;
+  height: 18px;
 }
 
 .page-title {

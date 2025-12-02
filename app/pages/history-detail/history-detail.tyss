@@ -2,8 +2,7 @@
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(180deg, #0A0E27 0%, #1A1D35 100%);
-  padding: 20px;
-  padding-top: 60px;
+  padding: 0;
 }
 
 .header {
@@ -11,20 +10,25 @@
   align-items: center;
   margin-bottom: 24px;
   position: relative;
+  padding: 0 20px;
+  height: 88px;
 }
 
 .back-btn {
-  width: 40px;
-  height: 40px;
+  width: 30px; /* Increased touch area */
+  height: 30px;
+  position: absolute;
+  margin-top: 53px;
+  left: 8px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-right: 16px;
+  justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
 }
 
 .back-icon {
-  width: 24px;
-  height: 24px;
+  width: 9px;
+  height: 18px;
 }
 
 .header-title {
@@ -39,6 +43,7 @@
   font-weight: bold;
   color: #FFFFFF;
   margin-bottom: 4px;
+  margin-top: 53px;
 }
 
 .page-subtitle {
@@ -50,6 +55,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 20px 20px 20px;
 }
 
 .main-card {

@@ -42,25 +42,28 @@
 }
 
 .back-btn {
+  width: 30px; /* Increased touch area */
+  height: 30px;
   position: absolute;
-  left: 16px;
-  height: 100%;
+  margin-top: 53px;
+  left: 20px;
   display: flex;
   align-items: center;
-  padding: 0 10px; /* Touch area */
+  justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
 }
 
 .back-icon {
-  width: 20px;
-  height: 20px;
-
+  width: 9px;
+  height: 18px;
 }
 
 .nav-title {
   color: #FFFFFF;
   font-size: 18px;
   font-weight: 600;
-}
+  margin-top: 53px;
+  }
 
 .content {
   flex: 1;

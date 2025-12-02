@@ -1,3 +1,7 @@
+function formatDpState(dpState) {
+  return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+}
+
 Page({
   data: {
     exerciseTime: '05:04',
@@ -8,6 +12,15 @@ Page({
     console.log('Home Page Load');
     // this.loadTodayData();
     this.updateTime();
+
+    const { onDpDataChange, registerDeviceListListener } = ty.device;
+const { getLaunchOptionsSync } = ty;
+// 启动参数中获取设备 id
+const {
+  query: { deviceId }
+} = getLaunchOptionsSync();
+
+
   },
   onShow() {
     console.log('Home Page Show');

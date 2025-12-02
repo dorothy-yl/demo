@@ -1,8 +1,7 @@
 <view class="container">
   <view class="header">
     <view class="back-btn" bindtap="onBack">
-      <text class="back-arrow">‹</text>
-      <text class="back-text">返回</text>
+      <image class="back-icon" src="/app/images/icons/Vector.svg" />
     </view>
     <text class="page-title">重复</text>
     <view class="placeholder"></view>

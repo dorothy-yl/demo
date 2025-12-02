@@ -1,5 +1,8 @@
 <view class="container">
   <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <image class="back-icon" src="/app/images/icons/Vector.svg" />
+    </view>
     <text class="header-title">FTMS</text>
   </view>
 

@@ -16,14 +16,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0px;
+  margin-top: 10px;
   background: #2C3246;
+  position: relative;
+}
+
+.back-btn {
+  width: 30px; /* Increased touch area */
+  height: 30px;
+  position: absolute;
+  margin-top: 53px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10; /* Ensure above title if overlap */
+}
+
+.back-icon {
+  width: 9px;
+  height: 18px;
 }
 
 .page-title {
   font-size: 18px;
   color: #FFFFFF;
   font-weight: 600;
+  margin-top: 53px;
 }
 
 /* Date Selector */
