@@ -1,38 +1,53 @@
 .container {
+  width: 100%;
   background-color: #000;
   min-height: 100vh;
   color: #fff;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000; 
+}
+
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 15px 10px;
-  background-color:#000000; /* Match Add page */
+  background-color:#000000; 
+  margin-top:53px;
   position: relative;
 }
 
 .back-btn {
-  width: 30px; /* Increased touch area */
-  height: 30px;
   position: absolute;
-  margin-top: 53px;
   left: 8px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  gap: 4px;
   z-index: 10; /* Ensure above title if overlap */
 }
 
 .back-icon {
   width: 9px;
   height: 18px;
+  filter: brightness(0) saturate(100%) invert(58%) sepia(100%) saturate(2000%) hue-rotate(0deg) brightness(1.1) contrast(1);
+}
+
+.back-text {
+  font-size: 16px;
+  color: #FFA500;
+  left:20px;
 }
 
 .page-title {
   font-size: 18px;
   font-weight: bold;
+  text-align: center;
+  flex: 1;
 }
 
 .placeholder {
@@ -40,7 +55,7 @@
 }
 
 .days-list {
-  background-color: #1A1D35;
+  background-color: rgba(255, 255, 255, 0.05);
   margin-top: 20px;
   border-radius: 10px;
   margin-left: 16px;
@@ -52,7 +67,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .day-item:last-child {

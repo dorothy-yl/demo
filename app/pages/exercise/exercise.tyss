@@ -242,13 +242,13 @@
 }
 
 .gauge-knob {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   background-color: #FFFFFF;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   position: absolute;
-  top: 10px; /* Adjust based on radius to sit on the arc */
+  top: -5px; /* Adjust based on radius to sit on the arc */
   left: 50%;
   margin-left: -8px; /* Center the knob */
   /* This positioning places it at the top (0 deg in CSS usually), we rotate the container to move it */

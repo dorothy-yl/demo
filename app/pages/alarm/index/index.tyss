@@ -6,16 +6,14 @@
 
 .custom-header {
   position: fixed;
-  top: 0;
+  margin-top:70px;
   left: 0;
   width: 100%;
-  height: 88px; /* Status bar + Navigation bar roughly */
+  height: 88px; 
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding-bottom: 10px;
-  padding-left: 16px;
-  padding-right: 16px;
+  align-items: center;
+  padding: 0 16px;
   background-color:#2C3A4A
   z-index: 100;
   box-sizing: border-box;
@@ -26,10 +24,9 @@
   height: 30px;
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 53px;
-  left: 23px;
-  z-index: 10;
+  position: static;
+  top: auto;
+  left: auto;
 }
 
 .back-icon {
@@ -37,13 +34,17 @@
   height: 18px;
 }
 
+.header-center {
+  flex: 1; /* 占满左右元素剩余空间 */
+  text-align: center;
+}
+
 .header-title {
  font-size: 18px;
   font-weight: 600;
   color: #FFFFFF;
-  text-align: center;
-  padding: 12px 0 24px;
-  margin-top: 53px;
+  padding: 0;
+  margin: 0;
 }
 
 
@@ -53,13 +54,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  /* Avoid overlapping with capsule if present, but on custom nav page, capsule is usually there.
-     We might need to adjust padding-right if capsule is covering it. 
-     Standard capsule is on the right. We'll place our + button to the left of it or below it?
-     Usually custom nav bar puts elements *in* the bar.
-     If we want it exactly like the screenshot, we put it on the right.
-  */
-  margin-right: 80px; /* Approximate width of capsule + padding */
+  margin-right: 0;
 }
 
 .add-icon {
