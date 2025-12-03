@@ -47,7 +47,7 @@
 .top-card {
   background-color: rgba(0, 0, 0, 0.2);
   width: 344px;
-  height: 246px;
+  height: 240px;
   display: flex;
   justify-content: center;
   align-items: center;

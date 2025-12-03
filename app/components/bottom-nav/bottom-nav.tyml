@@ -1,15 +1,15 @@
 <view class="bottom-nav-wrapper">
   <view class="bottom-nav">
     <view class="nav-item" bindtap="onSwitchTab" data-path="/pages/index/index" data-tab="home">
-      <image class="nav-icon" src="{{activeTab === 'home' ? '/app/images/icons/index_1.svg' : '/app/images/icons/home_gray.svg'}}" />
+      <image class="nav-icon" src="{{activeTab === 'home' ? '../../assets/icons/index_1.svg' : '../../assets/icons/home_gray.svg'}}" />
     </view>
     
     <view class="nav-item" bindtap="onSwitchTab" data-path="/pages/alarm/index/index" data-tab="clock">
-      <image class="nav-icon" src="{{activeTab === 'clock' ? '/app/images/icons/clock_green.svg' : '/app/images/icons/recodes.svg'}}" />
+      <image class="nav-icon" src="{{activeTab === 'clock' ? '../../assets/icons/clock_green.svg' : '/app/images/icons/recodes.svg'}}" />
     </view>
 
     <view class="nav-item" bindtap="onSwitchTab" data-path="/pages/congrats/congrats" data-tab="user">
-      <image class="nav-icon" src="{{activeTab === 'user' ? '/app/images/icons/user_green.svg' : '/app/images/icons/my.svg'}}" />
+      <image class="nav-icon" src="{{activeTab === 'user' ? '../../assets/user_green.svg' : '/app/images/icons/my.svg'}}" />
     </view>
   </view>
 </view>

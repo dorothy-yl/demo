@@ -18,7 +18,7 @@
     <view class="summary-right">
       <view class="bicycle-circle-outer">
         <view class="bicycle-circle-inner">
-          <image class="bicycle-image" src="/app/images/Bicycle.png" mode="aspectFit"></image>
+          <image class="bicycle-image" src="../../assets/Bicycle.png" mode="aspectFit"></image>
         </view>
       </view>
     </view>
@@ -30,26 +30,26 @@
     <view class="function-grid">
       <view class="function-item" bindtap="goToExercise">
         <view class="function-icon-wrapper">
-          <image class="function-icon" src="/app/images/icons/Quick Start.svg" mode="aspectFit"></image>
+          <image class="function-icon" src="../../assets/icons/Quick Start.svg" mode="aspectFit"></image>
         </view>
         <text class="function-label">Quick Start</text>
       </view>
       
       <view class="function-item" bindtap="goToGoal">
         <view class="function-icon-wrapper target-pattern">
-          <image class="function-icon" src="/app/images/icons/Target patterm.svg" mode="aspectFit"></image>
+          <image class="function-icon" src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
         </view>
         <text class="function-label">Target pattern</text>
       </view>
       <view class="function-item" bindtap="goToFTMS">
         <view class="function-icon-wrapper ftms">
-          <image class="function-icon" src="/app/images/icons/ftms.svg" mode="aspectFit"></image>
+          <image class="function-icon" src="../../assets/icons/ftms.svg" mode="aspectFit"></image>
         </view>
         <text class="function-label">FTMS</text>
       </view>
       <view class="function-item" bindtap="goToTirp">
         <view class="function-icon-wrapper tirp">
-          <image class="function-icon" src="/app/images/icons/Trip.svg" mode="aspectFit"></image>
+          <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
         </view>
         <text class="function-label">Tirp</text>
       </view>
