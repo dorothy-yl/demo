@@ -5,25 +5,26 @@
   <view class="content">
     <text class="page-title">Congratulations!</text>
 
-    <view class="user-header">
-      <view class="avatar-circle">
-        <image class="avatar-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
-      </view>
-      <view class="user-info">
-        <text class="user-name">{{userName}}</text>
-        <text class="date">{{date}}</text>
-      </view>
-    </view>
-
-    <view class="main-circle-section">
-      <view class="progress-ring"></view>
-      <view class="ring-center-bg"></view>
-      <view class="ring-content">
-        <view class="ring-value-row">
-           <text class="ring-value">{{caloriesBurned}}</text>
-           <text class="ring-unit">kcal</text>
+    <view class="top-card">
+      <view class="user-header">
+        <view class="avatar-circle">
+          <image class="avatar-icon" src="/app/images/icons/my.svg" mode="aspectFit"></image>
         </view>
-        <text class="ring-label">Burn calories</text>
+        <view class="user-info">
+          <text class="user-name">{{userName}}</text>
+          <text class="date">{{date}}</text>
+        </view>
+      </view>
+
+      <view class="main-circle-section">
+        <image class="progress-ring-img" src="/app/images/radius.svg" mode="aspectFit"></image>
+        <view class="ring-content">
+          <view class="ring-value-row">
+             <text class="ring-value">{{caloriesBurned}}</text>
+             <text class="ring-unit">kcal</text>
+          </view>
+          <text class="ring-label">Burn calories</text>
+        </view>
       </view>
     </view>
 

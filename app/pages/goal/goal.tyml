@@ -28,7 +28,7 @@
       <text class="picker-display">{{hoursStr}}:{{minutesStr}}:{{secondsStr}}</text>
     </view>
 
-    <picker-view class="time-picker" indicator-class="picker-indicator"  value="{{timeValue}}" bindchange="onTimeChange">
+    <picker-view class="time-picker" mask-style="opacity:0" indicator-style="opacity:0.5; background-color:  rgba(255, 255, 255, 0.3)"  value="{{timeValue}}" bindchange="onTimeChange">
       <picker-view-column>
         <view class="picker-item" wx:for="{{hours}}" wx:key="*this">{{item}} <text class="unit">时</text></view>
       </picker-view-column>
