@@ -40,13 +40,13 @@ body {
 .back-icon {
   width: 9px;
   height: 18px;
+  left:16px;
   filter: brightness(0) saturate(100%) invert(58%) sepia(100%) saturate(2000%) hue-rotate(0deg) brightness(1.1) contrast(1);
 }
 
 .back-text {
   font-size: 16px;
   color: #FFA500;
-  left:20px;
 }
 
 .page-title {
@@ -57,9 +57,6 @@ body {
 
 }
 
-.placeholder {
-  width: 60px;
-}
 
 .days-list {
   background-color: rgba(255, 255, 255, 0.05);

@@ -3,7 +3,7 @@
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  background-color: #1e2335;
+  background-color: #2C3A4A;
   font-family: sans-serif;
 }
 
@@ -46,8 +46,8 @@
 
 .top-card {
   background-color: rgba(0, 0, 0, 0.2);
-  width: 680rpx;
-  height: 480rpx;
+  width: 344px;
+  height: 246px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -147,9 +147,9 @@
 }
 
 .ring-label {
-  color: #a0a4b0;
-  font-size: 28rpx;
-  margin-top: 8rpx;
+  color: #D3D3D3;
+  font-size: 15px;
+  margin-top: 24px;
 }
 
 
@@ -161,7 +161,7 @@
 }
 
 .stats-card {
-  background: #242A3E;
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 16rpx;
   padding: 30rpx;
   box-sizing: border-box;
@@ -229,7 +229,7 @@
 
 .card-title {
   color: #a0a4b0;
-  font-size: 24rpx;
+  font-size: 14px;
   font-family: sans-serif;
 }
 
@@ -261,13 +261,13 @@
 
 .big-value {
   color: #ffffff;
-  font-size: 70rpx;
+  font-size: 86rpx;
   font-weight: bold;
 }
 
 .medium-value {
   color: #ffffff;
-  font-size: 48rpx;
+  font-size: 54rpx;
   font-weight: bold;
 }
 
