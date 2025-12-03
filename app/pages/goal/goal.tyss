@@ -134,7 +134,7 @@
   height:28px;
   font-size: 20px;
   color: #FFFFFF;
-  margin-top:75px;
+  margin-top:20px;
 }
 
 .picker-display {
@@ -146,29 +146,43 @@
 }
 
 .time-picker {
-  width: 80%;
+  width: 330px;
   height: 180px;
   margin: 0;
   color: #FFFFFF;
+  margin-top:20px;
+
 }
 
 .picker-indicator {
   height: 50px;
-  background-color: transparent;
-  border: 2px solid #2B95FF;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1); 
+  border:none;
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .picker-item {
-  line-height: 50px;
   text-align: center;
   color:rgba(255, 255, 255, 0.9);
   font-size: 24px;
+  background-color: transparent; 
+  position: relative;
+  z-index: 0;
+}
+
+.picker-item.picker-selected {
+  position: relative;
+  opacity: 0; 
 }
 
 .unit {
   font-size: 20px;
-  margin-left: 2px;
+  margin-left: 4px;
   color: #FFFFFF;
 }
 
