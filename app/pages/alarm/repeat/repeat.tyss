@@ -1,8 +1,14 @@
 .container {
   width: 100%;
-  background-color: #000;
   min-height: 100vh;
-  color: #fff;
+  background: linear-gradient(180deg,#000 0%,#000 100%);
+  padding: 0;
+  padding-bottom: 80px;
+  box-sizing: border-box;
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
 }
 
 body {
@@ -17,7 +23,7 @@ body {
   align-items: center;
   padding: 15px 10px;
   background-color:#000000; 
-  margin-top:53px;
+  margin-top:75px;
   position: relative;
 }
 
@@ -47,7 +53,8 @@ body {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
-  flex: 1;
+  color: #ffffff; 
+
 }
 
 .placeholder {
@@ -76,6 +83,7 @@ body {
 
 .day-name {
   font-size: 16px;
+  color: #ffffff; 
 }
 
 .check-mark {

@@ -147,17 +147,21 @@
 /* 常用功能区域 */
 .common-functions {
   padding: 0 20px 20px;
-  margin-top: 18px;
 }
 
+
+
 .section-title {
-  display: none; /* Screenshot doesn't show the title "Common functions" */
+  font-size: 19px;
+  font-weight: 400;
+  color: #9E9E9E;
 }
 
 .function-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px; /* Slightly tighter gap */
+  margin-top:8px;
 }
 
 .function-item {
