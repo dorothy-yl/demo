@@ -1,12 +1,12 @@
 <view class="container">
-  <image class="background-image" src="/app/images/Sportsman .png" mode="aspectFill"></image>
+  <image class="background-image" src="../../assets/Sportsman .png" mode="aspectFill"></image>
   <view class="overlay"></view>
 
   <!-- Custom Navigation Bar -->
   <view class="custom-nav" style="padding-top: {{statusBarHeight}}px">
     <view class="nav-content">
       <view class="back-btn" bindtap="goBack">
-        <image src="/app/images/icons/Vector.svg" class="back-icon" ></image>
+        <image src="../../assets/icons/Vector.svg" class="back-icon" ></image>
       </view>
       <text class="nav-title">Set goals</text>
     </view>

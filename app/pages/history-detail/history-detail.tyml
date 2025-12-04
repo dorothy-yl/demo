@@ -1,7 +1,7 @@
 <view class="container">
   <view class="header">
     <view class="back-btn" bindtap="goBack">
-      <image class="back-icon" src="/app/images/icons/Vector.svg" mode="aspectFit"></image>
+      <image class="back-icon" src="../../assets/icons/Vector.svg" mode="aspectFit"></image>
     </view>
     <view class="header-title">
       <text class="page-title">Details</text>
@@ -42,7 +42,7 @@
       <view class="card-column">
         <view class="info-card">
           <view class="card-icon green">
-            <image src="/app/images/icons/Target patterm.svg" mode="aspectFit"></image>
+            <image src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
           </view>
           <text class="card-label">Maximum resistance</text>
           <text class="card-value">{{record.maxResistance || '19'}}</text>
@@ -55,14 +55,14 @@
       <view class="card-column">
         <view class="info-card">
           <view class="card-icon orange">
-            <image src="/app/images/icons/love.svg" mode="aspectFit"></image>
+            <image src="../../assets/icons/love.svg" mode="aspectFit"></image>
           </view>
           <text class="card-label">Calories</text>
           <text class="card-value">{{record.calories}} kcal</text>
         </view>
         <view class="info-card">
           <view class="card-icon blue">
-            <image src="/app/images/icons/Trip.svg" mode="aspectFit"></image>
+            <image src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
           </view>
           <text class="card-label">Distance</text>
           <text class="card-value">{{record.distance}} km</text>

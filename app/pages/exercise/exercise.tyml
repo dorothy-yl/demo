@@ -18,7 +18,7 @@
     <view class="top-stat-item">
       <view class="value-icon-row">
         <text class="top-stat-value">{{heartRate}}</text>
-        <image class="heart-icon" src="/app/images/icons/love.svg" />
+        <image class="heart-icon" src="../../assets/icons/love.svg" />
       </view>
       <text class="top-stat-label">Heart Rate</text>
     </view>
