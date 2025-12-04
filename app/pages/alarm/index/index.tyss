@@ -73,7 +73,7 @@
 .empty-state-text {
   position: absolute;
   left: 20px;
-  bottom: 30px;
+  bottom: 80px;
   z-index: 10;
 }
 
@@ -166,7 +166,6 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
   padding: 0 16px;
-  width: 100%;
   box-sizing: border-box;
 }
 
@@ -189,8 +188,6 @@
 }
 
 .calendar-day.today {
-  background-color: rgba(82, 196, 26, 0.2);
-  border: 1px solid #52C41A;
 }
 
 .calendar-day.has-settings {
@@ -230,7 +227,7 @@
 .add-button-container {
   position: fixed;
   right: 20px;
-  bottom: 100px;
+  bottom: 160px;
   z-index: 100;
 }
 
