@@ -1,0 +1,134 @@
+.container {
+  width: 100%;
+  background-color: #2C3A4A;
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 10px;
+  background-color: #2C3A4A;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  z-index: 10;
+}
+
+.back-icon {
+  width: 9px;
+  height: 18px;
+  left: 16px;
+  filter: brightness(0) saturate(100%) invert(58%) sepia(100%) saturate(2000%) hue-rotate(0deg) brightness(1.1) contrast(1);
+}
+
+.back-text {
+  font-size: 16px;
+  color: #FFA500;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.placeholder {
+  width: 60px; /* Match back-btn width for symmetry */
+}
+
+.section {
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  padding: 0 16px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.picker-container-small {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+}
+
+/* Picker styles */
+.small-picker {
+  width: 100%;
+  height: 180px;
+  background-color: #2C3A4A;
+}
+
+.picker-section {
+  margin-bottom: 25px;
+  padding: 0 16px;
+}
+
+.picker-label {
+  font-size: 16px;
+  color: #8E8E93;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.picker-column {
+  line-height: 50px;
+  text-align: center;
+  color: rgb(255, 255, 255);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.picker-item {
+  line-height: 50px;
+  text-align: center;
+  color: white;
+}
+
+.unit {
+  font-size: 14px;
+  margin-left: 4px;
+  color: #8E8E93;
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+  .small-picker {
+    height: 160px;
+  }
+  
+  .picker-item {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .picker-section {
+    max-width: 600px;
+    margin: 0 auto 25px;
+  }
+  
+  .section-title {
+    max-width: 600px;
+    margin: 0 auto 15px;
+  }
+}
+

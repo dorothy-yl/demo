@@ -4,7 +4,7 @@
       <image class="nav-icon" src="{{activeTab === 'home' ? '../../assets/icons/index_1.svg' : '../../assets/icons/home_gray.svg'}}" />
     </view>
     
-    <view class="nav-item" bindtap="onSwitchTab" data-path="/pages/alarm/index/index" data-tab="clock">
+    <view class="nav-item" bindtap="onSwitchTab" data-path="/pages/history/history" data-tab="clock">
       <image class="nav-icon" src="{{activeTab === 'clock' ? '../../assets/icons/clock_green.svg' : '../../assets/icons/recodes.svg'}}" />
     </view>
 

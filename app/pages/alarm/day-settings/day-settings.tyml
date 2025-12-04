@@ -1,0 +1,76 @@
+<scroll-view scroll-y="true" class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="onBack">
+      <image class="back-icon" src="../../assets/icons/Vector.svg" />
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">{{selectedDateText || '日期设置'}}</text>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- Day Settings -->
+  <view class="section">
+    <text class="section-title">运动参数设置</text>
+    
+    <!-- Resistance Picker -->
+    <view class="picker-section">
+      <text class="picker-label">阻力 (1-32级)</text>
+      <view class="picker-container-small">
+        <picker-view 
+          class="small-picker" 
+          indicator-style="height: 50px; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px;" 
+          mask-style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0,0,0,0)), linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));"
+          value="{{resistanceValue}}" 
+          bindchange="onResistanceChange"
+        >
+          <picker-view-column class="picker-column">
+            <view ty:for="{{resistanceLevels}}" ty:key="*this" class="picker-item">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+    </view>
+
+    <!-- Time Picker (Hour:Minute:Second) -->
+    <view class="picker-section">
+      <text class="picker-label">运动时间 (时:分:秒)</text>
+      <view class="picker-container-small">
+        <picker-view 
+          class="small-picker" 
+          indicator-style="height: 50px; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px;" 
+          mask-style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0,0,0,0)), linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));"
+          value="{{exerciseTimeValue}}" 
+          bindchange="onExerciseTimeChange"
+        >
+          <picker-view-column class="picker-column">
+            <view ty:for="{{exerciseHours}}" ty:key="*this" class="picker-item">{{item}} <text class="unit">时</text></view>
+          </picker-view-column>
+          <picker-view-column class="picker-column">
+            <view ty:for="{{exerciseMinutes}}" ty:key="*this" class="picker-item">{{item}} <text class="unit">分</text></view>
+          </picker-view-column>
+          <picker-view-column class="picker-column">
+            <view ty:for="{{exerciseSeconds}}" ty:key="*this" class="picker-item">{{item}} <text class="unit">秒</text></view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+    </view>
+
+    <!-- Distance Picker -->
+    <view class="picker-section">
+      <text class="picker-label">距离 (公里)</text>
+      <view class="picker-container-small">
+        <picker-view 
+          class="small-picker" 
+          indicator-style="height: 50px; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px;" 
+          mask-style="background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0,0,0,0)), linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));"
+          value="{{distanceValue}}" 
+          bindchange="onDistanceChange"
+        >
+          <picker-view-column class="picker-column">
+            <view ty:for="{{distanceOptions}}" ty:key="*this" class="picker-item">{{item}}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+

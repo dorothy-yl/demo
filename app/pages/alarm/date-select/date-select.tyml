@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="onBack">
+      <image class="back-icon" src="../../assets/icons/Vector.svg" />
+      <text class="back-text">返回</text>
+    </view>
+    <text class="page-title">选择日期</text>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- Month Navigation -->
+  <view class="month-header">
+    <view class="month-nav-btn" bindtap="prevMonth">
+      <text class="nav-arrow">‹</text>
+    </view>
+    <text class="month-title">{{currentMonthText}}</text>
+    <view class="month-nav-btn" bindtap="nextMonth">
+      <text class="nav-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- Weekday Headers -->
+  <view class="weekday-headers">
+    <view class="weekday-header" ty:for="{{weekdays}}" ty:key="*this">
+      <text class="weekday-text">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- Calendar Grid -->
+  <view class="calendar-grid">
+    <view 
+      class="calendar-day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.hasSettings ? 'has-settings' : ''}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
+      ty:for="{{calendarDays}}" 
+      ty:key="date"
+      bindtap="selectDate"
+      data-date="{{item.date}}"
+    >
+      <text class="day-number">{{item.day}}</text>
+      <view class="settings-indicator" ty:if="{{item.hasSettings}}"></view>
+    </view>
+  </view>
+</view>
+

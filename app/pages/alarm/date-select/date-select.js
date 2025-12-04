@@ -1,14 +1,11 @@
 Page({
   data: {
-    alarms: [],
-    hasAlarms: false,
-    // Calendar data
     currentDate: new Date(),
     calendarDays: [],
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
     currentMonthText: '',
-    daySettings: {},
-    selectedDate: null
+    daySettings: {}, // Store settings for each day
+    selectedDate: null // Track currently selected date
   },
 
   onLoad() {
@@ -17,20 +14,15 @@ Page({
   },
 
   onShow() {
-    this.loadAlarms();
+    // Reload settings when returning from day-settings page
     this.loadDaySettings();
     this.generateCalendar();
-  },
-
-  loadAlarms() {
-    const alarms = ty.getStorageSync('alarms') || [];
-    this.setData({
-      alarms: alarms,
-      hasAlarms: alarms.length > 0
-    });
+    // Clear selected date when returning
+    this.setData({ selectedDate: null });
   },
 
   loadDaySettings() {
+    // Load all day settings from storage
     const allSettings = ty.getStorageSync('day_settings') || {};
     this.setData({ daySettings: allSettings });
   },
@@ -40,17 +32,21 @@ Page({
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
+    // Set month text
     const monthText = `${year}年${month + 1}月`;
     this.setData({ currentMonthText: monthText });
 
+    // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startWeekday = firstDay.getDay();
+    const startWeekday = firstDay.getDay(); // 0 = Sunday
 
+    // Get previous month's last days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     const calendarDays = [];
 
+    // Add previous month's trailing days
     for (let i = startWeekday - 1; i >= 0; i--) {
       const day = prevMonthLastDay - i;
       const date = new Date(year, month - 1, day);
@@ -65,6 +61,7 @@ Page({
       });
     }
 
+    // Add current month's days
     const today = new Date();
     const todayStr = this.formatDate(today);
     for (let day = 1; day <= daysInMonth; day++) {
@@ -80,6 +77,7 @@ Page({
       });
     }
 
+    // Add next month's leading days to fill the grid (42 cells = 6 weeks)
     const remainingCells = 42 - calendarDays.length;
     for (let day = 1; day <= remainingCells; day++) {
       const date = new Date(year, month + 1, day);
@@ -120,49 +118,19 @@ Page({
 
   selectDate(e) {
     const date = e.currentTarget.dataset.date;
+    // Set selected date and update calendar to show green border
     this.setData({ selectedDate: date });
     this.generateCalendar();
+    
+    // Navigate to day-settings page
+    ty.setStorageSync('selected_date', date);
+    ty.navigateTo({
+      url: '/pages/alarm/day-settings/day-settings'
+    });
   },
 
   onBack() {
     ty.navigateBack();
-  },
-
-  onAdd() {
-    if (this.data.selectedDate) {
-      ty.setStorageSync('selected_date', this.data.selectedDate);
-      ty.navigateTo({
-        url: '/pages/alarm/day-settings/day-settings'
-      });
-    }
-  },
-
-  onToggleAlarm(e) {
-    const id = e.currentTarget.dataset.id;
-    const alarms = this.data.alarms;
-    const index = alarms.findIndex(a => a.id === id);
-    if (index > -1) {
-      alarms[index].enabled = !alarms[index].enabled;
-      this.setData({ alarms });
-      ty.setStorageSync('alarms', alarms);
-    }
-  },
-
-  onDelete(e) {
-    const id = e.currentTarget.dataset.id;
-    const alarms = this.data.alarms.filter(a => a.id !== id);
-    this.setData({
-      alarms: alarms,
-      hasAlarms: alarms.length > 0
-    });
-    ty.setStorageSync('alarms', alarms);
-  },
-  
-  // Helper to format repeat text
-  getRepeatText(days) {
-    if (!days || days.length === 0) return '永不';
-    if (days.length === 7) return '每天';
-    const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    return days.map(d => dayNames[d]).join(' ');
   }
 });
+
