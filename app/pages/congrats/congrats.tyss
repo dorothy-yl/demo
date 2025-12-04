@@ -46,16 +46,16 @@
 
 .top-card {
   background-color: rgba(0, 0, 0, 0.2);
-  width: 344px;
-  height: 240px;
+  width: 100%;
   display: flex;
+  flex-direction:column;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 24rpx;
+  margin: 0 auto 12rpx;
   border-radius: 16rpx;
-  padding: 32rpx;
   box-sizing: border-box;
   position: relative;
+  min-height:0;
 }
 
 .user-header {
@@ -163,7 +163,6 @@
 .stats-card {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 16rpx;
-  padding: 30rpx;
   box-sizing: border-box;
 }
 
@@ -201,7 +200,7 @@
 
 .bottom-grid {
   display: flex;
-  gap: 24rpx;
+  gap: 15px;
 }
 
 .big-card {
@@ -229,7 +228,6 @@
 
 .card-title {
   color: #a0a4b0;
-  font-size: 14px;
   font-family: sans-serif;
 }
 
