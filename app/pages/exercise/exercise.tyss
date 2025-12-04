@@ -59,7 +59,7 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 30px;
-  margin-top: 15px;
+  margin-top: 30px;
 }
 
 .top-stat-item {
@@ -135,7 +135,6 @@
 
 /* Timer Card */
 .timer-card {
-  width:329px;
   height:114px;
   display:flex;
   justify-content: center; /* 修正错误写法：justify -> justify-content */

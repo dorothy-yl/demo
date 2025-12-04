@@ -2,7 +2,7 @@
   <!-- Header -->
   <view class="header">
     <view class="back-btn" bindtap="goBack">
-      <image class="back-icon" src="/app/images/icons/Vector.svg" />
+      <image class="back-icon" src="../../assets/icons/Vector.svg" />
     </view>
     <text class="header-title">Quick Start</text>
     <view class="header-placeholder"></view>
@@ -48,7 +48,7 @@
 
   <!-- Load Gauge Section -->
   <view class="gauge-section">
-    <view class="gauge-wrapper" catchtouchmove="handleTouchMove" catchtouchstart="handleTouchMove">
+    <view class="gauge-wrapper" catchtouchmove="handleTouchMove" catchtouchstart="handleTouchMove" catchtouchend="handleTouchEnd">
       <!-- Background Arc -->
       <view class="gauge-background"></view>
       <!-- Progress Arc (Dynamic) -->

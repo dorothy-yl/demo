@@ -17,12 +17,20 @@ Page({
     knobAngle: 225 // Start angle
   },
   timer: null,
+  tempLoad: null, // 临时存储滑动过程中的load值
+  throttleTimer: null, // 节流定时器
+  throttledUpdateVisual: null, // 节流后的视觉更新函数
 
   
   onLoad() {
     console.log('Exercise Page Load');
     this.startTimer();
     this.updateGauge(this.data.load);
+    
+    // 初始化节流函数
+    this.throttledUpdateVisual = this.throttle((value) => {
+      this.updateGaugeVisual(value);
+    }, 100);
 
     // 原生调用方式
 const { onDpDataChange, registerDeviceListListener } = ty.device;
@@ -195,6 +203,35 @@ onDpDataChange(_onDpDataChange);
     }).exec();
   },
 
+  // 节流函数
+  throttle(func, delay) {
+    return (...args) => {
+      if (this.throttleTimer) {
+        clearTimeout(this.throttleTimer);
+      }
+      this.throttleTimer = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  },
+
+  // 仅更新视觉位置（不更新load数据和发送命令）
+  updateGaugeVisual(value) {
+    const maxLoad = 32;
+    const currentValue = Math.min(Math.max(value, 0), maxLoad);
+    const maxAngle = 270;
+    const progressAngle = (currentValue / maxLoad) * maxAngle;
+    const startAngle = 225;
+    const knobAngle = startAngle + progressAngle;
+
+    this.setData({
+      gaugeProgressStyle: `
+        background: conic-gradient(from ${startAngle}deg, #ADFF2F 0deg, #ADFF2F ${progressAngle}deg, transparent ${progressAngle}deg);
+      `,
+      knobAngle: knobAngle
+    });
+  },
+
   handleTouchMove(e) {
     if (!this.gaugeCenter) return;
 
@@ -238,23 +275,49 @@ onDpDataChange(_onDpDataChange);
     const maxLoad = 32;
     const newLoad = Math.round(progress * maxLoad);
 
-    if (newLoad !== this.data.load) {
-      this.updateGauge(newLoad);
-      
-      // Send command to device (throttle this in real app, but for now direct)
-      // Assuming 102 is the DP code for resistance/load
-       const { query: { deviceId } } = ty.getLaunchOptionsSync();
-       if (deviceId) {
-           ty.device.publishDps({
-            deviceId,
-            dps: { 102: newLoad },
-            mode: 1,
-            pipelines: [0, 1, 2, 3, 4, 5, 6],
-            success: () => {},
-            fail: () => {}
-          });
-       }
+    // 存储临时值
+    this.tempLoad = newLoad;
+
+    // 使用节流更新视觉位置（不更新load数据和发送命令）
+    if (this.throttledUpdateVisual) {
+      this.throttledUpdateVisual(newLoad);
     }
+  },
+
+  handleTouchEnd(e) {
+    // 清除节流定时器，避免延迟更新
+    if (this.throttleTimer) {
+      clearTimeout(this.throttleTimer);
+      this.throttleTimer = null;
+    }
+    
+    // 手指放开时，提交最终值
+    if (this.tempLoad !== null && this.tempLoad !== this.data.load) {
+      const finalLoad = this.tempLoad;
+      
+      // 更新完整显示（包括load数据）
+      this.updateGauge(finalLoad);
+      
+      // 发送设备命令
+      const { query: { deviceId } } = ty.getLaunchOptionsSync();
+      if (deviceId) {
+        ty.device.publishDps({
+          deviceId,
+          dps: { 102: finalLoad },
+          mode: 1,
+          pipelines: [0, 1, 2, 3, 4, 5, 6],
+          success: () => {
+            console.log('Load updated to:', finalLoad);
+          },
+          fail: (err) => {
+            console.error('Failed to update load:', err);
+          }
+        });
+      }
+    }
+    
+    // 清除临时值
+    this.tempLoad = null;
   },
 
   updateGauge(value) {
