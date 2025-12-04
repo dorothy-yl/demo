@@ -51,7 +51,7 @@
   flex-direction:column;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 12rpx;
+  margin: 0 auto 46px;
   border-radius: 16rpx;
   box-sizing: border-box;
   position: relative;
@@ -200,7 +200,7 @@
 
 .bottom-grid {
   display: flex;
-  gap: 15px;
+  gap: 24rpx;
 }
 
 .big-card {
@@ -209,6 +209,8 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 240rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
 }
 
 .right-column {
@@ -224,6 +226,8 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
+  padding: 32rpx;
+  box-sizing: border-box;
 }
 
 .card-title {
@@ -231,10 +235,15 @@
   font-family: sans-serif;
 }
 
+.card-title-row {
+  display: flex;
+  align-items: center;
+}
+
 .card-icon {
   width: 40rpx;
   height: 40rpx;
-  margin-top: 16rpx;
+  margin-right: 12rpx;
 }
 .card-icon-small {
   width: 32rpx;
@@ -244,7 +253,7 @@
 }
 
 .big-value-row {
-  margin-top: 40rpx;
+  margin-top: 32rpx;
   display: flex;
   align-items: baseline;
   justify-content: flex-end; /* Align right like screenshot */

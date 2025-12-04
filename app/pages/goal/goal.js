@@ -1,92 +1,198 @@
 Page({
   data: {
-    showPicker: false,
-    hours: [],
-    minutes: [],
-    seconds: [],
-    timeValue: [1, 31, 5], // Default matches screenshot 01:31:05
-    hoursStr: '01',
-    minutesStr: '31',
-    secondsStr: '05',
-    statusBarHeight: 20 // Default fallback
+    activeTab: 'distance',
+    selectedValues: {
+      distance: 0.5,
+      time: 1,
+      calories: 100,
+      resistance: 1
+    },
+    // Slider configuration
+    minValue: 0,
+    maxValue: 100,
+    step: 1,
+    currentValue: 0,
+    unitText: '公里',
+    
+    // Slider state
+    sliderPercentage: 0,
+    isDragging: false,
+    showEmptyHint: false,
+    
+    // Track dimensions (cached)
+    trackWidth: 0,
+    trackLeft: 0
+  },
+  
+  onLoad() {
+    console.log('Goal Page Load');
+    this.updateCurrentValues();
+    // Delay to ensure layout is ready
+    setTimeout(() => {
+      this.getTrackDimensions();
+    }, 200);
   },
 
-  onLoad() {
-    // Get system info for status bar height
-    try {
-      const sysInfo = ty.getSystemInfoSync();
-      if (sysInfo.statusBarHeight) {
-        this.setData({ statusBarHeight: sysInfo.statusBarHeight });
+  onReady() {
+    this.getTrackDimensions();
+  },
+
+  getTrackDimensions() {
+    const query = ty.createSelectorQuery();
+    query.select('#slider-track').boundingClientRect((rect) => {
+      if (rect) {
+        this.setData({
+          trackWidth: rect.width,
+          trackLeft: rect.left
+        });
       }
-    } catch (e) {
-      console.error('Failed to get system info', e);
-    }
+    }).exec();
+  },
 
-    const hours = [];
-    const minutes = [];
-    const seconds = [];
-
-    for (let i = 0; i < 24; i++) {
-      hours.push(i < 10 ? '0' + i : '' + i);
+  updateCurrentValues() {
+    const { activeTab, selectedValues } = this.data;
+    let selectedValue = selectedValues[activeTab];
+    let minValue = 0;
+    let maxValue = 100;
+    let step = 1;
+    let unitText = '公里';
+    
+    switch(activeTab) {
+      case 'distance':
+        minValue = 0.5;
+        maxValue = 50.0;
+        step = 0.5;
+        unitText = '公里';
+        if (!selectedValue) selectedValue = 0.5;
+        break;
+      case 'time':
+        minValue = 1;
+        maxValue = 60;
+        step = 1;
+        unitText = '分钟';
+        if (!selectedValue) selectedValue = 1;
+        break;
+      case 'calories':
+        minValue = 100;
+        maxValue = 1500;
+        step = 100;
+        unitText = '卡';
+        if (!selectedValue) selectedValue = 100;
+        break;
+      case 'resistance':
+        minValue = 1;
+        maxValue = 32;
+        step = 1;
+        unitText = '';
+        if (!selectedValue) selectedValue = 1;
+        break;
     }
-    for (let i = 0; i < 60; i++) {
-      minutes.push(i < 10 ? '0' + i : '' + i);
-      seconds.push(i < 10 ? '0' + i : '' + i);
-    }
-
+    
+    // Calculate percentage
+    const percentage = ((selectedValue - minValue) / (maxValue - minValue)) * 100;
+    
+    // Check empty state (if value is at minimum)
+    const showEmptyHint = selectedValue === minValue;
+    
     this.setData({
-      hours,
-      minutes,
-      seconds
+      minValue,
+      maxValue,
+      step,
+      unitText,
+      currentValue: selectedValue,
+      sliderPercentage: Math.max(0, Math.min(100, percentage)),
+      showEmptyHint
+    });
+  },
+
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (tab === this.data.activeTab) return;
+    
+    this.setData({
+      activeTab: tab
+    });
+    
+    this.updateCurrentValues();
+  },
+
+  // Slider Interactions
+  onSliderStart(e) {
+    this.setData({ isDragging: true });
+    this.handleTouch(e);
+  },
+
+  onSliderMove(e) {
+    if (!this.data.isDragging) return;
+    this.handleTouch(e);
+  },
+
+  onSliderEnd(e) {
+    this.setData({ isDragging: false });
+    this.handleTouch(e);
+  },
+  
+  onSliderTap(e) {
+    this.handleTouch(e);
+  },
+
+  handleTouch(e) {
+    const { trackWidth, trackLeft, minValue, maxValue, step, activeTab, selectedValues } = this.data;
+    if (!trackWidth) {
+        this.getTrackDimensions(); // Try to get dimensions again if missing
+        return;
+    }
+    
+    const touchX = e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX;
+    
+    // Calculate percentage based on touch position
+    let percentage = ((touchX - trackLeft) / trackWidth) * 100;
+    percentage = Math.max(0, Math.min(100, percentage));
+    
+    // Calculate raw value
+    let rawValue = minValue + (percentage / 100) * (maxValue - minValue);
+    
+    // Snap to step
+    let steppedValue = Math.round(rawValue / step) * step;
+    
+    // Clamp value
+    steppedValue = Math.max(minValue, Math.min(maxValue, steppedValue));
+    
+    // Handle floating point precision issues
+    if (step < 1) {
+        steppedValue = parseFloat(steppedValue.toFixed(1));
+    } else {
+        steppedValue = Math.round(steppedValue);
+    }
+
+    // Recalculate percentage for visual snap
+    const finalPercentage = ((steppedValue - minValue) / (maxValue - minValue)) * 100;
+    
+    const showEmptyHint = steppedValue === minValue;
+
+    // Update data
+    this.setData({
+      sliderPercentage: finalPercentage,
+      currentValue: steppedValue,
+      showEmptyHint,
+      selectedValues: {
+        ...selectedValues,
+        [activeTab]: steppedValue
+      }
     });
   },
 
   goBack() {
-    if (this.data.showPicker) {
-      this.setData({ showPicker: false });
-    } else {
-      ty.navigateBack();
-    }
+    ty.navigateBack();
   },
 
-  showTimePicker() {
-    this.setData({ showPicker: true });
-  },
-
-  showCaloriesPicker() {
-     // To be implemented
-     ty.showToast({ title: 'Calories settings coming soon', icon: 'none' });
-  },
-
-  showDistancePicker() {
-     // To be implemented
-     ty.showToast({ title: 'Distance settings coming soon', icon: 'none' });
-  },
-
-  onTimeChange(e) {
-    const val = e.detail.value;
-    this.setData({
-      timeValue: val,
-      hoursStr: this.data.hours[val[0]],
-      minutesStr: this.data.minutes[val[1]],
-      secondsStr: this.data.seconds[val[2]]
-    });
-  },
-
-  confirmTime() {
-    const { hoursStr, minutesStr, secondsStr } = this.data;
-    // Save logic here
-    console.log(`Set time to ${hoursStr}:${minutesStr}:${secondsStr}`);
+  startExercise() {
+    const { activeTab, selectedValues } = this.data;
+    const goalValue = selectedValues[activeTab];
+    const goalType = activeTab;
     
-    ty.showToast({
-      title: 'Goal Set!',
-      icon: 'success'
+    ty.navigateTo({
+      url: `/pages/exercise/exercise?goalType=${goalType}&goalValue=${goalValue}`
     });
-    
-    setTimeout(() => {
-      // Go back to selection or home? 
-      // Usually confirms selection and closes picker
-      this.setData({ showPicker: false });
-    }, 1500);
   }
 });

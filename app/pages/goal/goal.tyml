@@ -1,46 +1,74 @@
 <view class="container">
   <image class="background-image" src="../../assets/Sportsman .png" mode="aspectFill"></image>
   <view class="overlay"></view>
+  <!-- Header -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <image class="back-icon" src="../../assets/icons/Vector.svg" />
+    </view>
+    <text class="header-title thin">设定目标</text>
+    <view class="header-placeholder"></view>
+  </view>
 
-  <!-- Custom Navigation Bar -->
-  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px">
-    <view class="nav-content">
-      <view class="back-btn" bindtap="goBack">
-        <image src="../../assets/icons/Vector.svg" class="back-icon" ></image>
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'distance' ? 'active' : ''}}" bindtap="switchTab" data-tab="distance">
+      <text class="tab-text">距离</text>
+      <view class="tab-underline" ty:if="{{activeTab === 'distance'}}"></view>
+    </view>
+    <view class="tab-item {{activeTab === 'time' ? 'active' : ''}}" bindtap="switchTab" data-tab="time">
+      <text class="tab-text">时间</text>
+      <view class="tab-underline" ty:if="{{activeTab === 'time'}}"></view>
+    </view>
+    <view class="tab-item {{activeTab === 'calories' ? 'active' : ''}}" bindtap="switchTab" data-tab="calories">
+      <text class="tab-text">卡路里</text>
+      <view class="tab-underline" ty:if="{{activeTab === 'calories'}}"></view>
+    </view>
+    <view class="tab-item {{activeTab === 'resistance' ? 'active' : ''}}" bindtap="switchTab" data-tab="resistance">
+      <text class="tab-text">阻力</text>
+      <view class="tab-underline" ty:if="{{activeTab === 'resistance'}}"></view>
+    </view>
+  </view>
+
+  <!-- Slider Container -->
+  <view class="slider-container">
+    <view class="slider-value-display">
+      <text class="current-value">{{currentValue}}</text>
+      <text class="current-unit">{{unitText}}</text>
+    </view>
+    
+    <view class="slider-track-container" id="slider-track" bindtouchstart="onSliderTap">
+      <view class="slider-track"></view>
+      <view class="slider-fill" style="width: {{sliderPercentage}}%"></view>
+      <view 
+        class="slider-thumb" 
+        style="left: {{sliderPercentage}}%"
+        catchtouchstart="onSliderStart"
+        catchtouchmove="onSliderMove"
+        catchtouchend="onSliderEnd"
+      >
+        <view class="slider-thumb-dot"></view>
+        <!-- Tooltip Bubble -->
+        <view class="slider-tooltip {{isDragging ? 'show' : ''}}">
+          <text class="tooltip-text">{{currentValue}}</text>
+        </view>
       </view>
-      <text class="nav-title">Set goals</text>
+    </view>
+    
+    <view class="slider-labels">
+      <text class="slider-label-min">{{minValue}}</text>
+      <text class="slider-label-max">{{maxValue}}</text>
     </view>
   </view>
 
-  <!-- Goal Selection View -->
-  <view class="content" wx:if="{{!showPicker}}">
-    <view class="goal-buttons">
-      <button class="goal-btn primary" bindtap="showTimePicker">Exercise time</button>
-      <button class="goal-btn secondary" bindtap="showCaloriesPicker">Calories</button>
-      <button class="goal-btn secondary" bindtap="showDistancePicker">Distance</button>
-    </view>
+  <!-- Empty State Hint -->
+  <view class="empty-hint {{showEmptyHint ? 'show' : ''}}">
+    <text class="empty-hint-text">请设置目标{{activeTab === 'calories' ? '卡路里' : unitText}}</text>
   </view>
 
-  <!-- Time Picker View -->
-  <view class="picker-content" wx:if="{{showPicker}}">
-    <view class="picker-header">
-      <text class="picker-title">Exercise time</text>
-      <text class="picker-display">{{hoursStr}}:{{minutesStr}}:{{secondsStr}}</text>
-    </view>
-
-    <picker-view class="time-picker" mask-style="opacity:0" indicator-style="opacity:0.5; background-color:  rgba(255, 255, 255, 0.3)"  value="{{timeValue}}" bindchange="onTimeChange">
-      <picker-view-column>
-        <view class="picker-item" wx:for="{{hours}}" wx:key="*this">{{item}} <text class="unit">时</text></view>
-      </picker-view-column>
-      <picker-view-column>
-        <view class="picker-item" wx:for="{{minutes}}" wx:key="*this">{{item}} <text class="unit">分</text></view>
-      </picker-view-column>
-      <picker-view-column>
-        <view class="picker-item" wx:for="{{seconds}}" wx:key="*this">{{item}} <text class="unit">秒</text></view>
-      </picker-view-column>
-    </picker-view>
-
-    <button class="sure-btn" bindtap="confirmTime">Sure</button>
+  <!-- Start Exercise Button -->
+  <view class="footer">
+    <button class="start-btn" bindtap="startExercise">开始运动</button>
   </view>
 </view>
 

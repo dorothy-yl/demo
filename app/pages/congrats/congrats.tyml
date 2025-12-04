@@ -46,8 +46,10 @@
       <view class="bottom-grid">
         <!-- Left Big Card -->
         <view class="stats-card big-card">
-          <text class="card-title">Average speed</text>
-          <image class="card-icon" src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
+          <view class="card-title-row">
+            <image class="card-icon" src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
+            <text class="card-title">Average speed</text>
+          </view>
           <view class="big-value-row">
             <text class="big-value">{{avgSpeed}}</text>
             <text class="unit">km/h</text>
