@@ -13,19 +13,19 @@
   <!-- Tab Bar -->
   <view class="tab-bar">
     <view class="tab-item {{activeTab === 'distance' ? 'active' : ''}}" bindtap="switchTab" data-tab="distance">
-      <text class="tab-text">距离</text>
+      <text class="tab-text">Distance</text>
       <view class="tab-underline" ty:if="{{activeTab === 'distance'}}"></view>
     </view>
     <view class="tab-item {{activeTab === 'time' ? 'active' : ''}}" bindtap="switchTab" data-tab="time">
-      <text class="tab-text">时间</text>
+      <text class="tab-text">Time</text>
       <view class="tab-underline" ty:if="{{activeTab === 'time'}}"></view>
     </view>
     <view class="tab-item {{activeTab === 'calories' ? 'active' : ''}}" bindtap="switchTab" data-tab="calories">
-      <text class="tab-text">卡路里</text>
+      <text class="tab-text">Calories</text>
       <view class="tab-underline" ty:if="{{activeTab === 'calories'}}"></view>
     </view>
     <view class="tab-item {{activeTab === 'resistance' ? 'active' : ''}}" bindtap="switchTab" data-tab="resistance">
-      <text class="tab-text">阻力</text>
+      <text class="tab-text">Resistance</text>
       <view class="tab-underline" ty:if="{{activeTab === 'resistance'}}"></view>
     </view>
   </view>
@@ -63,12 +63,12 @@
 
   <!-- Empty State Hint -->
   <view class="empty-hint {{showEmptyHint ? 'show' : ''}}">
-    <text class="empty-hint-text">请设置目标{{activeTab === 'calories' ? '卡路里' : unitText}}</text>
+    <text class="empty-hint-text">Please set target {{activeTab === 'calories' ? 'calories' : unitText}}</text>
   </view>
 
   <!-- Start Exercise Button -->
   <view class="footer">
-    <button class="start-btn" bindtap="startExercise">开始运动</button>
+    <button class="start-btn" bindtap="startExercise">Start Workout</button>
   </view>
 </view>
 

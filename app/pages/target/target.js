@@ -12,7 +12,7 @@ Page({
     maxValue: 100,
     step: 1,
     currentValue: 0,
-    unitText: '公里',
+    unitText: 'km',
     
     // Slider state
     sliderPercentage: 0,
@@ -55,28 +55,28 @@ Page({
     let minValue = 0;
     let maxValue = 100;
     let step = 1;
-    let unitText = '公里';
+    let unitText = 'km';
     
     switch(activeTab) {
       case 'distance':
         minValue = 0.5;
         maxValue = 50.0;
         step = 0.5;
-        unitText = '公里';
+        unitText = 'km';
         if (!selectedValue) selectedValue = 0.5;
         break;
       case 'time':
         minValue = 1;
         maxValue = 60;
         step = 1;
-        unitText = '分钟';
+        unitText = 'min';
         if (!selectedValue) selectedValue = 1;
         break;
       case 'calories':
         minValue = 100;
         maxValue = 1500;
         step = 100;
-        unitText = '卡';
+        unitText = 'cal';
         if (!selectedValue) selectedValue = 100;
         break;
       case 'resistance':
@@ -119,24 +119,43 @@ Page({
   // Slider Interactions
   onSliderStart(e) {
     this.setData({ isDragging: true });
-    this.handleTouch(e);
+    this.handleTouchMove(e);
   },
 
   onSliderMove(e) {
     if (!this.data.isDragging) return;
-    this.handleTouch(e);
+    this.handleTouchMove(e);
   },
 
   onSliderEnd(e) {
     this.setData({ isDragging: false });
-    this.handleTouch(e);
+    this.handleTouchEnd(e);
   },
   
   onSliderTap(e) {
-    this.handleTouch(e);
+    this.handleTouchEnd(e);
   },
 
-  handleTouch(e) {
+  handleTouchMove(e) {
+    const { trackWidth, trackLeft, minValue, maxValue } = this.data;
+    if (!trackWidth) {
+        this.getTrackDimensions(); // Try to get dimensions again if missing
+        return;
+    }
+    
+    const touchX = e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX;
+    
+    // Calculate percentage based on touch position (visual feedback only)
+    let percentage = ((touchX - trackLeft) / trackWidth) * 100;
+    percentage = Math.max(0, Math.min(100, percentage));
+    
+    // Only update visual position during dragging
+    this.setData({
+      sliderPercentage: percentage
+    });
+  },
+
+  handleTouchEnd(e) {
     const { trackWidth, trackLeft, minValue, maxValue, step, activeTab, selectedValues } = this.data;
     if (!trackWidth) {
         this.getTrackDimensions(); // Try to get dimensions again if missing
@@ -170,7 +189,7 @@ Page({
     
     const showEmptyHint = steppedValue === minValue;
 
-    // Update data
+    // Update data only when finger is released
     this.setData({
       sliderPercentage: finalPercentage,
       currentValue: steppedValue,
