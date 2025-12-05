@@ -1,20 +1,20 @@
 <view class="container">
   <view class="header">
     <view class="back-btn" bindtap="goBack">
-      <image class="back-icon" src="/app/images/icons/Vector.svg" />
+      <image class="back-icon" src="../../assets/icons/Vector.svg" />
     </view>
     <text class="page-title">Sports records</text>
   </view>
   <view class="date-selector">
     <view class="arrow-btn left" bindtap="prevDate">
-      <image class="arrow-icon" src="/app/images/icons/Vector 1.svg" mode="aspectFit"></image>
+      <image class="arrow-icon" src="../../assets/icons/Vector.svg" mode="aspectFit"></image>
     </view>
     <view class="current-date" bindtap="showCalendar">
       <text>{{currentDate}}</text>
       <view class="triangle-down">▼</view>
     </view>
     <view class="arrow-btn right" bindtap="nextDate">
-      <image class="arrow-icon" src="/app/images/icons/Vector 2.svg" mode="aspectFit"></image>
+      <image class="arrow-icon" src="/../../assets/icons/Vector.svg"  mode="aspectFit"></image>
     </view>
   </view>
 
