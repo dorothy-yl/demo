@@ -20,12 +20,22 @@ Page({
   tempLoad: null, // 临时存储滑动过程中的load值
   throttleTimer: null, // 节流定时器
   throttledUpdateVisual: null, // 节流后的视觉更新函数
+  maxResistance: null, // 最大阻力值
+  minResistance: null, // 最小阻力值
+  resistanceSum: 0, // 阻力总和
+  resistanceCount: 0 ,// 阻力计数
 
   
   onLoad() {
     console.log('Exercise Page Load');
     this.startTimer();
     this.updateGauge(this.data.load);
+    
+    // 初始化阻力跟踪
+    this.maxResistance = this.data.load;
+    this.minResistance = this.data.load;
+    this.resistanceSum = this.data.load;
+    this.resistanceCount = 1;
     
     // 初始化节流函数
     this.throttledUpdateVisual = this.throttle((value) => {
@@ -87,10 +97,11 @@ dpID.forEach(element => {
   //阻力
   if(element.code == 102) {
     console.log('阻力:', element.value);
+    const loadValue = element.value;
     this.setData({
-      load: element.value
+      load: loadValue
     });
-    this.updateGauge(element.value);
+    this.updateGauge(loadValue);
   } 
 });
 }
@@ -181,10 +192,90 @@ onDpDataChange(_onDpDataChange);
     ty.showModal({
       title: 'End Workout',
       content: 'Are you sure you want to end this workout?',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
       success: (res) => {
         if (res.confirm) {
+          // 停止计时器
           this.stopTimer();
-          ty.navigateBack();
+          
+          // 收集所有运动数据
+          const now = new Date();
+          const timestamp = now.getTime();
+          const elapsedSeconds = this.data.elapsedTime;
+          
+          // 计算平均阻力
+          const avgResistance = this.resistanceCount > 0 
+            ? (this.resistanceSum / this.resistanceCount).toFixed(1) 
+            : this.data.load;
+          
+          // 单位转换：速度从 mi/h 转为 km/h
+          const speedKmh = (parseFloat(this.data.speed) * 1.609).toFixed(1);
+          
+          // 计算距离：distance = speed (km/h) × time (hours)
+          const timeInHours = elapsedSeconds / 3600;
+          const distance = (parseFloat(speedKmh) * timeInHours).toFixed(1);
+          
+          // 格式化时间
+          const durationFormatted = this.formatTime(elapsedSeconds);
+          
+          // 格式化日期 - congrats格式: "2025/09/12"
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, '0');
+          const day = String(now.getDate()).padStart(2, '0');
+          const dateCongrats = `${year}/${month}/${day}`;
+          
+          // 格式化日期 - history格式: "12月11日 12:01:03"
+          const hours = String(now.getHours()).padStart(2, '0');
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          const seconds = String(now.getSeconds()).padStart(2, '0');
+          const dateFormatted = `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+          
+          // 构建运动记录对象
+          const exerciseRecord = {
+            id: timestamp,
+            duration: elapsedSeconds,
+            durationFormatted: durationFormatted,
+            date: now.toISOString(),
+            dateFormatted: dateFormatted,
+            dateCongrats: dateCongrats,
+            speed: parseFloat(this.data.speed),
+            speedKmh: parseFloat(speedKmh),
+            calories: parseFloat(this.data.calories),
+            distance: parseFloat(distance),
+            rpm: this.data.rpm,
+            watt: this.data.watt,
+            heartRate: this.data.heartRate,
+            maxResistance: this.maxResistance,
+            minResistance: this.minResistance,
+            avgResistance: parseFloat(avgResistance)
+          };
+          
+          // 保存到storage
+          const history = ty.getStorageSync('exerciseHistory') || [];
+          history.unshift(exerciseRecord); // 添加到数组开头（最新的在前）
+          ty.setStorageSync('exerciseHistory', history);
+          
+          // 跳转到congrats页面，通过URL参数传递数据
+          const params = new URLSearchParams({
+            id: timestamp.toString(),
+            duration: elapsedSeconds.toString(),
+            speed: this.data.speed,
+            speedKmh: speedKmh,
+            calories: this.data.calories,
+            distance: distance,
+            rpm: this.data.rpm.toString(),
+            watt: this.data.watt.toString(),
+            heartRate: this.data.heartRate.toString(),
+            maxResistance: this.maxResistance.toString(),
+            minResistance: this.minResistance.toString(),
+            avgResistance: avgResistance,
+            dateCongrats: dateCongrats
+          });
+          
+          ty.navigateTo({
+            url: `/pages/congrats/congrats?${params.toString()}`
+          });
         }
       }
     });
@@ -327,6 +418,16 @@ onDpDataChange(_onDpDataChange);
     const progressAngle = (currentValue / maxLoad) * maxAngle;
     const startAngle = 225;
     const knobAngle = startAngle + progressAngle;
+
+    // 更新阻力跟踪
+    if (this.maxResistance === null || currentValue > this.maxResistance) {
+      this.maxResistance = currentValue;
+    }
+    if (this.minResistance === null || currentValue < this.minResistance) {
+      this.minResistance = currentValue;
+    }
+    this.resistanceSum += currentValue;
+    this.resistanceCount += 1;
 
     // Calculate knob position
     // Radius is 110px (half of 220px width)
