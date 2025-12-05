@@ -13,7 +13,7 @@
     <!-- Empty State Text - Left Bottom -->
     <view class="empty-state-text" ty:if="{{!hasAlarms}}">
       <text class="empty-title">Exercise reminder</text>
-      <text class="empty-desc">Click "Add" in the upper right corner.</text>
+      <text class="empty-desc">Click "Add" in the bottom right corner.</text>
     </view>
 
     <!-- Calendar in Center -->

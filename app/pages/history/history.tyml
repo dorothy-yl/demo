@@ -9,7 +9,7 @@
     <view class="arrow-btn left" bindtap="prevDate">
       <image class="arrow-icon" src="/app/images/icons/Vector 1.svg" mode="aspectFit"></image>
     </view>
-    <view class="current-date">
+    <view class="current-date" bindtap="showCalendar">
       <text>{{currentDate}}</text>
       <view class="triangle-down">▼</view>
     </view>
@@ -19,6 +19,12 @@
   </view>
 
   <scroll-view class="record-list" scroll-y="true">
+    <!-- 空状态占位 -->
+    <view class="empty-placeholder" ty:if="{{records.length === 0}}">
+      <text class="empty-text">今日暂无运动记录</text>
+    </view>
+    
+    <!-- 记录卡片列表 -->
     <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item" bindtap="goToDetail" data-id="{{item.id}}">
       <view class="card-header">
         <view class="duration-group">
@@ -46,6 +52,42 @@
       </view>
     </view>
   </scroll-view>
+
+  <!-- 日历弹窗 -->
+  <view class="calendar-modal" ty:if="{{showCalendar}}" bindtap="hideCalendar">
+    <view class="calendar-modal-content" catchtap="stopPropagation">
+      <!-- 月份导航 -->
+      <view class="calendar-month-header">
+        <view class="calendar-month-nav-btn" bindtap="prevMonth">
+          <text class="calendar-nav-arrow">‹</text>
+        </view>
+        <text class="calendar-month-title">{{currentMonthText}}</text>
+        <view class="calendar-month-nav-btn" bindtap="nextMonth">
+          <text class="calendar-nav-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 星期标题行 -->
+      <view class="calendar-weekday-headers">
+        <view class="calendar-weekday-header" ty:for="{{weekdays}}" ty:key="*this">
+          <text class="calendar-weekday-text">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 日期网格 -->
+      <view class="calendar-grid">
+        <view 
+          class="calendar-day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
+          ty:for="{{calendarDays}}" 
+          ty:key="date"
+          bindtap="selectDateFromCalendar"
+          data-date="{{item.date}}"
+        >
+          <text class="calendar-day-number">{{item.day}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
 
   <!-- Bottom Navigation -->
   <view class="bottom-nav">

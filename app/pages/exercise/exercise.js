@@ -239,22 +239,56 @@ onDpDataChange(_onDpDataChange);
             date: now.toISOString(),
             dateFormatted: dateFormatted,
             dateCongrats: dateCongrats,
-            speed: parseFloat(this.data.speed),
-            speedKmh: parseFloat(speedKmh),
-            calories: parseFloat(this.data.calories),
-            distance: parseFloat(distance),
-            rpm: this.data.rpm,
-            watt: this.data.watt,
-            heartRate: this.data.heartRate,
-            maxResistance: this.maxResistance,
-            minResistance: this.minResistance,
-            avgResistance: parseFloat(avgResistance)
+            speed: parseFloat(this.data.speed) || 0,
+            speedKmh: parseFloat(speedKmh) || 0,
+            calories: parseFloat(this.data.calories) || 0,
+            distance: parseFloat(distance) || 0,
+            rpm: this.data.rpm || 0,
+            watt: this.data.watt || 0,
+            heartRate: this.data.heartRate || 0,
+            maxResistance: this.maxResistance || 0,
+            minResistance: this.minResistance || 0,
+            avgResistance: parseFloat(avgResistance) || 0
           };
           
-          // 保存到storage
-          const history = ty.getStorageSync('exerciseHistory') || [];
-          history.unshift(exerciseRecord); // 添加到数组开头（最新的在前）
-          ty.setStorageSync('exerciseHistory', history);
+          // 验证数据完整性
+          let saveSuccess = true;
+          if (!exerciseRecord.id || exerciseRecord.duration < 0) {
+            console.error('Invalid exercise record data');
+            ty.showToast({
+              title: '数据保存失败：数据不完整',
+              icon: 'none'
+            });
+            saveSuccess = false;
+          } else {
+            // 保存到storage
+            try {
+              const history = ty.getStorageSync('exerciseHistory') || [];
+              
+              // 确保history是数组
+              if (!Array.isArray(history)) {
+                console.warn('exerciseHistory is not an array, resetting to empty array');
+                ty.setStorageSync('exerciseHistory', []);
+              }
+              
+              // 添加到数组开头（最新的在前）
+              const updatedHistory = [exerciseRecord, ...history];
+              
+              // 保存到storage
+              ty.setStorageSync('exerciseHistory', updatedHistory);
+              
+              console.log('Exercise record saved successfully:', exerciseRecord.id);
+            } catch (error) {
+              console.error('Error saving exercise record to storage:', error);
+              ty.showToast({
+                title: '数据保存失败',
+                icon: 'none'
+              });
+              saveSuccess = false;
+            }
+          }
+          
+          // 即使保存失败，也继续跳转到congrats页面（数据已通过URL参数传递）
           
           // 跳转到congrats页面，通过URL参数传递数据
           const params = new URLSearchParams({

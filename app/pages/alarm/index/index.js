@@ -129,12 +129,9 @@ Page({
   },
 
   onAdd() {
-    if (this.data.selectedDate) {
-      ty.setStorageSync('selected_date', this.data.selectedDate);
-      ty.navigateTo({
-        url: '/pages/alarm/day-settings/day-settings'
-      });
-    }
+    ty.navigateTo({
+      url: '/pages/target/target'
+    });
   },
 
   onToggleAlarm(e) {

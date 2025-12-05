@@ -74,6 +74,12 @@
   color: #FFFFFF;
   margin: 0 20px;
   top:20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.current-date:active {
+  opacity: 0.7;
 }
 
 .triangle-down {
@@ -87,6 +93,21 @@
   flex: 1;
   padding: 0 20px;
   box-sizing: border-box;
+}
+
+/* Empty State Placeholder */
+.empty-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 200px;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #8E8E93;
+  text-align: center;
 }
 
 .record-card {
@@ -228,4 +249,126 @@
 .nav-item:not(.active) .nav-icon {
   opacity: 0.5;
   filter: grayscale(100%);
+}
+
+/* Calendar Modal */
+.calendar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.calendar-modal-content {
+  background-color: #2C3A4A;
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+/* Calendar Month Header */
+.calendar-month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.calendar-month-nav-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.calendar-nav-arrow {
+  font-size: 24px;
+  color: #FFA500;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.calendar-month-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Calendar Weekday Headers */
+.calendar-weekday-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 10px;
+  gap: 4px;
+}
+
+.calendar-weekday-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.calendar-weekday-text {
+  font-size: 14px;
+  color: #8E8E93;
+  font-weight: 500;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  position: relative;
+  min-height: 40px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.calendar-day.today {
+  background-color: rgba(82, 196, 26, 0.15);
+}
+
+.calendar-day.selected {
+  border: 2px solid #52C41A;
+  background-color: rgba(82, 196, 26, 0.3);
+}
+
+.calendar-day.selected.today {
+  border: 2px solid #52C41A;
+  background-color: rgba(82, 196, 26, 0.4);
+}
+
+.calendar-day-number {
+  font-size: 16px;
+  color: #FFFFFF;
+  font-weight: 500;
 }

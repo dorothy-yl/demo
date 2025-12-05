@@ -90,6 +90,10 @@ Page({
     this.publishDps({
       2: resistance // Change this DP ID to match your product's resistance DP
     });
+  },
+
+  goBack: function () {
+    ty.navigateBack();
   }
 });
 
