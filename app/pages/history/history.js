@@ -47,6 +47,19 @@ Page({
     return `${month}月${day}日`;
   },
 
+  // 格式化时长为 "HH:MM:SS" 格式
+  formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    const h = hours.toString().padStart(2, '0');
+    const m = minutes.toString().padStart(2, '0');
+    const s = secs.toString().padStart(2, '0');
+    
+    return `${h}:${m}:${s}`;
+  },
+
   // 从 ISO 字符串或 Date 对象中提取日期字符串
   getDateStringFromRecord(record) {
     if (!record || !record.date) return '';
@@ -94,7 +107,7 @@ Page({
   // 根据日期加载记录
   loadRecordsForDate(date) {
     try {
-      const history = ty.getStorageSync('exerciseHistory') || [];
+      const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
       const targetDateStr = this.formatDateString(date);
       
       // 筛选出当天的记录
@@ -105,12 +118,12 @@ Page({
       
       // 格式化记录以匹配页面显示需求
       const formattedRecords = dayRecords.map(record => {
-        // 将duration从秒转换为分钟（用于显示）
-        const durationMinutes = Math.floor(record.duration / 60);
+        // 将duration从秒转换为 "HH:MM:SS" 格式
+        const durationFormatted = this.formatTime(record.duration || 0);
         
         return {
           id: record.id,
-          duration: durationMinutes.toString(),
+          duration: durationFormatted,
           date: record.dateFormatted || record.date,
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories).toString(),

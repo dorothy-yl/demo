@@ -29,7 +29,6 @@
       <view class="card-header">
         <view class="duration-group">
           <text class="duration-val">{{item.duration}}</text>
-          <text class="duration-unit">min</text>
         </view>
         <text class="record-date">{{item.date}}</text>
       </view>

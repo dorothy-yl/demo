@@ -59,8 +59,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transform: rotate(180deg);
   background: rgba(255, 255, 255, 0.1); /* Circle background for arrows */
+}
+
+.arrow-btn.left {
+  transform: rotate(0deg);
+}
+
+.arrow-btn.right {
+  transform: rotate(180deg);
 }
 
 .arrow-icon {

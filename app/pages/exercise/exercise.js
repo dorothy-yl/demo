@@ -263,7 +263,7 @@ onDpDataChange(_onDpDataChange);
           } else {
             // 保存到storage
             try {
-              const history = ty.getStorageSync('exerciseHistory') || [];
+              const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
               
               // 确保history是数组
               if (!Array.isArray(history)) {
@@ -275,8 +275,18 @@ onDpDataChange(_onDpDataChange);
               const updatedHistory = [exerciseRecord, ...history];
               
               // 保存到storage
-              ty.setStorageSync('exerciseHistory', updatedHistory);
-              
+             // ty.setStorageSync('exerciseHistory', updatedHistory);
+              // 存储字符串
+ty.setStorage({
+  key: 'exerciseHistory',
+  data: updatedHistory,
+  success: (res) => {
+    console.log(res.data);
+  },
+  fail: (err) => {
+    console.log(err);
+  }
+});
               console.log('Exercise record saved successfully:', exerciseRecord.id);
             } catch (error) {
               console.error('Error saving exercise record to storage:', error);

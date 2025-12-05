@@ -14,7 +14,6 @@
     <view class="main-card">
       <view class="main-card-left">
         <text class="duration-value">{{record.duration}}</text>
-        <text class="duration-unit">min</text>
       </view>
       <view class="main-card-right">
         <text class="record-date-time">{{record.date}}</text>

@@ -2,6 +2,19 @@ Page({
   data: {
     record: null
   },
+
+  // 格式化时长为 "HH:MM:SS" 格式
+  formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    const h = hours.toString().padStart(2, '0');
+    const m = minutes.toString().padStart(2, '0');
+    const s = secs.toString().padStart(2, '0');
+    
+    return `${h}:${m}:${s}`;
+  },
   
   onLoad(options) {
     const id = options.id;
@@ -18,9 +31,10 @@ Page({
     if (!record) {
       // 从历史列表页的数据结构构建记录
       const distance = parseFloat(options.distance) || 0.7;
+      const durationSeconds = parseInt(options.duration) || 0;
       record = {
         id: parseInt(id) || 1,
-        duration: options.duration || '17',
+        duration: this.formatTime(durationSeconds),
         date: options.date || '12月11日 12:01:03',
         speed: options.speed || '107.29',
         calories: options.calories || '52',
@@ -35,6 +49,11 @@ Page({
       // 确保距离格式正确
       if (record.distance && typeof record.distance === 'number') {
         record.distance = record.distance.toFixed(1);
+      }
+      // 格式化时长（duration 是秒数）
+      if (record.duration !== undefined) {
+        const durationSeconds = typeof record.duration === 'number' ? record.duration : parseInt(record.duration) || 0;
+        record.duration = this.formatTime(durationSeconds);
       }
     }
     
