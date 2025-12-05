@@ -6,7 +6,7 @@
     <view class="back-btn" bindtap="goBack">
       <image class="back-icon" src="../../assets/icons/Vector.svg" />
     </view>
-    <text class="header-title thin">设定目标</text>
+    <text class="header-title thin">Target pattern</text>
     <view class="header-placeholder"></view>
   </view>
 

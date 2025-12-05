@@ -82,7 +82,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .summary-item {
@@ -139,14 +139,14 @@
 .bicycle-image {
   width: 176px;
   height: 229px;
-  top:89px;
-  left:165px
   object-fit: contain;
+  position: relative;
+  margin-top: 20px;
 }
 
 /* 常用功能区域 */
 .common-functions {
-  padding: 0 20px 20px;
+  padding: 0 20px 40px;
 }
 
 
@@ -159,23 +159,72 @@
 
 .function-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px; /* Slightly tighter gap */
-  margin-top:8px;
+  grid-template-columns: 179px 1fr;
+  margin-top:10px;
+  width: 319px;
+  height: 350px;
 }
 
-.function-item {
+.function-item1 {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align text to left */
-  padding: 24px 20px;
-  background: #151925; /* Darker background */
-  border-radius: 40px 16px 16px 16px; /* Asymmetric border radius */
+  align-content:center;
+  align-items: flex-start; 
+  background: #151925;
+  border-radius: 30px 0 0 0;
   position: relative;
-  height: 140px; /* Fixed height for consistency */
+  width: 160px;
+  height: 163px;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content:  space-around;
+  padding: 16px 0 0 16px;
+  justify-self: start;
 }
+
+.function-item2{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  background: #151925;
+  border-radius: 30px 0 30 30;
+  position: relative;
+  width: 200px;
+  height: 163px;
+  box-sizing: border-box;
+  justify-content:space-around;
+  padding: 16px 0 0 16px;
+  justify-self: end;
+}
+.function-item3{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  background: #151925;
+  border-radius: 30px 30px 30px 0;
+  position: relative;
+  width: 200px;
+  height: 152px;
+  box-sizing: border-box;
+  justify-content: space-around;
+  padding: 16px 0 0 16px;
+  justify-self: start;
+}
+
+.function-item4{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  background: #151925;
+  border-radius: 0 0 30px 0;
+  position: relative;
+  width: 160px;
+  height: 152px;
+  box-sizing: border-box;
+  justify-content:space-around;
+  padding: 16px 0 0 16px;
+  justify-self: end;
+}
+
 
 /* Specific background shapes for icon wrappers */
 .function-icon-wrapper {
@@ -190,34 +239,12 @@
 }
 
 .function-icon {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
-
-/* Icon Colors - Removed filters as per user request to use original icon colors */
-/* Quick Start */
-.function-item:nth-child(1) .function-icon {
-  /* filter: invert(76%) sepia(68%) saturate(1688%) hue-rotate(359deg) brightness(101%) contrast(106%); */
-}
-
-/* Target pattern */
-.function-item:nth-child(2) .function-icon {
-  /* filter: invert(85%) sepia(25%) saturate(969%) hue-rotate(128deg) brightness(96%) contrast(98%); */
-}
-
-/* FTMS */
-.function-item:nth-child(3) .function-icon {
-  /* filter: invert(36%) sepia(61%) saturate(2465%) hue-rotate(200deg) brightness(100%) contrast(96%); */
-}
-
-/* Tirp */
-.function-item:nth-child(4) .function-icon {
-  /* filter: invert(56%) sepia(39%) saturate(3504%) hue-rotate(315deg) brightness(100%) contrast(96%); */
-}
-
 
 .function-label {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 500;
   color: #FFFFFF;
   text-align: left;
