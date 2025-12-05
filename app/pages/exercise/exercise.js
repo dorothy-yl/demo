@@ -123,7 +123,27 @@ onDpDataChange(_onDpDataChange);
   },
 
   goBack() {
-    ty.navigateBack();
+    try {
+      ty.navigateBack({
+        delta: 1,
+        success: () => {
+          console.log('返回成功');
+        },
+        fail: (err) => {
+          console.error('返回失败:', err);
+          // 如果返回失败，尝试跳转到首页
+          ty.navigateTo({
+            url: '/pages/index/index'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('返回异常:', error);
+      // 如果出现异常，尝试跳转到首页
+      ty.navigateTo({
+        url: '/pages/index/index'
+      });
+    }
   },
 
   formatTime(seconds) {

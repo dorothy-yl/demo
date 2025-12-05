@@ -63,9 +63,27 @@ Page({
   },
   
   goBack() {
-    ty.navigateBack({
-      delta: 1
-    });
+    try {
+      ty.navigateBack({
+        delta: 1,
+        success: () => {
+          console.log('返回成功');
+        },
+        fail: (err) => {
+          console.error('返回失败:', err);
+          // 如果返回失败，尝试跳转到历史记录页
+          ty.navigateTo({
+            url: '/pages/history/history'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('返回异常:', error);
+      // 如果出现异常，尝试跳转到历史记录页
+      ty.navigateTo({
+        url: '/pages/history/history'
+      });
+    }
   }
 });
 
