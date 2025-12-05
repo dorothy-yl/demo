@@ -8,7 +8,7 @@
     "pages/congrats/congrats",
     "pages/history-detail/history-detail",
     "pages/alarm/index/index",
-    "pages/goal/goal"
+    "pages/target/target"
   ],
   "window": {
     "navigationStyle": "custom"
