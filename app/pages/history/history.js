@@ -127,7 +127,9 @@ Page({
           date: record.dateFormatted || record.date,
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories).toString(),
-          distance: record.distance ? record.distance.toFixed(1) : '0.0',
+          distance: record.distance ? record.distance.toFixed(2) : '0.0',
+          Load: record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0'),
+          resistance: record.avgResistance ? record.avgResistance.toFixed(1) : (record.maxResistance ? record.maxResistance.toFixed(1) : '0.0'),
           // 保存完整数据用于详情页
           fullRecord: record
         };
@@ -306,7 +308,7 @@ Page({
         date: fullRecord.dateFormatted || fullRecord.date || '',
         speed: fullRecord.speedKmh ? fullRecord.speedKmh.toString() : (fullRecord.speed ? fullRecord.speed.toString() : '0'),
         calories: fullRecord.calories ? fullRecord.calories.toString() : '0',
-        distance: fullRecord.distance ? fullRecord.distance.toString() : '0',
+        distance: fullRecord.distance ? fullRecord.distance.toFixed(2) : '0.00',
         rpm: fullRecord.rpm ? fullRecord.rpm.toString() : '0',
         watt: fullRecord.watt ? fullRecord.watt.toString() : '0',
         maxResistance: fullRecord.maxResistance ? fullRecord.maxResistance.toString() : '0',

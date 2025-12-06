@@ -21,7 +21,7 @@
   <scroll-view class="record-list" scroll-y="true">
     <!-- 空状态占位 -->
     <view class="empty-placeholder" ty:if="{{records.length === 0}}">
-      <text class="empty-text">今日暂无运动记录</text>
+      <text class="empty-text">No exercise records for today</text>
     </view>
     
     <!-- 记录卡片列表 -->
@@ -35,8 +35,8 @@
       
       <view class="card-stats">
         <view class="stat-item">
-          <text class="stat-label">Speed(km/h)</text>
-          <text class="stat-val">{{item.speed}}</text>
+          <text class="stat-label">Load</text>
+          <text class="stat-val">{{item.Load}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
