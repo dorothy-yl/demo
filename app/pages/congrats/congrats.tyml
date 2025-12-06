@@ -59,11 +59,11 @@
         <!-- Right Column -->
         <view class="right-column">
           <view class="stats-card small-card">
-            <text class="card-title">Calories</text>
+            <text class="card-title">Watt</text>
             <image class="card-icon-small" src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
             <view class="small-value-row">
-              <text class="medium-value">{{secondaryCalories}}</text>
-              <text class="unit">kcal</text>
+              <text class="medium-value">{{Watt}}</text>
+              <text class="unit">w</text>
             </view>
           </view>
           <view class="stats-card small-card">

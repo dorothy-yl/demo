@@ -1,13 +1,13 @@
 Page({
   data: {
-    userName: 'Dkkd',
-    date: '2025/09/12',
+    userName: 'lucy',
+    date: '2025/12/06',
     caloriesBurned: 128,
-    duration: '00:01:36',
-    rpm: '11.23',
+    duration: '18:24',
+    rpm: '61',
     avgSpeed: '1.3',
-    secondaryCalories: 15,
-    distance: '0.7'
+    watt: '152',
+    distance: '2.37'
   },
   onLoad(options) {
     let exerciseData = null;
@@ -19,8 +19,9 @@ Page({
         duration: parseInt(options.duration) || 0,
         speedKmh: parseFloat(options.speedKmh) || 0,
         calories: parseFloat(options.calories) || 0,
-        distance: parseFloat(options.distance) || 0,
+        distance: parseFloat(options.distance) || 0.00,
         rpm: parseFloat(options.rpm) || 0,
+        watt: parseFloat(options.watt) || 0,
         dateCongrats: options.dateCongrats || ''
       };
     } else {
@@ -51,8 +52,8 @@ Page({
       const caloriesBurned = Math.round(exerciseData.calories);
       const rpm = exerciseData.rpm ? exerciseData.rpm.toFixed(2) : '0.00';
       const avgSpeed = exerciseData.speedKmh ? exerciseData.speedKmh.toFixed(1) : '0.0';
-      const secondaryCalories = Math.round(exerciseData.calories * 0.1); // 可以调整这个计算
-      const distance = exerciseData.distance ? exerciseData.distance.toFixed(1) : '0.0';
+      const watt = exerciseData.watt ? exerciseData.watt.toFixed(1) : '00'; // 可以调整这个计算
+      const distance = exerciseData.distance ? exerciseData.distance.toFixed(2) : '0.00';
       const date = exerciseData.dateCongrats || exerciseData.dateFormatted || '2025/09/12';
       
       this.setData({
@@ -62,7 +63,7 @@ Page({
         duration: durationFormatted,
         rpm: rpm,
         avgSpeed: avgSpeed,
-        secondaryCalories: secondaryCalories,
+        watt: watt,
         distance: distance
       });
     }

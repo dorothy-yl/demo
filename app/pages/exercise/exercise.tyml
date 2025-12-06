@@ -11,8 +11,8 @@
   <!-- Speed and Heart Rate Row -->
   <view class="top-row">
     <view class="top-stat-item">
-      <text class="top-stat-value">{{speed}}</text>
-      <text class="top-stat-label">Speed(mi/h)</text>
+      <text class="top-stat-value">{{rpm}}</text>
+      <text class="top-stat-label">RPM</text>
     </view>
     <view class="vertical-divider"></view>
     <view class="top-stat-item">
@@ -33,8 +33,8 @@
   <!-- 3-Column Stats Grid -->
   <view class="stats-grid">
     <view class="card stat-card">
-      <text class="card-label">RPM</text>
-      <text class="card-value">{{rpm}}</text>
+      <text class="card-label">Distance</text>
+      <text class="card-value">{{distance}}</text>
     </view>
     <view class="card stat-card">
       <text class="card-label">Calories</text>
@@ -71,6 +71,6 @@
 
   <!-- Bottom Button -->
   <view class="footer">
-    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">Pause/Hold Stop</button>
+    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">START/PAUSE</button>
   </view>
 </view>

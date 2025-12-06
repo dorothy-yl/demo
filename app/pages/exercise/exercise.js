@@ -5,13 +5,13 @@ function formatDpState(dpState) {
 Page({
   data: {
     isPaused: false,
-    elapsedTime: 3126, // 52:06 in seconds for demo match
-    speed: 7.3,
-    heartRate: 71,
-    formattedTime: '00:52:06',
-    rpm: 61,
-    calories: 128,
-    watt: 53,
+    elapsedTime: 0, 
+    rpm: 0,
+    heartRate: 0,
+    distance: 0,
+    formattedTime: '00:00:00',
+    calories: 0,
+    watt: 0,
     load: 1,
     gaugeProgressStyle: '',
     knobAngle: 225 // Start angle
@@ -24,10 +24,15 @@ Page({
   minResistance: null, // 最小阻力值
   resistanceSum: 0, // 阻力总和
   resistanceCount: 0 ,// 阻力计数
+  isStopping: false, // 防止重复处理停止逻辑
 
   
   onLoad() {
     console.log('Exercise Page Load');
+    // 初始化停止标志
+    this.isRunning = false,   // 是否正在运动
+    this.isPausing = false,   // 是否处于暂停
+    this.isStopping = false   // 是否正在结束
     this.startTimer();
     this.updateGauge(this.data.load);
     
@@ -55,6 +60,38 @@ const _onDpDataChange = (event) => {
 console.log('dp点数组:'+ JSON.stringify(formatDpState(event.dps)));
 const dpID = formatDpState(event.dps);  //dpID 数组
 dpID.forEach(element => {
+  if (element.code === 106) { // 只判断code=106，再处理不同的value
+    const sportState = element.value?.toUpperCase(); // 统一转大写，兼容大小写
+    console.log('硬件上报运动状态:', sportState);
+  
+    // 避免重复处理（结合isStopping/isStarting等状态）
+    switch (sportState) {
+      case 'START': // 硬件上报“开始”
+        if (!this.isRunning) {
+          this.handleStartExercise(false); // false：硬件主动开始，软件不回发指令
+        }
+        break;
+      
+      case 'PAUSE': // 硬件上报“暂停（继续的前置状态）”
+        if (this.isRunning && !this.isPausing) {
+          this.handlePauseExercise(false); // 处理暂停逻辑
+        }
+        break;
+      
+      case 'END': // 硬件上报“结束”（对应之前的STOP）
+        if (!this.isStopping) {
+          this.handleStopExercise(false); // 处理结束逻辑
+        }
+        break;
+    }
+    return;
+  }
+  //rpm
+  if(element.code == 110) {
+    this.setData({
+      rpm: element.value
+    });
+  }
   // 时间
   if(element.code == 104) {
     this.setData({
@@ -74,10 +111,10 @@ dpID.forEach(element => {
       heartRate: element.value
     });
   }
-  //rpm 踏率
-  if(element.code == 110) {
+  // 距离
+  if (element.code == 103) {
     this.setData({
-      rpm: element.value
+      distance: (element.value/1000).toFixed(2)
     });
   }
  // 卡路里
@@ -216,87 +253,119 @@ onDpDataChange(_onDpDataChange);
       cancelText: 'Cancel',
       success: (res) => {
         if (res.confirm) {
-          // 停止计时器
-          this.stopTimer();
-          
-          // 收集所有运动数据
-          const now = new Date();
-          const timestamp = now.getTime();
-          const elapsedSeconds = this.data.elapsedTime;
-          
-          // 计算平均阻力
-          const avgResistance = this.resistanceCount > 0 
-            ? (this.resistanceSum / this.resistanceCount).toFixed(1) 
-            : this.data.load;
-          
-          // 单位转换：速度从 mi/h 转为 km/h
-          const speedKmh = (parseFloat(this.data.speed) * 1.609).toFixed(1);
-          
-          // 计算距离：distance = speed (km/h) × time (hours)
-          const timeInHours = elapsedSeconds / 3600;
-          const distance = (parseFloat(speedKmh) * timeInHours).toFixed(1);
-          
-          // 格式化时间
-          const durationFormatted = this.formatTime(elapsedSeconds);
-          
-          // 格式化日期 - congrats格式: "2025/09/12"
-          const year = now.getFullYear();
-          const month = String(now.getMonth() + 1).padStart(2, '0');
-          const day = String(now.getDate()).padStart(2, '0');
-          const dateCongrats = `${year}/${month}/${day}`;
-          
-          // 格式化日期 - history格式: "12月11日 12:01:03"
-          const hours = String(now.getHours()).padStart(2, '0');
-          const minutes = String(now.getMinutes()).padStart(2, '0');
-          const seconds = String(now.getSeconds()).padStart(2, '0');
-          const dateFormatted = `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
-          
-          // 构建运动记录对象
-          const exerciseRecord = {
-            id: timestamp,
-            duration: elapsedSeconds,
-            durationFormatted: durationFormatted,
-            date: now.toISOString(),
-            dateFormatted: dateFormatted,
-            dateCongrats: dateCongrats,
-            speed: parseFloat(this.data.speed) || 0,
-            speedKmh: parseFloat(speedKmh) || 0,
-            calories: parseFloat(this.data.calories) || 0,
-            distance: parseFloat(distance) || 0,
-            rpm: this.data.rpm || 0,
-            watt: this.data.watt || 0,
-            heartRate: this.data.heartRate || 0,
-            maxResistance: this.maxResistance || 0,
-            minResistance: this.minResistance || 0,
-            avgResistance: parseFloat(avgResistance) || 0
-          };
-          
-          // 验证数据完整性
-          let saveSuccess = true;
-          if (!exerciseRecord.id || exerciseRecord.duration < 0) {
-            console.error('Invalid exercise record data');
-            ty.showToast({
-              title: '数据保存失败：数据不完整',
-              icon: 'none'
-            });
-            saveSuccess = false;
-          } else {
-            // 保存到storage
-            try {
-              const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
-              
-              // 确保history是数组
-              if (!Array.isArray(history)) {
-                console.warn('exerciseHistory is not an array, resetting to empty array');
-                ty.setStorageSync('exerciseHistory', []);
+          // 向硬件发送停止命令
+          const { query: { deviceId } } = ty.getLaunchOptionsSync();
+          if (deviceId) {
+            ty.device.publishDps({
+              deviceId,
+              dps: { 106: 'STOP' },
+              mode: 1,
+              pipelines: [0, 1, 2, 3, 4, 5, 6],
+              success: () => {
+                console.log('停止命令已发送到硬件');
+                this.handleStopExercise(true); // true表示已发送命令
+              },
+              fail: (err) => {
+                console.error('硬件停止指令发送失败:', err);
+                // 即使发送失败，也继续执行停止逻辑
+                this.handleStopExercise(true);
               }
-              
-              // 添加到数组开头（最新的在前）
-              const updatedHistory = [exerciseRecord, ...history];
-              
-              // 保存到storage
-             // ty.setStorageSync('exerciseHistory', updatedHistory);
-              // 存储字符串
+            });
+          } else {
+            // 如果没有deviceId，直接执行停止逻辑
+            this.handleStopExercise(true);
+          }
+        }
+      }
+    });
+  },
+
+  // 处理停止运动的通用方法
+  // sendCommand: true表示已经发送了命令（或不需要发送），false表示不需要发送命令（硬件触发的）
+  handleStopExercise(sendCommand) {
+    // 防止重复处理
+    if (this.isStopping) {
+      console.log('停止逻辑已在处理中，跳过重复调用');
+      return;
+    }
+    this.isStopping = true;
+
+    // 停止计时器
+    this.stopTimer();
+    
+    // 收集所有运动数据
+    const now = new Date();
+    const timestamp = now.getTime();
+    const elapsedSeconds = this.data.elapsedTime;
+    
+    // 计算平均阻力
+    const avgResistance = this.resistanceCount > 0 
+      ? (this.resistanceSum / this.resistanceCount).toFixed(1) 
+      : this.data.load;
+    
+    // 单位转换：速度从 mi/h 转为 km/h
+    const speedKmh = (parseFloat(this.data.speed) * 1.609).toFixed(1);
+ 
+    
+    // 格式化时间
+    const durationFormatted = this.formatTime(elapsedSeconds);
+    
+    // 格式化日期 - congrats格式: "2025/09/12"
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateCongrats = `${year}/${month}/${day}`;
+    
+    // 格式化日期 - history格式: "12月11日 12:01:03"
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const dateFormatted = `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+    
+    // 构建运动记录对象
+    const exerciseRecord = {
+      id: timestamp,
+      duration: elapsedSeconds,
+      durationFormatted: durationFormatted,
+      date: now.toISOString(),
+      dateFormatted: dateFormatted,
+      dateCongrats: dateCongrats,
+      rpm: parseFloat(this.data.rpm) || 0,
+      calories: parseFloat(this.data.calories) || 0,
+      distance: parseFloat(this.data.distance) || 0,
+      watt: this.data.watt || 0,
+      heartRate: this.data.heartRate || 0,
+      maxResistance: this.maxResistance || 0,
+      minResistance: this.minResistance || 0,
+      avgResistance: parseFloat(avgResistance) || 0
+    };
+    
+    // 验证数据完整性
+    let saveSuccess = true;
+    if (!exerciseRecord.id || exerciseRecord.duration < 0) {
+      console.error('Invalid exercise record data');
+      ty.showToast({
+        title: '数据保存失败：数据不完整',
+        icon: 'none'
+      });
+      saveSuccess = false;
+    } else {
+      // 保存到storage
+      try {
+        const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
+        
+        // 确保history是数组
+        if (!Array.isArray(history)) {
+          console.warn('exerciseHistory is not an array, resetting to empty array');
+          ty.setStorageSync('exerciseHistory', []);
+        }
+        
+        // 添加到数组开头（最新的在前）
+        const updatedHistory = [exerciseRecord, ...history];
+        
+        // 保存到storage
+       // ty.setStorageSync('exerciseHistory', updatedHistory);
+        // 存储字符串
 ty.setStorage({
   key: 'exerciseHistory',
   data: updatedHistory,
@@ -307,41 +376,38 @@ ty.setStorage({
     console.log(err);
   }
 });
-              console.log('Exercise record saved successfully:', exerciseRecord.id);
-            } catch (error) {
-              console.error('Error saving exercise record to storage:', error);
-              ty.showToast({
-                title: '数据保存失败',
-                icon: 'none'
-              });
-              saveSuccess = false;
-            }
-          }
-          
-          // 即使保存失败，也继续跳转到congrats页面（数据已通过URL参数传递）
-          
-          // 跳转到congrats页面，通过URL参数传递数据
-          const params = new URLSearchParams({
-            id: timestamp.toString(),
-            duration: elapsedSeconds.toString(),
-            speed: this.data.speed,
-            speedKmh: speedKmh,
-            calories: this.data.calories,
-            distance: distance,
-            rpm: this.data.rpm.toString(),
-            watt: this.data.watt.toString(),
-            heartRate: this.data.heartRate.toString(),
-            maxResistance: this.maxResistance.toString(),
-            minResistance: this.minResistance.toString(),
-            avgResistance: avgResistance,
-            dateCongrats: dateCongrats
-          });
-          
-          ty.navigateTo({
-            url: `/pages/congrats/congrats?${params.toString()}`
-          });
-        }
+        console.log('Exercise record saved successfully:', exerciseRecord.id);
+      } catch (error) {
+        console.error('Error saving exercise record to storage:', error);
+        ty.showToast({
+          title: '数据保存失败',
+          icon: 'none'
+        });
+        saveSuccess = false;
       }
+    }
+    
+    // 即使保存失败，也继续跳转到congrats页面（数据已通过URL参数传递）
+    
+    // 跳转到congrats页面，通过URL参数传递数据
+    const params = new URLSearchParams({
+      id: timestamp.toString(),
+      duration: elapsedSeconds.toString(),
+      speed: this.data.speed,
+      speedKmh: speedKmh,
+      calories: this.data.calories,
+      distance: this.data.distance,
+      rpm: this.data.rpm.toString(),
+      watt: this.data.watt.toString(),
+      heartRate: this.data.heartRate.toString(),
+      maxResistance: this.maxResistance.toString(),
+      minResistance: this.minResistance.toString(),
+      avgResistance: avgResistance,
+      dateCongrats: dateCongrats
+    });
+    
+    ty.navigateTo({
+      url: `/pages/congrats/congrats?${params.toString()}`
     });
   },
 
@@ -493,39 +559,6 @@ ty.setStorage({
     this.resistanceSum += currentValue;
     this.resistanceCount += 1;
 
-    // Calculate knob position
-    // Radius is 110px (half of 220px width)
-    // Center is (110, 110) relative to wrapper
-    // Angle needs to be in radians. 
-    // Math.cos/sin take radians where 0 is 3 o'clock.
-    // Our knobAngle is in CSS degrees (0 is 12 o'clock usually? No, standard CSS rotation is from 12 o'clock? 
-    // Wait, let's check the CSS. 
-    // .gauge-knob-container is rotated by knobAngle.
-    // Inside it, .gauge-knob is at top: 10px, left: 50%.
-    // So 0deg rotation puts knob at 12 o'clock.
-    // 225deg rotation puts it at bottom-left.
-    // My calculation in handleTouchMove assumed 0 is 3 o'clock (Math.atan2 standard).
-    // So I need to align these coordinate systems.
-    
-    // Math.atan2(dy, dx): 0 is +x (3 o'clock). +90 is +y (6 o'clock in screen coords).
-    // CSS rotate: 0 is usually 12 o'clock? 
-    // Actually, if I use standard rotation, 0 is 12 o'clock?
-    // Let's re-verify CSS.
-    // .gauge-knob-container { width: 100%; height: 100%; ... }
-    // .gauge-knob { left: 50%; top: 10px; ... } -> This is at 12 o'clock position relative to container.
-    // So yes, 0deg rotation = 12 o'clock.
-    
-    // Math.atan2 returns angle from X axis (3 o'clock).
-    // 3 o'clock is 90 degrees clockwise from 12 o'clock.
-    // So CSS Angle = Math Angle + 90.
-    // Example: 
-    // Point at 12 o'clock (0, -y): atan2(-y, 0) = -90 deg. +90 = 0 deg. Correct.
-    // Point at 3 o'clock (x, 0): atan2(0, x) = 0 deg. +90 = 90 deg. Correct.
-    // Point at 6 o'clock (0, y): atan2(y, 0) = 90 deg. +90 = 180 deg. Correct.
-    // Point at 9 o'clock (-x, 0): atan2(0, -x) = 180 deg. +90 = 270 deg. Correct.
-    
-    // So in handleTouchMove, I should convert Math angle to CSS angle by adding 90.
-    
     this.setData({
       load: currentValue,
       gaugeProgressStyle: `
