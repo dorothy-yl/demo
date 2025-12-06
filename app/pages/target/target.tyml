@@ -25,7 +25,7 @@
       <view class="tab-underline" ty:if="{{activeTab === 'calories'}}"></view>
     </view>
     <view class="tab-item {{activeTab === 'resistance' ? 'active' : ''}}" bindtap="switchTab" data-tab="resistance">
-      <text class="tab-text">Resistance</text>
+      <text class="tab-text">Load</text>
       <view class="tab-underline" ty:if="{{activeTab === 'resistance'}}"></view>
     </view>
   </view>
