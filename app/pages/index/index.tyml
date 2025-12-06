@@ -51,7 +51,7 @@
         <view class="function-icon-wrapper tirp">
           <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
         </view>
-        <text class="function-label">Tirp</text>
+        <text class="function-label">Tips</text>
       </view>
     </view>
   </view>
