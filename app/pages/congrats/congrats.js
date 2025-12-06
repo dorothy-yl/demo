@@ -51,9 +51,13 @@ Page({
       const durationFormatted = exerciseData.durationFormatted || formatTime(exerciseData.duration);
       const caloriesBurned = Math.round(exerciseData.calories);
       const rpm = exerciseData.rpm ? exerciseData.rpm.toFixed(2) : '0.00';
-      const avgSpeed = exerciseData.speedKmh ? exerciseData.speedKmh.toFixed(1) : '0.0';
-      const watt = exerciseData.watt ? exerciseData.watt.toFixed(1) : '00'; // 可以调整这个计算
       const distance = exerciseData.distance ? exerciseData.distance.toFixed(2) : '0.00';
+      
+      // 计算平均速度 = 总路程 / 时间（时间从秒转换为小时）
+      const durationInHours = exerciseData.duration > 0 ? exerciseData.duration / 3600 : 0;
+      const avgSpeed = durationInHours > 0 ? (parseFloat(distance) / durationInHours).toFixed(1) : '0.0';
+      
+      const watt = exerciseData.watt ? exerciseData.watt.toFixed(1) : '00';
       const date = exerciseData.dateCongrats || exerciseData.dateFormatted || '2025/09/12';
       
       this.setData({
