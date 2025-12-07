@@ -26,35 +26,22 @@
     </view>
   </view>
 
-  <!-- Slider Container -->
-  <view class="slider-container">
-    <view class="slider-value-display">
-      <text class="current-value">{{currentValue}}</text>
-      <text class="current-unit">{{unitText}}</text>
-    </view>
-    
-    <view class="slider-track-container" id="slider-track" bindtouchstart="onSliderTap">
-      <view class="slider-track"></view>
-      <view class="slider-fill" style="width: {{sliderPercentage}}%"></view>
-      <view 
-        class="slider-thumb" 
-        style="left: {{sliderPercentage}}%"
-        catchtouchstart="onSliderStart"
-        catchtouchmove="onSliderMove"
-        catchtouchend="onSliderEnd"
-      >
-        <view class="slider-thumb-dot"></view>
-        <!-- Tooltip Bubble -->
-        <view class="slider-tooltip {{isDragging ? 'show' : ''}}">
-          <text class="tooltip-text">{{currentValue}}</text>
+  <!-- Picker Container -->
+  <view class="picker-container">
+    <picker-view 
+      class="target-picker" 
+      indicator-style="height: 120rpx;" 
+      mask-style="background-color: rgba(255, 255, 255, 0.1);"
+      value="{{pickerIndex}}" 
+      bindchange="onPickerChange"
+    >
+      <picker-view-column>
+        <view ty:for="{{range}}" ty:key="*this" class="picker-item {{pickerIndex[0] === index ? 'active' : ''}}">
+          {{item}}
         </view>
-      </view>
-    </view>
-    
-    <view class="slider-labels">
-      <text class="slider-label-min">{{minValue}}</text>
-      <text class="slider-label-max">{{maxValue}}</text>
-    </view>
+      </picker-view-column>
+    </picker-view>
+    <text class="unit-overlay">{{unitText}}</text>
   </view>
 
   <!-- Empty State Hint -->

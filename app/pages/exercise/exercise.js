@@ -6,7 +6,7 @@ Page({
   data: {
     isPaused: false,
     elapsedTime: 0, 
-    rpm: 0,
+    rpm: 60,
     heartRate: 0,
     distance: 0,
     formattedTime: '00:00:00',
@@ -14,7 +14,18 @@ Page({
     watt: 0,
     load: 1,
     gaugeProgressStyle: '',
-    knobAngle: 225 // Start angle
+    knobAngle: 225, // Start angle
+    // 目标模式相关
+    isGoalMode: false,
+    goalType: null, // 'time', 'distance', 'calories'
+    goalValue: 0,
+    pageTitle: 'Quick Start',
+    // 倒计时相关
+    countdownTime: 0, // 倒计时剩余时间（秒）
+    // 初始值记录（用于计算从0开始的距离和卡路里）
+    initialDistance: 0,
+    initialCalories: 0,
+    goalCompleted: false // 目标是否已完成
   },
   timer: null,
   tempLoad: null, // 临时存储滑动过程中的load值
@@ -25,14 +36,44 @@ Page({
   resistanceSum: 0, // 阻力总和
   resistanceCount: 0 ,// 阻力计数
   isStopping: false, // 防止重复处理停止逻辑
-
   
-  onLoad() {
-    console.log('Exercise Page Load');
+
+  onLoad(options) {
+    console.log('Exercise Page Load', options);
+    
+    // 检查是否是目标模式
+    const goalType = options.goalType;
+    const goalValue = parseFloat(options.goalValue);
+    
+    if (goalType && goalValue) {
+      this.setData({
+        isGoalMode: true,
+        goalType: goalType,
+        goalValue: goalValue,
+        pageTitle: 'Target pattern'
+      });
+      
+      // 如果是时间目标，初始化倒计时
+      if (goalType === 'time') {
+        const countdownSeconds = goalValue * 60; // 转换为秒
+        this.setData({
+          countdownTime: countdownSeconds,
+          formattedTime: this.formatTime(countdownSeconds)
+        });
+      }
+    }
+    
     // 初始化停止标志
     this.isRunning = false,   // 是否正在运动
     this.isPausing = false,   // 是否处于暂停
     this.isStopping = false   // 是否正在结束
+    
+    // 初始化目标模式的初始值记录（用于从0开始计算）
+    if (this.data.isGoalMode) {
+      this.initialDistance = null; // 使用null表示尚未记录初始值
+      this.initialCalories = null; // 使用null表示尚未记录初始值
+    }
+    
     this.startTimer();
     this.updateGauge(this.data.load);
     
@@ -41,6 +82,12 @@ Page({
     this.minResistance = this.data.load;
     this.resistanceSum = this.data.load;
     this.resistanceCount = 1;
+    
+    // 确保初始阻力值不为0，以便硬件开始上报RPM和Watt
+    if (this.data.load === 0) {
+      this.setData({ load: 1 });
+      this.updateGauge(1);
+    }
     
     // 初始化节流函数
     this.throttledUpdateVisual = this.throttle((value) => {
@@ -94,9 +141,17 @@ dpID.forEach(element => {
   }
   // 时间
   if(element.code == 104) {
-    this.setData({
-      elapsedTime: element.value
-    });
+    if (this.data.isGoalMode && this.data.goalType === 'time') {
+      // 目标模式下的时间目标：使用倒计时，不直接使用硬件上报的时间
+      // 但可以用于记录实际运动时间
+      // 这里不做处理，由定时器控制倒计时
+    } else {
+      // 非目标模式或非时间目标：正常使用硬件上报的时间
+      this.setData({
+        elapsedTime: element.value,
+        formattedTime: this.formatTime(element.value)
+      });
+    }
   }
   //速度
   if(element.code == 105) {
@@ -113,16 +168,48 @@ dpID.forEach(element => {
   }
   // 距离
   if (element.code == 103) {
-    this.setData({
-      distance: (element.value/1000).toFixed(2)
-    });
+    const rawDistance = element.value / 1000;
+    if (this.data.isGoalMode) {
+      // 目标模式：从0开始
+      if (this.initialDistance === null) {
+        this.initialDistance = rawDistance;
+      }
+      const currentDistance = Math.max(0, rawDistance - this.initialDistance);
+      this.setData({
+        distance: currentDistance.toFixed(2)
+      });
+      // 检查目标完成
+      if (this.data.goalType === 'distance' && currentDistance >= this.data.goalValue) {
+        this.checkGoalCompleted();
+      }
+    } else {
+      this.setData({
+        distance: rawDistance.toFixed(2)
+      });
+    }
   }
  // 卡路里
  if(element.code == 107) {
   console.log('卡路里:', element.value);
-  this.setData({
-    calories: (element.value/1000).toFixed(1)
-  });
+  const rawCalories = element.value / 1000;
+  if (this.data.isGoalMode) {
+    // 目标模式：从0开始
+    if (this.initialCalories === null) {
+      this.initialCalories = rawCalories;
+    }
+    const currentCalories = Math.max(0, rawCalories - this.initialCalories);
+    this.setData({
+      calories: currentCalories.toFixed(1)
+    });
+    // 检查目标完成
+    if (this.data.goalType === 'calories' && currentCalories >= this.data.goalValue) {
+      this.checkGoalCompleted();
+    }
+  } else {
+    this.setData({
+      calories: rawCalories.toFixed(1)
+    });
+  }
 }
   //功率
   if(element.code == 109) {
@@ -201,16 +288,34 @@ onDpDataChange(_onDpDataChange);
   startTimer() {
     if (this.timer) return;
     this.timer = setInterval(() => {
-      if (!this.data.isPaused) {
-        const newTime = this.data.elapsedTime + 1;
-        
-        // Simulate small fluctuations
-        this.setData({
-          elapsedTime: newTime,
-          formattedTime: this.formatTime(newTime),
-        });
-      
-    }
+      if (!this.data.isPaused && !this.data.goalCompleted) {
+        if (this.data.isGoalMode && this.data.goalType === 'time') {
+          // 倒计时模式
+          const newCountdown = this.data.countdownTime - 1;
+          if (newCountdown <= 0) {
+            this.setData({
+              countdownTime: 0,
+              formattedTime: this.formatTime(0),
+              elapsedTime: this.data.goalValue * 60 // 记录实际运动时间
+            });
+            // 目标完成
+            this.checkGoalCompleted();
+          } else {
+            this.setData({
+              countdownTime: newCountdown,
+              formattedTime: this.formatTime(newCountdown),
+              elapsedTime: this.data.goalValue * 60 - newCountdown // 记录已运动时间
+            });
+          }
+        } else {
+          // 正常计时模式
+          const newTime = this.data.elapsedTime + 1;
+          this.setData({
+            elapsedTime: newTime,
+            formattedTime: this.formatTime(newTime),
+          });
+        }
+      }
     }, 1000);
   },
 
@@ -221,28 +326,232 @@ onDpDataChange(_onDpDataChange);
     }
   },
 
+  // 处理开始运动
+  handleStartExercise(sendCommand) {
+    if (this.isRunning) {
+      console.log('运动已在进行中，跳过重复开始');
+      return;
+    }
+    
+    this.isRunning = true;
+    this.isPausing = false;
+    
+    // 确保阻力值已设置（至少为1），这样硬件才能开始上报RPM和Watt
+    const currentLoad = this.data.load || 1;
+    const { query: { deviceId } } = ty.getLaunchOptionsSync();
+    
+    // 先设置阻力，确保硬件开始上报数据
+    if (deviceId) {
+      ty.device.publishDps({
+        deviceId,
+        dps: { 102: currentLoad },
+        mode: 1,
+        pipelines: [0, 1, 2, 3, 4, 5, 6],
+        success: () => {
+          console.log('阻力已设置:', currentLoad);
+          this.updateGauge(currentLoad);
+          
+          // 阻力设置成功后再发送开始命令
+          if (sendCommand) {
+            ty.device.publishDps({
+              deviceId,
+              dps: { 106: 'START' },
+              mode: 1,
+              pipelines: [0, 1, 2, 3, 4, 5, 6],
+              success: () => {
+                console.log('开始运动命令已发送');
+                this.setData({ isPaused: false });
+              },
+              fail: (err) => {
+                console.error('开始运动命令发送失败:', err);
+              }
+            });
+          } else {
+            this.setData({ isPaused: false });
+          }
+        },
+        fail: (err) => {
+          console.error('设置阻力失败:', err);
+          // 即使设置阻力失败，也继续发送开始命令
+          if (sendCommand) {
+            ty.device.publishDps({
+              deviceId,
+              dps: { 106: 'START' },
+              mode: 1,
+              pipelines: [0, 1, 2, 3, 4, 5, 6],
+              success: () => {
+                console.log('开始运动命令已发送');
+                this.setData({ isPaused: false });
+              },
+              fail: (err) => {
+                console.error('开始运动命令发送失败:', err);
+              }
+            });
+          } else {
+            this.setData({ isPaused: false });
+          }
+        }
+      });
+    } else {
+      // 如果没有deviceId，直接更新状态
+      if (sendCommand) {
+        console.warn('deviceId不存在，无法发送命令');
+      }
+      this.setData({ isPaused: false });
+    }
+  },
+
+  // 处理暂停运动
+  handlePauseExercise(sendCommand) {
+    if (!this.isRunning) {
+      console.log('运动未开始，无法暂停');
+      return;
+    }
+    
+    this.isPausing = true;
+    
+    if (sendCommand) {
+      const { query: { deviceId } } = ty.getLaunchOptionsSync();
+      if (deviceId) {
+        ty.device.publishDps({
+          deviceId,
+          dps: { 106: 'PAUSE' },
+          mode: 1,
+          pipelines: [0, 1, 2, 3, 4, 5, 6],
+          success: () => {
+            console.log('暂停命令已发送');
+            this.setData({ isPaused: true });
+          },
+          fail: (err) => {
+            console.error('暂停命令发送失败:', err);
+          }
+        });
+      }
+    } else {
+      this.setData({ isPaused: true });
+    }
+  },
+
   togglePause() {
     const { query: { deviceId } } = ty.getLaunchOptionsSync();
     const targetState = !this.data.isPaused;
     // 替换为硬件实际的暂停/继续指令（如硬件用 0 表示暂停，1 表示继续）
     const controlCmd = targetState ? 'PAUSE' : 'START'; 
   
-    ty.device.publishDps({
-      deviceId,
-      dps: { 106: controlCmd }, // 替换为硬件控制暂停/继续的dp点
-      mode: 1,
-      pipelines: [0, 1, 2, 3, 4, 5, 6],
-      success: () => {
-        this.setData({ isPaused: targetState });
-        // 状态提示（可选）
-        const tip = targetState ? '已暂停' : '已继续';
-        ty.showToast({ title: tip, icon: 'none' });
-      },
-      fail: (err) => {
-        console.error('硬件指令发送失败:', err);
-        ty.showToast({ title: '操作失败', icon: 'none' });
-      }
-    });
+    if (!targetState) {
+      // 如果继续运动，先确保阻力已设置，然后再发送开始命令
+      const currentLoad = this.data.load || 1;
+      this.isRunning = true;
+      this.isPausing = false;
+      
+      // 先设置阻力，确保硬件开始上报RPM和Watt
+      ty.device.publishDps({
+        deviceId,
+        dps: { 102: currentLoad },
+        mode: 1,
+        pipelines: [0, 1, 2, 3, 4, 5, 6],
+        success: () => {
+          console.log('继续运动时设置阻力:', currentLoad);
+          this.updateGauge(currentLoad);
+          
+          // 阻力设置成功后再发送开始命令
+          ty.device.publishDps({
+            deviceId,
+            dps: { 106: 'START' },
+            mode: 1,
+            pipelines: [0, 1, 2, 3, 4, 5, 6],
+            success: () => {
+              this.setData({ isPaused: false });
+              ty.showToast({ title: '已继续', icon: 'none' });
+            },
+            fail: (err) => {
+              console.error('继续运动命令发送失败:', err);
+              ty.showToast({ title: '操作失败', icon: 'none' });
+            }
+          });
+        },
+        fail: (err) => {
+          console.error('设置阻力失败:', err);
+          // 即使设置阻力失败，也继续发送开始命令
+          ty.device.publishDps({
+            deviceId,
+            dps: { 106: 'START' },
+            mode: 1,
+            pipelines: [0, 1, 2, 3, 4, 5, 6],
+            success: () => {
+              this.setData({ isPaused: false });
+              ty.showToast({ title: '已继续', icon: 'none' });
+            },
+            fail: (err) => {
+              console.error('继续运动命令发送失败:', err);
+              ty.showToast({ title: '操作失败', icon: 'none' });
+            }
+          });
+        }
+      });
+    } else {
+      // 暂停运动
+      ty.device.publishDps({
+        deviceId,
+        dps: { 106: 'PAUSE' },
+        mode: 1,
+        pipelines: [0, 1, 2, 3, 4, 5, 6],
+        success: () => {
+          this.setData({ isPaused: true });
+          this.isPausing = true;
+          ty.showToast({ title: '已暂停', icon: 'none' });
+        },
+        fail: (err) => {
+          console.error('暂停命令发送失败:', err);
+          ty.showToast({ title: '操作失败', icon: 'none' });
+        }
+      });
+    }
+  },
+
+  // 检查目标是否完成
+  checkGoalCompleted() {
+    if (this.data.goalCompleted) return; // 防止重复触发
+    
+    let completed = false;
+    const { goalType, goalValue } = this.data;
+    
+    if (goalType === 'time') {
+      // 时间目标：倒计时到0
+      completed = this.data.countdownTime <= 0;
+    } else if (goalType === 'distance') {
+      // 距离目标：当前距离 >= 目标距离
+      completed = parseFloat(this.data.distance) >= goalValue;
+    } else if (goalType === 'calories') {
+      // 卡路里目标：当前卡路里 >= 目标卡路里
+      completed = parseFloat(this.data.calories) >= goalValue;
+    }
+    
+    if (completed) {
+      this.setData({ goalCompleted: true });
+      // 暂停计时器
+      this.setData({ isPaused: true });
+      
+      // 显示完成提示框
+      ty.showModal({
+        title: 'Goal Completed',
+        content: 'You have completed your goal. Do you want to end the workout?',
+        confirmText: 'Confirm',
+        cancelText: 'Cancel',
+        success: (res) => {
+          if (res.confirm) {
+            // 跳转到congrats页面
+            this.handleStopExercise(true);
+          } else {
+            // 取消：继续运动
+            this.setData({ 
+              goalCompleted: false,
+              isPaused: false 
+            });
+          }
+        }
+      });
+    }
   },
 
   stopExercise() {
@@ -529,6 +838,17 @@ ty.setStorage({
           pipelines: [0, 1, 2, 3, 4, 5, 6],
           success: () => {
             console.log('Load updated to:', finalLoad);
+            // 如果运动已经开始且未暂停，设置阻力后应该能收到RPM和Watt数据
+            // 如果运动还没开始且未暂停，先开始运动以确保数据上报
+            if (this.isRunning && !this.data.isPaused) {
+              // 运动已在进行中，阻力设置后硬件会开始上报RPM和Watt
+              console.log('运动进行中，阻力已更新，等待硬件上报RPM和Watt数据');
+            } else if (!this.isRunning && !this.data.isPaused) {
+              // 运动还没开始，先开始运动以确保数据上报
+              console.log('运动未开始，阻力设置后自动开始运动');
+              this.handleStartExercise(true);
+            }
+            // 如果运动已暂停，不自动开始，等待用户手动继续
           },
           fail: (err) => {
             console.error('Failed to update load:', err);

@@ -14,39 +14,19 @@ Page({
     currentValue: 0,
     unitText: 'km',
     
-    // Slider state
-    sliderPercentage: 0,
-    isDragging: false,
-    showEmptyHint: false,
-    
-    // Track dimensions (cached)
-    trackWidth: 0,
-    trackLeft: 0
+    // Picker state
+    range: [],
+    pickerIndex: [0],
+    showEmptyHint: false
   },
   
   onLoad() {
     console.log('Goal Page Load');
     this.updateCurrentValues();
-    // Delay to ensure layout is ready
-    setTimeout(() => {
-      this.getTrackDimensions();
-    }, 200);
   },
 
   onReady() {
-    this.getTrackDimensions();
-  },
-
-  getTrackDimensions() {
-    const query = ty.createSelectorQuery();
-    query.select('#slider-track').boundingClientRect((rect) => {
-      if (rect) {
-        this.setData({
-          trackWidth: rect.width,
-          trackLeft: rect.left
-        });
-      }
-    }).exec();
+    // Ready
   },
 
   updateCurrentValues() {
@@ -88,117 +68,58 @@ Page({
         break;
     }
     
-    // Calculate percentage
-    const percentage = ((selectedValue - minValue) / (maxValue - minValue)) * 100;
+    // Generate Range
+    const range = this.generateRange(minValue, maxValue, step);
     
-    // Check empty state (if value is at minimum)
-    const showEmptyHint = selectedValue === minValue;
-    
+    // Find index
+    let index = -1;
+    const strValue = step < 1 ? selectedValue.toFixed(1) : Math.round(selectedValue).toString();
+    index = range.indexOf(strValue);
+    if (index === -1) index = 0;
+
     this.setData({
       minValue,
       maxValue,
       step,
       unitText,
       currentValue: selectedValue,
-      sliderPercentage: Math.max(0, Math.min(100, percentage)),
-      showEmptyHint
+      range,
+      pickerIndex: [index],
+      showEmptyHint: false
     });
   },
 
-  switchTab(e) {
-    const tab = e.currentTarget.dataset.tab;
-    if (tab === this.data.activeTab) return;
-    
-    this.setData({
-      activeTab: tab
-    });
-    
-    this.updateCurrentValues();
-  },
-
-  // Slider Interactions
-  onSliderStart(e) {
-    this.setData({ isDragging: true });
-    this.handleTouchMove(e);
-  },
-
-  onSliderMove(e) {
-    if (!this.data.isDragging) return;
-    this.handleTouchMove(e);
-  },
-
-  onSliderEnd(e) {
-    this.setData({ isDragging: false });
-    this.handleTouchEnd(e);
-  },
-  
-  onSliderTap(e) {
-    this.handleTouchEnd(e);
-  },
-
-  handleTouchMove(e) {
-    const { trackWidth, trackLeft, minValue, maxValue } = this.data;
-    if (!trackWidth) {
-        this.getTrackDimensions(); // Try to get dimensions again if missing
-        return;
-    }
-    
-    const touchX = e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX;
-    
-    // Calculate percentage based on touch position (visual feedback only)
-    let percentage = ((touchX - trackLeft) / trackWidth) * 100;
-    percentage = Math.max(0, Math.min(100, percentage));
-    
-    // Only update visual position during dragging
-    this.setData({
-      sliderPercentage: percentage
-    });
-  },
-
-  handleTouchEnd(e) {
-    const { trackWidth, trackLeft, minValue, maxValue, step, activeTab, selectedValues } = this.data;
-    if (!trackWidth) {
-        this.getTrackDimensions(); // Try to get dimensions again if missing
-        return;
-    }
-    
-    const touchX = e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX;
-    
-    // Calculate percentage based on touch position
-    let percentage = ((touchX - trackLeft) / trackWidth) * 100;
-    percentage = Math.max(0, Math.min(100, percentage));
-    
-    // Calculate raw value
-    let rawValue = minValue + (percentage / 100) * (maxValue - minValue);
-    
-    // Snap to step
-    let steppedValue = Math.round(rawValue / step) * step;
-    
-    // Clamp value
-    steppedValue = Math.max(minValue, Math.min(maxValue, steppedValue));
-    
-    // Handle floating point precision issues
-    if (step < 1) {
-        steppedValue = parseFloat(steppedValue.toFixed(1));
-    } else {
-        steppedValue = Math.round(steppedValue);
-    }
-
-    // Recalculate percentage for visual snap
-    const finalPercentage = ((steppedValue - minValue) / (maxValue - minValue)) * 100;
-    
-    const showEmptyHint = steppedValue === minValue;
-
-    // Update data only when finger is released
-    this.setData({
-      sliderPercentage: finalPercentage,
-      currentValue: steppedValue,
-      showEmptyHint,
-      selectedValues: {
-        ...selectedValues,
-        [activeTab]: steppedValue
+  generateRange(min, max, step) {
+    let range = [];
+    const count = Math.floor((max - min) / step) + 1;
+    for (let i = 0; i < count; i++) {
+      let val = min + i * step;
+      if (step < 1) {
+        range.push(val.toFixed(1));
+      } else {
+        range.push(Math.round(val).toString());
       }
-    });
+    }
+    return range;
+  },
+
+  onPickerChange(e) {
+    const val = e.detail.value[0];
+    const { range, activeTab, selectedValues, step } = this.data;
+    
+    if (val >= 0 && val < range.length) {
+      const strValue = range[val];
+      const numValue = parseFloat(strValue);
+      
+      this.setData({
+        pickerIndex: [val],
+        currentValue: numValue,
+        selectedValues: {
+          ...selectedValues,
+          [activeTab]: numValue
+        }
+      });
+    }
   },
 
   goBack() {

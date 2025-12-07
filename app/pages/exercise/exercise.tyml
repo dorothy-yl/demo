@@ -4,7 +4,7 @@
     <view class="back-btn" bindtap="goBack">
       <image class="back-icon" src="../../assets/icons/Vector.svg" />
     </view>
-    <text class="header-title">Quick Start</text>
+    <text class="header-title">{{pageTitle}}</text>
     <view class="header-placeholder"></view>
   </view>
 
@@ -26,7 +26,7 @@
 
   <!-- Exercise Time Card -->
   <view class="card timer-card">
-    <text class="card-label">Exercise time</text>
+    <text class="card-label">{{isGoalMode ? 'Time' : 'Exercise time'}}</text>
     <text class="timer-display">{{formattedTime}}</text>
   </view>
 
