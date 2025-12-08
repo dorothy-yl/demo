@@ -55,6 +55,7 @@ Page({
         const durationSeconds = typeof record.duration === 'number' ? record.duration : parseInt(record.duration) || 0;
         record.duration = this.formatTime(durationSeconds);
       }
+      
     }
     
     this.setData({

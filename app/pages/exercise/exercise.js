@@ -36,6 +36,7 @@ Page({
   resistanceSum: 0, // 阻力总和
   resistanceCount: 0 ,// 阻力计数
   isStopping: false, // 防止重复处理停止逻辑
+  dpMaxResistance: null, // 设备上报的最大阻力
   
 
   onLoad(options) {
@@ -217,6 +218,13 @@ dpID.forEach(element => {
     this.setData({
       watt: element.value
     });
+  }
+  // 最大阻力
+  if(element.code == 111) {
+    console.log('设备上报最大阻力:', element.value);
+    this.dpMaxResistance = element.value;
+    // 同步覆盖本地最大阻力，确保记录使用硬件值
+    this.maxResistance = element.value;
   }
   //阻力
   if(element.code == 102) {
@@ -632,6 +640,7 @@ onDpDataChange(_onDpDataChange);
     const dateFormatted = `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
     
     // 构建运动记录对象
+    const finalMaxResistance = this.dpMaxResistance ?? this.maxResistance ?? 0;
     const exerciseRecord = {
       id: timestamp,
       duration: elapsedSeconds,
@@ -644,7 +653,7 @@ onDpDataChange(_onDpDataChange);
       distance: parseFloat(this.data.distance) || 0,
       watt: this.data.watt || 0,
       heartRate: this.data.heartRate || 0,
-      maxResistance: this.maxResistance || 0,
+      maxResistance: finalMaxResistance,
       minResistance: this.minResistance || 0,
       avgResistance: parseFloat(avgResistance) || 0
     };
