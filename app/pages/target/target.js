@@ -5,7 +5,6 @@ Page({
       distance: 0.5,
       time: 1,
       calories: 100,
-      resistance: 1
     },
     // Slider configuration
     minValue: 0,
@@ -27,6 +26,16 @@ Page({
 
   onReady() {
     // Ready
+  },
+
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab;
+
+    if (tab === this.data.activeTab) return;
+
+    this.setData({ activeTab: tab }, () => {
+      this.updateCurrentValues();
+    });
   },
 
   updateCurrentValues() {

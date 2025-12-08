@@ -29,9 +29,9 @@
   <!-- Picker Container -->
   <view class="picker-container">
     <picker-view 
-      class="target-picker" 
-      indicator-style="height: 120rpx;" 
-      mask-style="background-color: rgba(255, 255, 255, 0.1);"
+      class="target-picker"
+      mask-style="opacity:0" 
+      indicator-style="height: 96rpx; opacity: 0.5;"
       value="{{pickerIndex}}" 
       bindchange="onPickerChange"
     >

@@ -1,14 +1,12 @@
 .container {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: linear-gradient(180deg,#2C3A4A 0%,#2C3A4A 100%);
   padding: 0;
   padding-bottom: 80px;
   box-sizing: border-box;
-  position: fixed;
-  top:0;
-  left:0;
-  right:0;
+  overflow-x: hidden;
 }
 
 
@@ -75,7 +73,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px 40px;
+  padding: 0 20px 20px;
 }
 
 .summary-left {
@@ -146,7 +144,7 @@
 
 /* 常用功能区域 */
 .common-functions {
-  padding: 0 20px 40px;
+  padding: 0 20px 20px;
 }
 
 
@@ -159,10 +157,12 @@
 
 .function-grid {
   display: grid;
-  grid-template-columns: 179px 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top:10px;
-  width: 319px;
-  height: 350px;
+  width: 100%;
+  height: auto;
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 .function-item1 {
@@ -173,7 +173,7 @@
   background: #151925;
   border-radius: 30px 0 0 0;
   position: relative;
-  width: 160px;
+  width: 100%;
   height: 163px;
   box-sizing: border-box;
   justify-content:  space-around;
@@ -188,7 +188,7 @@
   background: #151925;
   border-radius: 30px 0 30 30;
   position: relative;
-  width: 200px;
+  width: 100%;
   height: 163px;
   box-sizing: border-box;
   justify-content:space-around;
@@ -202,7 +202,7 @@
   background: #151925;
   border-radius: 30px 30px 30px 0;
   position: relative;
-  width: 200px;
+  width: 100%;
   height: 152px;
   box-sizing: border-box;
   justify-content: space-around;
@@ -217,7 +217,7 @@
   background: #151925;
   border-radius: 0 0 30px 0;
   position: relative;
-  width: 160px;
+  width: 100%;
   height: 152px;
   box-sizing: border-box;
   justify-content:space-around;
