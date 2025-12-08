@@ -2,7 +2,7 @@
   <!-- Custom Header -->
   <view class="custom-header">
     <view class="header-left" bindtap="onBack">
-      <image class="back-icon" src="../../assets/icons/Vector.svg" />
+      <image class="back-icon" src="../../../assets/icons/Vector.svg" />
     </view>
     <text class="header-title">Tirp</text>
     <view class="header-right"></view>
