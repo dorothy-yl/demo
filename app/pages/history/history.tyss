@@ -21,23 +21,6 @@
   position: relative;
 }
 
-.back-btn {
-  width: 30px; /* Increased touch area */
-  height: 30px;
-  position: absolute;
-  margin-top: 53px;
-  left: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  z-index: 10; /* Ensure above title if overlap */
-}
-
-.back-icon {
-  width: 9px;
-  height: 18px;
-}
-
 .page-title {
   font-size: 18px;
   color: #FFFFFF;
@@ -185,78 +168,6 @@
   width: 1px;
   height: 24px;
   background: rgba(255, 255, 255, 0.2);
-}
-
-/* Bottom Nav - Shared Styles */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background:#2C3A4A;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 0;
-  border-top: 1px solid#2C3A4A;
-  z-index: 100;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-}
-
-.nav-icon {
-  width: 28px;
-  height: 28px;
-}
-
-/* Active State Styling */
-.nav-item.active .nav-icon {
-  /* Make it green */
-  /* Use filter to change color to #B8F533 (Lime Green from screenshot) */
-  /* This is an approximation using hue-rotate or similar if icon is not white */
-  /* If icon is white, we can use filter: invert... */
-  /* Assuming SVG is white, let's just tint it or rely on a different way */
-  
-  /* Actually, let's try a simple background circle for active state if that matches screenshot 
-     Screenshot shows just the icon is green (lime).
-     If the icon is white SVG:
-  */
-  filter: sepia(100%) saturate(300%) hue-rotate(50deg) brightness(1.2); 
-  /* This tries to make it greenish. Better to use a green version of the icon if available, 
-     or ensure the SVG currentColor works and set color: #B8F533 */
-}
-
-/* If SVGs use 'fill="currentColor"', we can do this: */
-/* .nav-item.active { color: #B8F533; } */
-/* .nav-icon { fill: currentColor; } */
-/* But usually these are img tags. */
-
-/* Let's try a solid background circle green for active item IF that was the design?
-   The user said "clock turns green".
-   The screenshot bottom nav is cut off but usually it's just the icon color.
-*/
-
-.nav-item.active {
-  /* Target the circle wrapper if exists? No wrapper in HTML */
-}
-
-/* Override specific icon color if possible with CSS filter */
-/* Green lime color approx #CCFF00 */
-.nav-item.active .nav-icon {
-   filter: invert(77%) sepia(61%) saturate(483%) hue-rotate(33deg) brightness(102%) contrast(101%);
-}
-
-.nav-item:not(.active) .nav-icon {
-  opacity: 0.5;
-  filter: grayscale(100%);
 }
 
 /* Calendar Modal */
