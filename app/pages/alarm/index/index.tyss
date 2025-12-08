@@ -64,7 +64,7 @@
 }
 
 .content-wrapper {
-  padding-top: 88px; /* Push content down */
+  padding-top: 134px; /* Push content down */
   position: relative;
   min-height: calc(100vh - 88px);
 }
@@ -72,8 +72,8 @@
 /* Empty State Text - Left Bottom */
 .empty-state-text {
   position: absolute;
-  left: 20px;
-  bottom: 80px;
+  left: 38px;
+  bottom: 60px;
   z-index: 10;
 }
 
@@ -99,7 +99,7 @@
   align-items: center;
   justify-content: flex-start;
   padding: 20px 16px;
-  padding-top: 40px;
+  padding-top: 30px;
   min-height: calc(100vh - 200px);
   width: 100%;
 }
@@ -110,7 +110,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 16px;
-  margin-top: 10px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -226,8 +225,8 @@
 /* Add Button - Right Bottom */
 .add-button-container {
   position: fixed;
-  right: 20px;
-  bottom: 160px;
+  right: 40px;
+  bottom: 123px;
   z-index: 100;
 }
 

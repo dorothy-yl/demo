@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   background-color: #1A1D26; /* Darker theme base */
-  min-height: 100vh;
+  height: 100vh;
   color: #FFFFFF;
   padding: 0;
   box-sizing: border-box;
@@ -147,7 +147,7 @@
 .picker-container {
   width: 250px;
   height: 440px;
-  margin: 60rpx auto;
+  margin: 20rpx auto;
   position: relative;
   border-radius: 16rpx;
   box-sizing: border-box;
@@ -247,7 +247,6 @@
   box-shadow: 0 8rpx 40rpx rgba(74, 144, 226, 0.3);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
 }
 
 .start-btn::after {
