@@ -142,11 +142,11 @@
 }
 
 /* 常用功能区域 */
+/* 常用功能区域 */
 .common-functions {
   padding: 0 20px 20px;
+  box-sizing: border-box; /* 新增：防止padding撑大容器 */
 }
-
-
 
 .section-title {
   font-size: 19px;
@@ -156,76 +156,47 @@
 
 .function-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-top:18px;
+  grid-template-columns: 1fr 1fr; /* 2列均分 */
+  margin-top: 18px;
   height: auto;
   gap: 12px;
   box-sizing: border-box;
-  justify-items: center;
+  /* 移除justify-items: center，避免和item的对齐冲突 */
 }
 
-.function-item1 {
+/* 统一所有item的基础样式，减少重复 */
+.function-item1, .function-item2, .function-item3, .function-item4 {
   display: flex;
   flex-direction: column;
-  align-content:center;
-  align-items: flex-start; 
+  align-items: flex-start;
   background: #151925;
-  border-radius: 30px 0 0 0;
   position: relative;
-  width: 145px;
-  height: 163px;
-  box-sizing: border-box;
-  justify-content:  space-around;
-  padding: 16px 0 0 16px;
-  justify-self: start;
-}
-
-.function-item2{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-  background: #151925;
-  border-radius: 30px 0 30 30;
-  position: relative;
-  width: 174px;
-  height: 163px;
-  left:-35px;
-  box-sizing: border-box;
-  justify-content:space-around;
-  padding: 16px 0 0 16px;
-  justify-self: center;
-}
-.function-item3{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-  background: #151925;
-  border-radius: 30px 30px 30px 0;
-  position: relative;
-  width: 179px;
-  height: 152px;
   box-sizing: border-box;
   justify-content: space-around;
   padding: 16px 0 0 16px;
-  justify-self: end;
+  /* 统一高度，避免不同item高度不一致 */
+  height: 160px;
+  /* 移除硬编码的left/width/justify-self，改用Grid自适应 */
+  width: 100%; /* 占满Grid列宽 */
+  max-width: 180px; /* 限制最大宽度，避免大屏拉伸 */
 }
 
-.function-item4{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-  background: #151925;
+/* 单独保留每个item的圆角设计（修复你原有的语法错误：30 → 30px） */
+.function-item1 {
+  border-radius: 30px 0 0 0;
+}
+
+.function-item2 {
+  border-radius: 30px 0 30px 30px; /* 原代码少了px，已修复 */
+}
+
+.function-item3 {
+  border-radius: 30px 30px 30px 0;
+}
+
+.function-item4 {
   border-radius: 0 0 30px 0;
-  position: relative;
-  width: 140px;
-  height: 152px;
-  left:-38px;
-  box-sizing: border-box;
-  justify-content:space-around;
-  padding: 16px 0 0 16px;
-  justify-self: end;
 }
-
 
 /* Specific background shapes for icon wrappers */
 .function-icon-wrapper {
@@ -237,6 +208,14 @@
   justify-content: center;
   margin-bottom: 0;
   background: #1E2430 !important; /* Slightly lighter than card bg */
+}
+
+/* 兼容不同icon的自定义样式（你原代码里的target-pattern/ftms/tirp） */
+.function-icon-wrapper.target-pattern,
+.function-icon-wrapper.ftms,
+.function-icon-wrapper.tirp {
+  /* 如需单独样式可在这里加，保持和原逻辑一致 */
+  background: #1E2430 !important;
 }
 
 .function-icon {
@@ -252,7 +231,6 @@
   margin-top: 0;
   line-height: 1.2;
 }
-
 /* 连接状态 */
 .connection-status {
   background: #000000;

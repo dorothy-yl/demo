@@ -25,36 +25,39 @@
   </view>
 
   <!-- 常用功能区域 -->
-  <view class="common-functions">
-    <view class="section-title">Common functions</view>
-    <view class="function-grid">
-      <view class="function-item1" bindtap="goToExercise">
-        <view class="function-icon-wrapper">
-          <image class="function-icon" src="../../assets/icons/Quick Start.svg" mode="aspectFit"></image>
-        </view>
-        <text class="function-label">Quick Start</text>
+ <!-- 常用功能区域 -->
+<view class="common-functions">
+  <view class="section-title">Common functions</view>
+  <view class="function-grid">
+    <view class="function-item1" bindtap="goToExercise">
+      <view class="function-icon-wrapper">
+        <image class="function-icon" src="../../assets/icons/Quick Start.svg" mode="aspectFit"></image>
       </view>
-      
-      <view class="function-item2" bindtap="goToGoal">
-        <view class="function-icon-wrapper target-pattern">
-          <image class="function-icon" src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
-        </view>
-        <text class="function-label">Target pattern</text>
+      <text class="function-label">Quick Start</text>
+    </view>
+    
+    <view class="function-item2" bindtap="goToGoal">
+      <view class="function-icon-wrapper target-pattern">
+        <image class="function-icon" src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
       </view>
-      <view class="function-item3" bindtap="goToFTMS">
-        <view class="function-icon-wrapper ftms">
-          <image class="function-icon" src="../../assets/icons/ftms.svg" mode="aspectFit"></image>
-        </view>
-        <text class="function-label">FTMS</text>
+      <text class="function-label">Target pattern</text>
+    </view>
+    
+    <view class="function-item3" bindtap="goToFTMS">
+      <view class="function-icon-wrapper ftms">
+        <image class="function-icon" src="../../assets/icons/ftms.svg" mode="aspectFit"></image>
       </view>
-      <view class="function-item4" bindtap="goToTirp">
-        <view class="function-icon-wrapper tirp">
-          <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
-        </view>
-        <text class="function-label">Tips</text>
+      <text class="function-label">FTMS</text>
+    </view>
+    
+    <view class="function-item4" bindtap="goToTirp">
+      <view class="function-icon-wrapper tirp">
+        <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
       </view>
+      <text class="function-label">Tips</text>
     </view>
   </view>
+</view>
 
   <!-- 连接状态 -->
   <!-- <view class="connection-status">
