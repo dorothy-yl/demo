@@ -128,11 +128,11 @@ Page({
     ty.navigateBack();
   },
 
-  onAdd() {
-    ty.navigateTo({
-      url: '/pages/target/target'
-    });
-  },
+  // onAdd() {
+  //   ty.navigateTo({
+  //     url: '/pages/target/target'
+  //   });
+  // },
 
   onToggleAlarm(e) {
     const id = e.currentTarget.dataset.id;
