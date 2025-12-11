@@ -4,19 +4,23 @@
 
 ## 项目结构
 
-本项目包含两个版本：
-
-### 1. TuYa Mini App 版本（主项目）
+### TuYa Mini App 版本
 位于 `app/` 目录，使用 TuYa 小程序框架开发。
 
 **页面列表：**
 - `pages/index/` - 首页（运动数据展示、功能模块）
-- `pages/goal/` - 目标设置页（时间选择器、确认按钮）
+- `pages/target/` - 目标设置页（距离/时间/卡路里/阻力选择器）
 - `pages/exercise/` - 运动实时数据页（仪表盘、控制按钮）
 - `pages/history/` - 历史记录页（列表样式、统计图表）
+- `pages/history-detail/` - 历史记录详情页
+- `pages/congrats/` - 运动完成恭喜页
+- `pages/settings/` - 设置页
+- `pages/alarm/index/` - 闹钟设置页（日历视图、闹钟管理）
+- `pages/ftms/` - FTMS蓝牙设备连接页
 
-### 2. Vue 版本
-位于 `vue-version/` 目录，使用 Vue 3 + Vite 开发，可直接在浏览器运行。
+**组件列表：**
+- `components/bottom-nav/` - 底部导航栏组件
+
 
 ## 设计规范
 
@@ -53,11 +57,11 @@
 - ✅ 功能模块网格（目标设置、开始运动、历史记录、设置）
 - ✅ 本周统计数据
 
-### 目标设置页 (`pages/goal/`)
-- ✅ 目标类型选择（距离、时间、卡路里）
-- ✅ 时间选择器（今天、明天、本周、本月）
-- ✅ 目标值输入
-- ✅ 确认按钮并保存到本地存储
+### 目标设置页 (`pages/target/`)
+- ✅ 目标类型选择（距离、时间、卡路里、阻力）
+- ✅ 滚动选择器（根据类型动态调整范围和步长）
+- ✅ 实时显示当前选择值
+- ✅ 开始运动按钮（传递目标参数到运动页）
 
 ### 运动实时数据页 (`pages/exercise/`)
 - ✅ 实时计时显示
@@ -84,8 +88,21 @@
 
 ### 设置页 (`pages/settings/`)
 - ✅ 运动提醒功能（每日提醒时间设置）
-- ✅ 闹钟功能（支持多个闹钟，自定义重复周期）
-- ✅ FTMS蓝牙设备连接（扫描和连接健身器材）
+- ✅ 跳转到闹钟设置页
+- ✅ 跳转到FTMS蓝牙设备连接页
+
+### 闹钟设置页 (`pages/alarm/index/`)
+- ✅ 日历视图（显示每日闹钟设置状态）
+- ✅ 闹钟列表（支持多个闹钟）
+- ✅ 闹钟开关（启用/禁用）
+- ✅ 闹钟删除功能
+- ✅ 自定义重复周期（每天、每周特定日期）
+
+### FTMS蓝牙设备连接页 (`pages/ftms/`)
+- ✅ FTMS功能开关
+- ✅ 阻力值设置（1-20级）
+- ✅ 设备DP点控制（发送指令到TuYa设备）
+- ✅ 设备连接状态管理
 
 ## 运行说明
 
@@ -93,30 +110,22 @@
 
 1. 使用 TuYa 开发者工具打开项目
 2. 配置 `project.tuya.json`
-3. 编译运行
-
-### Vue 版本
-
+3. 安装依赖：
 ```bash
-cd vue-version
 npm install
-npm run dev
 ```
-
-访问 `http://localhost:3000`
+4. 编译运行
 
 ## 技术栈
 
 ### TuYa Mini App
 - TuYa Mini App Framework
-- TYML (模板)
+- TYML (模板语法)
 - TYSS (样式)
 - JavaScript
-
-### Vue 版本
-- Vue 3
-- Vue Router 4
-- Vite
+- @tuya-miniapp/miniapp-components-plus (UI组件库)
+- @tuya-miniapp/miniapp-gesture (手势库)
+- @tuya-miniapp/redux-connect-page (状态管理)
 
 ## 文件说明
 
@@ -124,42 +133,42 @@ npm run dev
 ```
 app/
 ├── app.js              # 应用入口
-├── app.json            # 应用配置
+├── app.json            # 应用配置（页面路由）
 ├── app.tyss            # 全局样式
-└── pages/
+├── assets/             # 静态资源（图片、图标）
+│   ├── icons/          # 图标资源
+│   └── *.png, *.svg    # 图片资源
+├── components/         # 公共组件
+│   └── bottom-nav/     # 底部导航栏组件
+├── i18n/               # 国际化
+│   └── strings.json    # 多语言字符串
+└── pages/              # 页面目录
     ├── index/          # 首页
-    │   ├── index.js
-    │   ├── index.json
-    │   ├── index.tyml
-    │   └── index.tyss
-    ├── goal/           # 目标设置
-    ├── exercise/       # 运动实时数据
-    └── history/        # 历史记录
+    ├── target/         # 目标设置页
+    ├── exercise/       # 运动实时数据页
+    ├── history/        # 历史记录页
+    ├── history-detail/ # 历史记录详情页
+    ├── congrats/       # 运动完成恭喜页
+    ├── settings/       # 设置页
+    ├── alarm/          # 闹钟设置页
+    │   └── index/
+    └── ftms/           # FTMS蓝牙连接页
 ```
 
-### Vue 版本文件结构
-```
-vue-version/
-├── src/
-│   ├── views/          # 页面组件
-│   │   ├── Home.vue
-│   │   ├── Goal.vue
-│   │   ├── Exercise.vue
-│   │   └── History.vue
-│   ├── router/         # 路由配置
-│   ├── App.vue
-│   └── main.js
-├── index.html
-├── vite.config.js
-└── package.json
-```
+每个页面包含：
+- `*.js` - 页面逻辑
+- `*.json` - 页面配置
+- `*.tyml` - 页面模板
+- `*.tyss` - 页面样式
 
 ## 注意事项
 
-1. **图片资源**: 图片需要放在 `src/image/` 目录下
+1. **图片资源**: 图片需要放在 `app/assets/` 目录下
 2. **颜色值**: 严格按照设计规范中的颜色值使用
-3. **响应式**: 所有页面都采用响应式设计
-4. **交互**: 所有按钮和可交互元素都有适当的反馈效果
+3. **设备连接**: 需要配置 `project.tuya.json` 中的设备ID才能使用DP点功能
+4. **本地存储**: 使用 `ty.getStorageSync` 和 `ty.setStorageSync` 进行数据持久化
+5. **导航**: 使用 `ty.navigateTo`、`ty.redirectTo`、`ty.navigateBack` 进行页面跳转
+6. **交互**: 所有按钮和可交互元素都有适当的反馈效果
 
 ## 开发说明
 
@@ -172,9 +181,14 @@ vue-version/
 ## 更新日志
 
 ### v1.0.0 (2024-11-26)
-- ✅ 完成首页开发
-- ✅ 完成目标设置页开发
-- ✅ 完成运动实时数据页开发
-- ✅ 完成历史记录页开发
+- ✅ 完成首页开发（运动数据展示、设备DP点连接）
+- ✅ 完成目标设置页开发（支持距离/时间/卡路里/阻力四种目标类型）
+- ✅ 完成运动实时数据页开发（实时仪表盘、阻力调节）
+- ✅ 完成历史记录页开发（列表展示、统计图表）
+- ✅ 完成历史记录详情页开发
+- ✅ 完成运动完成恭喜页开发（数据可视化）
+- ✅ 完成设置页开发
+- ✅ 完成闹钟设置页开发（日历视图、闹钟管理）
+- ✅ 完成FTMS蓝牙设备连接页开发（设备控制）
+- ✅ 完成底部导航栏组件开发
 - ✅ 应用深色主题样式
-- ✅ 创建 Vue 版本
