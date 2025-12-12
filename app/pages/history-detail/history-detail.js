@@ -55,7 +55,10 @@ Page({
         const durationSeconds = typeof record.duration === 'number' ? record.duration : parseInt(record.duration) || 0;
         record.duration = this.formatTime(durationSeconds);
       }
-      
+      // 设置 Load 字段（从 load 或 avgResistance 获取）
+      if (!record.Load) {
+        record.Load = record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0');
+      }
     }
     
     this.setData({

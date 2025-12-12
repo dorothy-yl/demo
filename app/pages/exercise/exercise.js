@@ -653,6 +653,7 @@ onDpDataChange(_onDpDataChange);
       distance: parseFloat(this.data.distance) || 0,
       watt: this.data.watt || 0,
       heartRate: this.data.heartRate || 0,
+      load: this.data.load || 0,
       maxResistance: finalMaxResistance,
       minResistance: this.minResistance || 0,
       avgResistance: parseFloat(avgResistance) || 0

@@ -311,6 +311,7 @@ Page({
         distance: fullRecord.distance ? fullRecord.distance.toFixed(2) : '0.00',
         rpm: fullRecord.rpm ? fullRecord.rpm.toString() : '0',
         watt: fullRecord.watt ? fullRecord.watt.toString() : '0',
+        Load: fullRecord.load ? fullRecord.load.toString() : (fullRecord.avgResistance ? Math.round(fullRecord.avgResistance).toString() : '0'),
         maxResistance: fullRecord.maxResistance ? fullRecord.maxResistance.toString() : '0',
         minResistance: fullRecord.minResistance ? fullRecord.minResistance.toString() : '0',
         heartRate: fullRecord.heartRate ? fullRecord.heartRate.toString() : '0'
