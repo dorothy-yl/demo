@@ -65,7 +65,7 @@ Page({
         minValue = 100;
         maxValue = 1500;
         step = 100;
-        unitText = 'cal';
+        unitText = 'kcal';
         if (!selectedValue) selectedValue = 100;
         break;
       case 'resistance':

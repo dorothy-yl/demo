@@ -187,14 +187,16 @@
 }
 
 .calendar-day.today {
+  background-color:#607d8b;
 }
+
 
 .calendar-day.has-settings {
   background-color: rgba(82, 196, 26, 0.15);
 }
 
 .calendar-day.has-settings.today {
-  background-color: rgba(82, 196, 26, 0.3);
+  background-color: #8E8E93;
 }
 
 .calendar-day.selected {
@@ -204,13 +206,17 @@
 
 .calendar-day.selected.today {
   border: 2px solid #52C41A;
-  background-color: rgba(82, 196, 26, 0.35);
+  background-color: #8E8E93;
 }
 
 .day-number {
   font-size: 16px;
   color: #FFFFFF;
   font-weight: 500;
+}
+
+.calendar-day.today .day-number {
+  color: #2C3A4A;
 }
 
 .settings-indicator {
