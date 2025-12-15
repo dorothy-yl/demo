@@ -2,6 +2,9 @@ function formatDpState(dpState) {
     return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
 }
 
+// 导入云端同步工具
+const { saveHistoryToCloud } = require('../../utils/cloudSync.js');
+
 Page({
   data: {
     isPaused: false,
@@ -690,6 +693,22 @@ ty.setStorage({
   data: updatedHistory,
   success: (res) => {
     console.log(res.data);
+    
+    // 本地存储成功后，同步到云端
+    const { query: { deviceId } } = ty.getLaunchOptionsSync();
+    if (deviceId) {
+      // 异步上报到云端，不阻塞页面跳转
+      saveHistoryToCloud(deviceId, exerciseRecord)
+        .then(() => {
+          console.log('历史记录已同步到云端');
+        })
+        .catch((error) => {
+          console.error('历史记录云端同步失败（不影响本地存储）:', error);
+          // 云端同步失败不影响本地存储，静默处理
+        });
+    } else {
+      console.warn('未找到设备ID，跳过云端同步');
+    }
   },
   fail: (err) => {
     console.log(err);

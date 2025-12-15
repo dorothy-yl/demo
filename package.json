@@ -5,10 +5,14 @@
   "main": "app.js",
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "postinstall": "node scripts/create-tuya-panel-kit-stub.js"
+  },
   "devDependencies": {},
   "dependencies": {
     "@tuya-miniapp/miniapp-components-plus": "^2.10.4",
     "@tuya-miniapp/miniapp-gesture": "^2.0.3",
-    "@tuya-miniapp/redux-connect-page": "^0.0.3"
+    "@tuya-miniapp/redux-connect-page": "^0.0.3",
+    "@tuya/tuya-panel-api": "^1.0.0"
   }
 }
