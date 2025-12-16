@@ -64,6 +64,44 @@ Page({
     return `${month}月${day}日`;
   },
 
+  // 格式化日期时间为 "MM月DD日 HH:mm:ss" 格式
+  formatDateTime(date) {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+  },
+
+  // 将 ISO 格式字符串转换为友好的显示格式
+  formatDateStringForDisplay(dateString) {
+    if (!dateString || typeof dateString !== 'string') {
+      return dateString;
+    }
+    
+    // 检测是否为 ISO 格式（包含 'T' 和 'Z' 或时区信息）
+    const isISOFormat = dateString.includes('T') && (dateString.includes('Z') || dateString.match(/[+-]\d{2}:\d{2}$/));
+    
+    if (isISOFormat) {
+      try {
+        // 解析 ISO 格式字符串并转换为本地时间
+        const date = new Date(dateString);
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+          return dateString; // 如果解析失败，返回原字符串
+        }
+        return this.formatDateTime(date);
+      } catch (error) {
+        console.warn('formatDateStringForDisplay: 解析日期失败', error, dateString);
+        return dateString; // 如果解析失败，返回原字符串
+      }
+    }
+    
+    // 如果不是 ISO 格式，直接返回原字符串
+    return dateString;
+  },
+
   // 格式化时长为 "HH:MM:SS" 格式
   formatTime(seconds) {
     const hours = Math.floor(seconds / 3600);
@@ -274,10 +312,14 @@ Page({
         // 将duration从秒转换为 "HH:MM:SS" 格式
         const durationFormatted = this.formatTime(record.duration || 0);
         
+        // 格式化日期字段（处理 ISO 格式）
+        const rawDate = record.dateFormatted || record.date;
+        const formattedDate = this.formatDateStringForDisplay(rawDate);
+        
         return {
           id: record.id,
           duration: durationFormatted,
-          date: record.dateFormatted || record.date,
+          date: formattedDate,
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories || 0).toString(),
           distance: record.distance ? record.distance.toFixed(2) : '0.0',
@@ -323,10 +365,14 @@ Page({
         // 将duration从秒转换为 "HH:MM:SS" 格式
         const durationFormatted = this.formatTime(record.duration || 0);
         
+        // 格式化日期字段（处理 ISO 格式）
+        const rawDate = record.dateFormatted || record.date;
+        const formattedDate = this.formatDateStringForDisplay(rawDate);
+        
         return {
           id: record.id,
           duration: durationFormatted,
-          date: record.dateFormatted || record.date,
+          date: formattedDate,
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories).toString(),
           distance: record.distance ? record.distance.toFixed(2) : '0.0',

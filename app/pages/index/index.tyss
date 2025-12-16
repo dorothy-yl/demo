@@ -225,7 +225,7 @@
 
 .function-label {
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 400;
   color: #FFFFFF;
   text-align: left;
   margin-top: 0;

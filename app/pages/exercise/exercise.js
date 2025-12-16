@@ -723,6 +723,7 @@ onDpDataChange(_onDpDataChange);
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
+    // 使用中文字符，确保UTF-8编码正确
     const dateFormatted = `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
     
     // 构建运动记录对象
@@ -731,7 +732,7 @@ onDpDataChange(_onDpDataChange);
       id: timestamp,
       duration: elapsedSeconds,
       durationFormatted: durationFormatted,
-      date: now.toISOString(),
+      date: new Date().toISOString(),
       dateFormatted: dateFormatted,
       dateCongrats: dateCongrats,
       rpm: parseFloat(this.data.rpm) || 0,
@@ -757,7 +758,8 @@ onDpDataChange(_onDpDataChange);
     } else {
       // 保存到storage
       try {
-        const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
+        // 统一使用字符串key的方式获取存储数据
+        const history = ty.getStorageSync('exerciseHistory') || [];
         
         // 确保history是数组
         if (!Array.isArray(history)) {
@@ -768,20 +770,21 @@ onDpDataChange(_onDpDataChange);
         // 添加到数组开头（最新的在前）
         const updatedHistory = [exerciseRecord, ...history];
         
-        // 保存到storage
-       // ty.setStorageSync('exerciseHistory', updatedHistory);
-        // 存储字符串
-ty.setStorage({
-  key: 'exerciseHistory',
-  data: updatedHistory,
-  success: (res) => {
-    console.log('本地存储成功:', res.data);
-  },
-  fail: (err) => {
-    console.error('本地存储失败:', err);
-  }
-});
+        // 保存到storage，使用setStorage确保UTF-8编码正确处理
+        ty.setStorage({
+          key: 'exerciseHistory',
+          data: updatedHistory,
+          success: (res) => {
+            console.log('本地存储成功');
+            // 验证存储的数据，确保中文正确
+            console.log('存储的日期格式:', exerciseRecord.dateFormatted);
+          },
+          fail: (err) => {
+            console.error('本地存储失败:', err);
+          }
+        });
         console.log('Exercise record saved successfully:', exerciseRecord.id);
+        console.log('Date formatted:', exerciseRecord.dateFormatted);
       } catch (error) {
         console.error('Error saving exercise record to storage:', error);
         ty.showToast({

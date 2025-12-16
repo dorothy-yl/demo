@@ -46,10 +46,14 @@ Page({
       loadValue = Math.round(logData.avgResistance).toString();
     }
     
+    // 处理日期字段，格式化 ISO 格式的时间字符串
+    const rawDate = logData.date || logData.dateCongrats || logData.cloudTimeStr || this.formatDate(new Date());
+    const formattedDate = this.formatDateString(rawDate);
+    
     return {
       id: parseInt(logData.id) || Date.now(),
       duration: this.formatTime(durationSeconds),
-      date: logData.date || logData.dateCongrats || logData.cloudTimeStr || this.formatDate(new Date()),
+      date: formattedDate,
       Load: loadValue,
       calories: caloriesValue.toString(),
       distance: distanceValue.toFixed(2),
@@ -71,6 +75,34 @@ Page({
     return `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
   },
 
+  // 将 ISO 格式字符串转换为友好的显示格式
+  formatDateString(dateString) {
+    if (!dateString || typeof dateString !== 'string') {
+      return dateString;
+    }
+    
+    // 检测是否为 ISO 格式（包含 'T' 和 'Z' 或时区信息）
+    const isISOFormat = dateString.includes('T') && (dateString.includes('Z') || dateString.match(/[+-]\d{2}:\d{2}$/));
+    
+    if (isISOFormat) {
+      try {
+        // 解析 ISO 格式字符串并转换为本地时间
+        const date = new Date(dateString);
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+          return dateString; // 如果解析失败，返回原字符串
+        }
+        return this.formatDate(date);
+      } catch (error) {
+        console.warn('formatDateString: 解析日期失败', error, dateString);
+        return dateString; // 如果解析失败，返回原字符串
+      }
+    }
+    
+    // 如果不是 ISO 格式，直接返回原字符串
+    return dateString;
+  },
+
   // 从本地存储或URL参数获取数据
   loadRecordFromFallback(options) {
     const id = options.id;
@@ -88,10 +120,13 @@ Page({
       // 从历史列表页的数据结构构建记录
       const distance = parseFloat(options.distance) || 0.7;
       const durationSeconds = parseInt(options.duration) || 0;
+      const rawDate = options.date || '12月11日 12:01:03';
+      const formattedDate = this.formatDateString(rawDate);
+      
       record = {
         id: parseInt(id) || 1,
         duration: this.formatTime(durationSeconds),
-        date: options.date || '12月11日 12:01:03',
+        date: formattedDate,
         Load: options.Load || '18',
         calories: options.calories || '52',
         distance: distance.toFixed(2),
@@ -110,6 +145,10 @@ Page({
       if (record.duration !== undefined) {
         const durationSeconds = typeof record.duration === 'number' ? record.duration : parseInt(record.duration) || 0;
         record.duration = this.formatTime(durationSeconds);
+      }
+      // 格式化日期字段（处理 ISO 格式）
+      if (record.date) {
+        record.date = this.formatDateString(record.date);
       }
       // 设置 Load 字段（从 load 或 avgResistance 获取）
       if (!record.Load) {
