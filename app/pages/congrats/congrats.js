@@ -10,6 +10,11 @@ Page({
     distance: '2.37'
   },
   onLoad(options) {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
     let exerciseData = null;
     
     // 优先从URL参数获取数据

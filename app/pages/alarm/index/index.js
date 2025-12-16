@@ -12,6 +12,11 @@ Page({
   },
 
   onLoad() {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
     this.loadDaySettings();
     this.generateCalendar();
   },

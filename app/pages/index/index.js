@@ -9,6 +9,11 @@ Page({
     currentTime: '9:42'
   },
   onLoad() {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
     console.log('Home Page Load');
     // this.loadTodayData();
     this.updateTime();

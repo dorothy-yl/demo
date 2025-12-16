@@ -48,15 +48,21 @@ function validateHistoryRecord(record) {
 }
 
 /**
- * 将历史记录数组格式化为 DP 点 112 需要的 JSON 字符串格式
- * @param {Array} historyArray - 历史记录数组
+ * 将历史记录数组或单条记录格式化为 DP 点 112 需要的 JSON 字符串格式
+ * @param {Array|Object} historyData - 历史记录数组或单条记录对象
  * @returns {String} JSON 字符串
  */
-function formatHistoryForDp112(historyArray) {
+function formatHistoryForDp112(historyData) {
   try {
-    // 确保是数组
-    if (!Array.isArray(historyArray)) {
-      console.warn('formatHistoryForDp112: historyArray is not an array');
+    // 支持单条记录对象或数组
+    let historyArray = [];
+    if (Array.isArray(historyData)) {
+      historyArray = historyData;
+    } else if (typeof historyData === 'object' && historyData !== null) {
+      // 单条记录，转换为数组
+      historyArray = [historyData];
+    } else {
+      console.warn('formatHistoryForDp112: historyData 格式不正确');
       return JSON.stringify([]);
     }
     
@@ -192,7 +198,7 @@ function saveHistoryToCloud(deviceId, historyData) {
       } else {
         // 单条记录：从本地存储获取现有记录，将新记录添加到开头
         try {
-          const existingHistory = ty.getStorageSync({ key: 'exerciseHistory' }) || [];
+          const existingHistory = ty.getStorageSync('exerciseHistory') || [];
           if (Array.isArray(existingHistory)) {
             historyArray = [historyData, ...existingHistory];
           } else {
@@ -396,12 +402,117 @@ function getHistoryFromCloud(deviceId, options = {}) {
 }
 
 /**
+ * 获取 DP 点上报日志
+ * @param {String} deviceId - 设备 ID
+ * @param {Object} options - 查询选项
+ * @param {Number} options.offset - 偏移量，默认 0
+ * @param {Number} options.limit - 每页数量，默认 50，最大 4000
+ * @param {String} options.sortType - 排序方式：'DESC' 或 'ASC'，默认 'DESC'
+ * @returns {Promise} Promise 对象，返回解析后的历史记录数组
+ */
+function getDpReportLog(deviceId, options = {}) {
+  return new Promise((resolve, reject) => {
+    if (!deviceId) {
+      reject(new Error('设备ID不能为空'));
+      return;
+    }
+
+    const {
+      offset = 0,
+      limit = 50,
+      sortType = 'DESC'
+    } = options;
+
+    // 确保 limit + offset <= 4000
+    const maxLimit = Math.min(limit, 4000 - offset);
+    if (maxLimit <= 0) {
+      reject(new Error('offset + limit 不能超过 4000'));
+      return;
+    }
+
+    console.log('获取 DP 点上报日志，参数:', { deviceId, offset, limit: maxLimit, sortType });
+
+    // 使用统计接口获取 DP 点 112 的日志
+    if (!commonApi || !commonApi.statApi) {
+      console.warn('commonApi.statApi 不可用，无法获取 DP 点上报日志');
+      reject(new Error('统计接口不可用，请确保已安装 @tuya/tuya-panel-api 并提交工单开通统计功能'));
+      return;
+    }
+
+    commonApi.statApi
+      .getDpReportLog({
+        devId: deviceId,
+        dpIds: '112',
+        offset: offset,
+        limit: maxLimit,
+        sortType: sortType
+      })
+      .then(response => {
+        console.log('DP 点上报日志返回的原始数据:', response);
+        
+        if (!response || !response.dps || !Array.isArray(response.dps)) {
+          console.warn('DP 点上报日志返回数据格式不正确');
+          resolve({
+            records: [],
+            total: 0,
+            hasNext: false
+          });
+          return;
+        }
+
+        // 解析每条日志记录
+        const historyRecords = [];
+        response.dps.forEach(dpLog => {
+          try {
+            // dpLog.value 是字符串，需要解析 JSON
+            const valueStr = dpLog.value;
+            if (typeof valueStr === 'string' && valueStr.trim()) {
+              const parsedData = JSON.parse(valueStr);
+              
+              // 如果解析出的是数组，展开为多条记录
+              if (Array.isArray(parsedData)) {
+                parsedData.forEach(record => {
+                  historyRecords.push({
+                    ...record,
+                    cloudTimestamp: dpLog.timeStamp,
+                    cloudTimeStr: dpLog.timeStr
+                  });
+                });
+              } else if (typeof parsedData === 'object') {
+                // 单条记录
+                historyRecords.push({
+                  ...parsedData,
+                  cloudTimestamp: dpLog.timeStamp,
+                  cloudTimeStr: dpLog.timeStr
+                });
+              }
+            }
+          } catch (error) {
+            console.warn('解析 DP 点上报日志记录失败:', error, '原始数据:', dpLog);
+          }
+        });
+
+        console.log('解析后的历史记录数量:', historyRecords.length);
+        resolve({
+          records: historyRecords,
+          total: response.total || historyRecords.length,
+          hasNext: response.hasNext || false
+        });
+      })
+      .catch(error => {
+        console.error('获取 DP 点上报日志失败:', error);
+        reject(error);
+      });
+  });
+}
+
+/**
  * 根据记录 ID 从云端查找历史记录
  * @param {String} deviceId - 设备 ID
  * @param {String|Number} recordId - 记录 ID
  * @returns {Promise} Promise 对象，返回匹配的记录或 null
  */
-export function findHistoryRecordFromCloud(deviceId, recordId) {
+function findHistoryRecordFromCloud(deviceId, recordId) {
   return new Promise((resolve, reject) => {
     // 先获取最近的记录（最多100条）
     getHistoryFromCloud(deviceId, {
@@ -439,6 +550,7 @@ module.exports = {
   formatHistoryForDp112,
   saveHistoryToCloud,
   getHistoryFromCloud,
+  getDpReportLog,
   findHistoryRecordFromCloud
 };
 

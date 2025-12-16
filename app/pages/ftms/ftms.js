@@ -6,6 +6,11 @@ Page({
   },
 
   onLoad: function (options) {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
     // Get deviceId from launch options or page parameters
     const launchOptions = ty.getLaunchOptionsSync();
     const deviceId = options.deviceId || launchOptions.query?.deviceId || launchOptions.query?.devId;

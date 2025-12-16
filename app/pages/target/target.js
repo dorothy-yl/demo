@@ -20,6 +20,12 @@ Page({
   },
   
   onLoad() {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
+    
     console.log('Goal Page Load');
     this.updateCurrentValues();
   },

@@ -13,6 +13,23 @@ Page({
   },
 
   onLoad() {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
+    
+    const { query: { deviceId } } = ty.getLaunchOptionsSync();
+    ty.getAnalyticsLogsPublishLog({
+      devId: deviceId,
+      dpIds: '112',
+      offset: 0,
+      limit: 10,
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch();
     console.log('History Page Load');
     // 初始化当前日期为今天
     const today = new Date();
@@ -107,7 +124,7 @@ Page({
   // 根据日期加载记录
   loadRecordsForDate(date) {
     try {
-      const history = ty.getStorageSync({key: 'exerciseHistory'}) || [];
+      const history = ty.getStorageSync('exerciseHistory') || [];
       const targetDateStr = this.formatDateString(date);
       
       // 筛选出当天的记录

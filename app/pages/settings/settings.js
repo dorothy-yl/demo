@@ -29,6 +29,12 @@ Page({
   },
   
   onLoad() {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
+    
     // 从本地存储加载设置
     this.loadSettings();
   },

@@ -3,7 +3,7 @@ function formatDpState(dpState) {
 }
 
 // 导入云端同步工具
-const { saveHistoryToCloud } = require('../../utils/cloudSync.js');
+const { formatHistoryForDp112 } = require('../../utils/cloudSync.js');
 
 Page({
   data: {
@@ -43,6 +43,11 @@ Page({
   
 
   onLoad(options) {
+    ty.hideMenuButton({ success: () => {
+      console.log('hideMenuButton success');
+    }, fail: (error) => {
+      console.log('hideMenuButton fail', error);
+    } });
     console.log('Exercise Page Load', options);
     
     // 检查是否是目标模式
@@ -578,16 +583,19 @@ onDpDataChange(_onDpDataChange);
           if (deviceId) {
             ty.device.publishDps({
               deviceId,
-              dps: { 106: 'STOP' },
+              dps: { 106: 'END' },
               mode: 1,
               pipelines: [0, 1, 2, 3, 4, 5, 6],
               success: () => {
                 console.log('停止命令已发送到硬件');
+                // 停止命令发送成功后，上报运动数据到云端
+                this.reportExerciseDataToCloud(deviceId);
                 this.handleStopExercise(true); // true表示已发送命令
               },
               fail: (err) => {
                 console.error('硬件停止指令发送失败:', err);
-                // 即使发送失败，也继续执行停止逻辑
+                // 即使发送失败，也继续执行停止逻辑，并尝试上报数据
+                this.reportExerciseDataToCloud(deviceId);
                 this.handleStopExercise(true);
               }
             });
@@ -598,6 +606,81 @@ onDpDataChange(_onDpDataChange);
         }
       }
     });
+  },
+
+  // 上报运动数据到云端（通过 DP 点 112）
+  reportExerciseDataToCloud(deviceId) {
+    if (!deviceId) {
+      console.warn('设备ID为空，无法上报数据到云端');
+      return;
+    }
+
+    try {
+      // 收集所有运动数据
+      const now = new Date();
+      const timestamp = now.getTime();
+      const elapsedSeconds = this.data.elapsedTime;
+      
+      // 计算平均阻力
+      const avgResistance = this.resistanceCount > 0 
+        ? (this.resistanceSum / this.resistanceCount).toFixed(1) 
+        : this.data.load;
+      
+      // 格式化时间
+      const durationFormatted = this.formatTime(elapsedSeconds);
+      
+      // 构建运动记录对象
+      const finalMaxResistance = this.dpMaxResistance ?? this.maxResistance ?? 0;
+      const exerciseRecord = {
+        id: timestamp,
+        duration: elapsedSeconds,
+        durationFormatted: durationFormatted,
+        date: now.toISOString(),
+        rpm: parseFloat(this.data.rpm) || 0,
+        calories: parseFloat(this.data.calories) || 0,
+        distance: parseFloat(this.data.distance) || 0,
+        watt: this.data.watt || 0,
+        heartRate: this.data.heartRate || 0,
+        load: this.data.load || 0,
+        maxResistance: finalMaxResistance,
+        minResistance: this.minResistance || 0,
+        avgResistance: parseFloat(avgResistance) || 0
+      };
+
+      // 格式化为 DP 点 112 需要的 JSON 字符串
+      const dp112Value = formatHistoryForDp112(exerciseRecord);
+      
+      if (!dp112Value || dp112Value === '[]') {
+        console.error('运动数据格式化失败，无法上报');
+        return;
+      }
+
+      console.log('=== 上报运动数据到云端 ===');
+      console.log('设备ID:', deviceId);
+      console.log('运动记录ID:', exerciseRecord.id);
+      console.log('DP点112数据:', JSON.stringify(exerciseRecord));
+
+      // 通过 publishDps 下发到设备，设备会主动上报到云端
+      ty.device.publishDps({
+        deviceId: deviceId,
+        dps: {
+          112: JSON.stringify(exerciseRecord)
+        },
+        mode: 2, // 自动选择最佳通道
+        pipelines: [0, 1, 2, 3, 4, 5, 6], // 所有通道
+        success: (res) => {
+          console.log('✓ 运动数据已下发到设备，等待设备上报到云端');
+          console.log('响应数据:', JSON.stringify(res));
+        },
+        fail: (error) => {
+          console.error('✗ 运动数据下发失败:');
+          console.error('错误详情:', JSON.stringify(error));
+          console.error('错误消息:', error.errorMsg || error.message || error);
+        }
+      });
+    } catch (error) {
+      console.error('上报运动数据到云端失败:', error);
+    }
   },
 
   // 处理停止运动的通用方法
@@ -692,26 +775,10 @@ ty.setStorage({
   key: 'exerciseHistory',
   data: updatedHistory,
   success: (res) => {
-    console.log(res.data);
-    
-    // 本地存储成功后，同步到云端
-    const { query: { deviceId } } = ty.getLaunchOptionsSync();
-    if (deviceId) {
-      // 异步上报到云端，不阻塞页面跳转
-      saveHistoryToCloud(deviceId, exerciseRecord)
-        .then(() => {
-          console.log('历史记录已同步到云端');
-        })
-        .catch((error) => {
-          console.error('历史记录云端同步失败（不影响本地存储）:', error);
-          // 云端同步失败不影响本地存储，静默处理
-        });
-    } else {
-      console.warn('未找到设备ID，跳过云端同步');
-    }
+    console.log('本地存储成功:', res.data);
   },
   fail: (err) => {
-    console.log(err);
+    console.error('本地存储失败:', err);
   }
 });
         console.log('Exercise record saved successfully:', exerciseRecord.id);
