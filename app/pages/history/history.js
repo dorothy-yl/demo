@@ -9,7 +9,9 @@ Page({
     calendarCurrentDate: new Date(),
     calendarDays: [],
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-    currentMonthText: ''
+    currentMonthText: '',
+    cloudRecords: [], // 存储从云端获取的所有记录
+    isLoading: false // 加载状态
   },
 
   onLoad() {
@@ -20,16 +22,8 @@ Page({
     } });
     
     const { query: { deviceId } } = ty.getLaunchOptionsSync();
-    ty.getAnalyticsLogsPublishLog({
-      devId: deviceId,
-      dpIds: '112',
-      offset: 0,
-      limit: 10,
-    })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch();
+    this.deviceId = deviceId;
+    
     console.log('History Page Load');
     // 初始化当前日期为今天
     const today = new Date();
@@ -39,14 +33,20 @@ Page({
       selectedDateStr: this.formatDateString(today)
     });
     this.updateDateDisplay(today);
-    this.loadRecordsForDate(today);
     this.generateCalendar();
+    
+    // 从云端加载数据
+    this.loadRecordsFromCloud();
   },
 
   onShow() {
-    // 每次显示页面时重新加载当前日期的记录
-    const selectedDate = new Date(this.data.currentDateObj);
-    this.loadRecordsForDate(selectedDate);
+    // 每次显示页面时重新从云端加载数据
+    if (this.deviceId) {
+      this.loadRecordsFromCloud();
+    } else {
+      const selectedDate = new Date(this.data.currentDateObj);
+      this.loadRecordsForDate(selectedDate);
+    }
   },
 
   // 格式化日期为 YYYY-MM-DD 字符串
@@ -121,8 +121,193 @@ Page({
     });
   },
 
-  // 根据日期加载记录
+  // 从云端加载所有历史记录
+  loadRecordsFromCloud() {
+    if (!this.deviceId) {
+      console.error('设备ID不存在');
+      // 降级到本地存储
+      const selectedDate = new Date(this.data.currentDateObj);
+      this.loadRecordsForDateFromLocal(selectedDate);
+      return;
+    }
+
+    this.setData({ isLoading: true });
+
+    // 获取更多数据，可以根据需要调整 limit
+    ty.getAnalyticsLogsPublishLog({
+      devId: this.deviceId,
+      dpIds: '112',
+      offset: 0,
+      limit: 10, // 可以根据需要调整，最大4000
+    })
+      .then((response) => {
+        console.log('云端返回的原始数据:', response);
+        
+        // 解析云端数据
+        const allRecords = this.parseCloudData(response);
+        
+        this.setData({
+          cloudRecords: allRecords,
+          isLoading: false
+        });
+        
+        // 加载当前日期的记录
+        const selectedDate = new Date(this.data.currentDateObj);
+        this.loadRecordsForDate(selectedDate);
+      })
+      .catch((error) => {
+        console.error('从云端获取数据失败:', error);
+        this.setData({
+          isLoading: false
+        });
+        // 如果云端获取失败，降级到本地存储
+        const selectedDate = new Date(this.data.currentDateObj);
+        this.loadRecordsForDateFromLocal(selectedDate);
+      });
+  },
+
+  // 解析云端返回的数据
+  parseCloudData(response) {
+    const allRecords = [];
+    
+    try {
+      // 根据截图，response 应该是一个包含日志记录的数组
+      // 每个记录有：时间、设备事件、事件名称、事件详情、来源、来源详情等字段
+      if (!response) {
+        console.warn('云端返回数据为空');
+        return [];
+      }
+
+      // 如果 response 是数组，直接遍历
+      // 如果 response 有 data 或 list 字段，使用该字段
+      let logItems = [];
+      if (Array.isArray(response)) {
+        logItems = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        logItems = response.data;
+      } else if (response.list && Array.isArray(response.list)) {
+        logItems = response.list;
+      } else if (response.dps && Array.isArray(response.dps)) {
+        logItems = response.dps;
+      } else {
+        console.warn('云端返回数据格式不正确，无法找到数组字段');
+        return [];
+      }
+
+      logItems.forEach((logItem, index) => {
+        try {
+          // 从"事件详情"字段中提取 JSON 数据
+          // 根据截图，事件详情字段包含历史记录的 JSON 对象
+          let eventDetail = null;
+          
+          // 尝试不同的字段名
+          if (logItem.eventDetail) {
+            eventDetail = typeof logItem.eventDetail === 'string' 
+              ? JSON.parse(logItem.eventDetail) 
+              : logItem.eventDetail;
+          } else if (logItem['事件详情']) {
+            eventDetail = typeof logItem['事件详情'] === 'string' 
+              ? JSON.parse(logItem['事件详情']) 
+              : logItem['事件详情'];
+          } else if (logItem.detail) {
+            eventDetail = typeof logItem.detail === 'string' 
+              ? JSON.parse(logItem.detail) 
+              : logItem.detail;
+          } else if (logItem.value) {
+            // 如果直接是 value 字段（字符串格式的 JSON）
+            eventDetail = typeof logItem.value === 'string' 
+              ? JSON.parse(logItem.value) 
+              : logItem.value;
+          } else if (logItem.dpValue) {
+            eventDetail = typeof logItem.dpValue === 'string' 
+              ? JSON.parse(logItem.dpValue) 
+              : logItem.dpValue;
+          }
+
+          // 如果 eventDetail 是数组，展开为多条记录
+          if (Array.isArray(eventDetail)) {
+            eventDetail.forEach(record => {
+              if (record && record.id) {
+                // 使用云端时间或记录中的时间
+                const cloudTime = logItem.time || logItem['时间(GMT+8)'] || logItem.timeStr || logItem.timestamp;
+                allRecords.push({
+                  ...record,
+                  cloudTime: cloudTime
+                });
+              }
+            });
+          } else if (eventDetail && typeof eventDetail === 'object' && eventDetail.id) {
+            // 单条记录
+            const cloudTime = logItem.time || logItem['时间(GMT+8)'] || logItem.timeStr || logItem.timestamp;
+            allRecords.push({
+              ...eventDetail,
+              cloudTime: cloudTime
+            });
+          }
+        } catch (error) {
+          console.warn(`解析第 ${index} 条云端记录失败:`, error, logItem);
+        }
+      });
+
+      console.log(`成功解析 ${allRecords.length} 条云端历史记录`);
+      return allRecords;
+    } catch (error) {
+      console.error('解析云端数据失败:', error);
+      return [];
+    }
+  },
+
+  // 根据日期加载记录（从云端数据中筛选）
   loadRecordsForDate(date) {
+    try {
+      const cloudRecords = this.data.cloudRecords || [];
+      const targetDateStr = this.formatDateString(date);
+      
+      // 筛选出当天的记录
+      const dayRecords = cloudRecords.filter(record => {
+        const recordDateStr = this.getDateStringFromRecord(record);
+        return recordDateStr === targetDateStr;
+      });
+      
+      // 格式化记录以匹配页面显示需求
+      const formattedRecords = dayRecords.map(record => {
+        // 将duration从秒转换为 "HH:MM:SS" 格式
+        const durationFormatted = this.formatTime(record.duration || 0);
+        
+        return {
+          id: record.id,
+          duration: durationFormatted,
+          date: record.dateFormatted || record.date,
+          speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
+          calories: Math.round(record.calories || 0).toString(),
+          distance: record.distance ? record.distance.toFixed(2) : '0.0',
+          Load: record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0'),
+          resistance: record.avgResistance ? record.avgResistance.toFixed(1) : (record.maxResistance ? record.maxResistance.toFixed(1) : '0.0'),
+          // 保存完整数据用于详情页
+          fullRecord: record
+        };
+      });
+      
+      // 按时间排序（最新的在前）
+      formattedRecords.sort((a, b) => {
+        const dateA = new Date(a.fullRecord.date || 0).getTime();
+        const dateB = new Date(b.fullRecord.date || 0).getTime();
+        return dateB - dateA;
+      });
+      
+      this.setData({
+        records: formattedRecords
+      });
+    } catch (error) {
+      console.error('Error loading records:', error);
+      this.setData({
+        records: []
+      });
+    }
+  },
+
+  // 从本地存储加载记录（作为降级方案）
+  loadRecordsForDateFromLocal(date) {
     try {
       const history = ty.getStorageSync('exerciseHistory') || [];
       const targetDateStr = this.formatDateString(date);
@@ -163,7 +348,7 @@ Page({
         records: formattedRecords
       });
     } catch (error) {
-      console.error('Error loading records:', error);
+      console.error('Error loading records from local:', error);
       this.setData({
         records: []
       });
