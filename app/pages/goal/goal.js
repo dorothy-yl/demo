@@ -9,6 +9,7 @@ Page({
     pickerIndex: [0],
     unitText: '',
     currentValue: 0,
+    titleText: '', // Title text for the blue box
     
     // Selected values
     selectedValues: {
@@ -61,7 +62,6 @@ Page({
     });
     this.updatePickerData('distance');
   },
-
   updatePickerData(type) {
     const { selectedValues } = this.data;
     let selectedValue = selectedValues[type];
@@ -69,6 +69,7 @@ Page({
     let maxValue = 100;
     let step = 1;
     let unitText = '';
+    let titleText = '';
     
     switch(type) {
       case 'time':
@@ -76,6 +77,7 @@ Page({
         maxValue = 60;
         step = 1;
         unitText = 'min';
+        titleText = 'Time';
         if (!selectedValue) selectedValue = 1;
         break;
       case 'calories':
@@ -83,6 +85,7 @@ Page({
         maxValue = 1500;
         step = 100;
         unitText = 'kcal';
+        titleText = 'Calories';
         if (!selectedValue) selectedValue = 100;
         break;
       case 'distance':
@@ -90,27 +93,32 @@ Page({
         maxValue = 50.0;
         step = 0.5;
         unitText = 'km';
+        titleText = 'Distance';
         if (!selectedValue) selectedValue = 0.5;
         break;
     }
     
-    // Generate Range
+    // 1. 生成完整range（保留1~60完整可滚动范围）
     const range = this.generateRange(minValue, maxValue, step);
     
-    // Find index
-    let index = -1;
+    // 2. 找到选中值在完整range中的索引
+    let originalIndex = -1;
     const strValue = step < 1 ? selectedValue.toFixed(1) : Math.round(selectedValue).toString();
-    index = range.indexOf(strValue);
-    if (index === -1) index = 0;
-
+    originalIndex = range.indexOf(strValue);
+    if (originalIndex === -1) originalIndex = 0;
+  
+    // 3. 关键：设置pickerIndex为选中项索引（选择器会自动滚动到该位置，且只显示5行）
+    // 选择器的显示行数由UI层控制（比如picker组件设置`visible-item-count="5"`）
     this.setData({
       minValue,
       maxValue,
       step,
       unitText,
+      titleText,
       currentValue: selectedValue,
-      range,
-      pickerIndex: [index]
+      range, // 保留完整range，确保可滚动1~60
+      pickerIndex: [originalIndex], // 选中项索引
+      fullRange: range // 保留完整range备用（如果后续需要）
     });
   },
 

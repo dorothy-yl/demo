@@ -25,20 +25,28 @@
   <view class="modal-overlay" ty:if="{{showModal}}" bindtap="closeModal">
     <view class="modal-content" catchtap="stopPropagation">
       <view class="modal-picker-container">
-        <picker-view 
-          class="modal-picker"
-          mask-style="opacity:0" 
-          indicator-style="height: 96rpx; opacity: 0.5;"
-          value="{{pickerIndex}}" 
-          bindchange="onPickerChange"
-        >
-          <picker-view-column>
-            <view ty:for="{{range}}" ty:key="*this" class="modal-picker-item {{pickerIndex[0] === index ? 'active' : ''}}">
-              {{item}}
-            </view>
-          </picker-view-column>
-        </picker-view>
-        <text class="modal-unit">{{unitText}}</text>
+        <!-- Blue Box for Title -->
+        <view class="modal-title-box">
+          <text class="modal-title-text">{{titleText}}</text>
+        </view>
+        <!-- Red Box for Picker -->
+        <view class="modal-picker-box">
+          <picker-view 
+            class="modal-picker"
+            mask-style="opacity:0" 
+            indicator-style="height: 60px; opacity: 0.5;"
+            value="{{pickerIndex}}" 
+            bindchange="onPickerChange"
+            visible-item-count="5" 
+          >
+            <picker-view-column>
+              <view ty:for="{{range}}" ty:key="*this" class="modal-picker-item {{pickerIndex[0] === index ? 'active' : ''}}">
+                {{item}}
+              </view>
+            </picker-view-column>
+          </picker-view>
+          <text class="modal-unit">{{unitText}}</text>
+        </view>
       </view>
       <button class="modal-confirm-btn" bindtap="confirmGoal">Sure</button>
     </view>
