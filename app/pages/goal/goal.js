@@ -159,14 +159,13 @@ Page({
     const { activeButton, currentValue } = this.data;
     console.log(`Set ${activeButton} goal to ${currentValue}`);
     
-    ty.showToast({
-      title: 'Goal Set!',
-      icon: 'success'
-    });
+    // 关闭模态框
+    this.closeModal();
     
-    setTimeout(() => {
-      this.closeModal();
-    }, 1500);
+    // 跳转到 exercise 页面，复用 target 页面的跳转逻辑
+    ty.navigateTo({
+      url: `/pages/exercise/exercise?goalType=${activeButton}&goalValue=${currentValue}`
+    });
   },
 
   closeModal() {
