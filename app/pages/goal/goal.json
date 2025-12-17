@@ -1,7 +1,6 @@
 {
-  "navigationBarTitleText": "设置",
+  "navigationBarTitleText": "Set goals",
   "navigationBarBackgroundColor": "#0A0E27",
   "navigationBarTextStyle": "white",
-  "backgroundColor": "#0A0E27"
+  "navigationStyle": "custom"
 }
-

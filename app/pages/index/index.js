@@ -128,7 +128,7 @@ Page({
   },
   goToGoal() {
     ty.navigateTo({
-      url: '/pages/target/target'
+      url: '/pages/goal/goal'
     });
   },
   goToHistory() {

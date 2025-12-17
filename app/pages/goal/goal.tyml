@@ -1,0 +1,47 @@
+<view class="container">
+  <image class="background-image" src="../../assets/Sportsman .png" mode="aspectFill"></image>
+  <view class="overlay"></view>
+
+  <!-- Custom Navigation Bar -->
+  <view class="custom-nav" style="padding-top: {{statusBarHeight}}px">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="goBack">
+        <image src="../../assets/icons/Vector.svg" class="back-icon" ></image>
+      </view>
+      <text class="nav-title">Set goals</text>
+    </view>
+  </view>
+
+  <!-- Goal Selection View -->
+  <view class="content">
+    <view class="goal-buttons">
+      <button class="goal-btn {{activeButton === 'time' ? 'primary' : 'secondary'}}" bindtap="showTimePicker">Time</button>
+      <button class="goal-btn {{activeButton === 'calories' ? 'primary' : 'secondary'}}" bindtap="showCaloriesPicker">Calories</button>
+      <button class="goal-btn {{activeButton === 'distance' ? 'primary' : 'secondary'}}" bindtap="showDistancePicker">Distance</button>
+    </view>
+  </view>
+
+  <!-- Modal Overlay -->
+  <view class="modal-overlay" ty:if="{{showModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-picker-container">
+        <picker-view 
+          class="modal-picker"
+          mask-style="opacity:0" 
+          indicator-style="height: 96rpx; opacity: 0.5;"
+          value="{{pickerIndex}}" 
+          bindchange="onPickerChange"
+        >
+          <picker-view-column>
+            <view ty:for="{{range}}" ty:key="*this" class="modal-picker-item {{pickerIndex[0] === index ? 'active' : ''}}">
+              {{item}}
+            </view>
+          </picker-view-column>
+        </picker-view>
+        <text class="modal-unit">{{unitText}}</text>
+      </view>
+      <button class="modal-confirm-btn" bindtap="confirmGoal">Sure</button>
+    </view>
+  </view>
+</view>
+
