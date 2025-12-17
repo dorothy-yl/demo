@@ -20,6 +20,10 @@ Page({
     calendarDays: [],
     weekdays: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
     currentMonthText: '',
+    showYearPicker: false,
+    yearPickerYears: [],
+    yearPickerIndex: [0],
+    selectedYear: null,
     
     // 时间选择器数据
     timePickerHours: [],
@@ -176,44 +180,26 @@ Page({
     const daysInMonth = lastDay.getDate();
     const startWeekday = firstDay.getDay();
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
     const calendarDays = [];
+    const today = new Date();
 
-    // 上个月的日期
-    for (let i = startWeekday - 1; i >= 0; i--) {
-      const day = prevMonthLastDay - i;
-      const date = new Date(year, month - 1, day);
+    // 只生成当前月的日期，但需要空位来对齐星期
+    // 在当月第一天之前添加空位
+    for (let i = 0; i < startWeekday; i++) {
       calendarDays.push({
-        day: day,
-        date: date,
-        isCurrentMonth: false,
-        isToday: false,
-        isSelected: this.isSameDate(date, selectedDate)
+        day: '',
+        date: null,
+        isEmpty: true
       });
     }
 
     // 当前月的日期
-    const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       calendarDays.push({
         day: day,
         date: date,
-        isCurrentMonth: true,
         isToday: this.isSameDate(date, today),
-        isSelected: this.isSameDate(date, selectedDate)
-      });
-    }
-
-    // 下个月的日期（填满42个格子）
-    const remainingCells = 42 - calendarDays.length;
-    for (let day = 1; day <= remainingCells; day++) {
-      const date = new Date(year, month + 1, day);
-      calendarDays.push({
-        day: day,
-        date: date,
-        isCurrentMonth: false,
-        isToday: false,
         isSelected: this.isSameDate(date, selectedDate)
       });
     }
@@ -246,8 +232,66 @@ Page({
     this.generateCalendar();
   },
 
+  // 显示年份选择器
+  showYearPicker() {
+    const { calendarCurrentDate } = this.data;
+    const currentYear = calendarCurrentDate.getFullYear();
+    const years = [];
+    const startYear = currentYear - 50;
+    const endYear = currentYear + 50;
+    
+    for (let year = startYear; year <= endYear; year++) {
+      years.push(year);
+    }
+    
+    const selectedIndex = years.indexOf(currentYear);
+    
+    this.setData({
+      yearPickerYears: years,
+      yearPickerIndex: [selectedIndex],
+      selectedYear: currentYear,
+      showYearPicker: true
+    });
+  },
+
+  // 隐藏年份选择器
+  hideYearPicker() {
+    this.setData({
+      showYearPicker: false
+    });
+  },
+
+  // 年份选择器滚动事件
+  onYearPickerChange(e) {
+    const values = e.detail.value;
+    const yearIndex = values[0];
+    const { yearPickerYears } = this.data;
+    const selectedYear = yearPickerYears[yearIndex];
+    
+    this.setData({
+      yearPickerIndex: [yearIndex],
+      selectedYear: selectedYear
+    });
+  },
+
+  // 确认年份选择
+  confirmYear() {
+    const { selectedYear, calendarCurrentDate } = this.data;
+    if (selectedYear) {
+      const newDate = new Date(selectedYear, calendarCurrentDate.getMonth(), 1);
+      this.setData({ 
+        calendarCurrentDate: newDate,
+        showYearPicker: false
+      });
+      this.generateCalendar();
+    }
+  },
+
   // 从日历选择日期
   selectDateFromCalendar(e) {
+    const isEmpty = e.currentTarget.dataset.isEmpty;
+    if (isEmpty) return;
+    
     const dateStr = e.currentTarget.dataset.date;
     if (!dateStr) return;
     

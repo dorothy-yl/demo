@@ -22,6 +22,12 @@ Page({
   onLoad() {
     // Get system info for status bar height
     try {
+      ty.hideMenuButton({ success: () => {
+        console.log('hideMenuButton success');
+      }, fail: (error) => {
+        console.log('hideMenuButton fail', error);
+      } });
+      
       const sysInfo = ty.getSystemInfoSync();
       if (sysInfo.statusBarHeight) {
         this.setData({ statusBarHeight: sysInfo.statusBarHeight });
