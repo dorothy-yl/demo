@@ -12,8 +12,9 @@
   left: 0;
   width: 100%;
   height: 88px;
-  display: flex;
-  justify-content: space-between;
+  /* Grid 布局：三列等分，确保标题居中 */
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
   padding: 0 16px;
   background-color: #2C3A4A;
@@ -26,7 +27,8 @@
   height: 30px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-self: start;
 }
 
 .back-icon {
@@ -35,10 +37,11 @@
 }
 
 .header-center {
-  flex: 1;
+  /* Grid 自动放置到中间列，在列内居中 */
   display: flex;
   justify-content: center;
   align-items: center;
+  justify-self: center;
 }
 
 .header-title {
@@ -53,6 +56,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  justify-self: end;
 }
 
 .delete-text {
