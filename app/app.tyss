@@ -1,6 +1,6 @@
 /* 全局样式 */
 page {
-  background-color: #ffffff;
+  background-color: #2C3A4A;
   font-family: 'Manrope', sans-serif;
 }
 

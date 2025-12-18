@@ -35,6 +35,7 @@ Page({
   },
 
   onLoad() {
+    
     ty.hideMenuButton({ 
       success: () => {
         console.log('hideMenuButton success');
@@ -67,6 +68,9 @@ Page({
     
     // 生成日历
     this.generateCalendar();
+    
+    // 设置 DP 点 113 监听（运动提醒云端同步）
+    this.setupDp113Listener();
   },
 
   onShow() {
@@ -102,7 +106,188 @@ Page({
       const dateB = new Date(b.dateTime).getTime();
       return dateB - dateA;
     });
-    this.setData({ tips });
+    
+    // 格式化每个提醒的日期和时间用于显示
+    const formattedTips = tips.map(tip => {
+      const date = new Date(tip.dateTime);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekday = weekdays[date.getDay()];
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+      return {
+        ...tip,
+        formattedDate: `${year}.${month}.${day}.${weekday}`,
+        formattedTime: `${hours}:${minutes}`
+      };
+    });
+    
+    this.setData({ tips: formattedTips });
+  },
+
+  // 设置 DP 点 113 监听（运动提醒云端同步）
+  setupDp113Listener() {
+    const { onDpDataChange, registerDeviceListListener } = ty.device;
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    if (!deviceId) {
+      console.warn('设备ID不存在，无法监听云端数据');
+      return;
+    }
+
+    // 监听 DP 点数据变化
+    const _onDpDataChange = (event) => {
+      if (!event.dps) return;
+
+      const dpState = event.dps;
+      // 检查是否有 DP 点 113（运动提醒）
+      if (dpState['113'] !== undefined) {
+        const cloudData = dpState['113'];
+        console.log('收到云端运动提醒数据（DP113）:', cloudData);
+
+        try {
+          // 解析 JSON 字符串
+          const tips = JSON.parse(cloudData);
+          
+          if (Array.isArray(tips)) {
+            // 保存到本地存储
+            ty.setStorageSync('tips', tips);
+            
+            // 重新加载提醒列表
+            this.loadTips();
+            
+            console.log('云端提醒数据已同步到本地，共', tips.length, '条');
+          } else {
+            console.warn('云端数据格式错误，应为数组');
+          }
+        } catch (error) {
+          console.error('解析云端提醒数据失败:', error);
+        }
+      }
+    };
+
+    // 注册设备监听
+    registerDeviceListListener({
+      deviceIdList: [deviceId],
+      success: () => {
+        console.log('运动提醒云端监听注册成功（DP113）');
+      },
+      fail: (error) => {
+        console.error('运动提醒云端监听注册失败:', error);
+      }
+    });
+
+    // 监听 DP 点变化
+    onDpDataChange(_onDpDataChange);
+  },
+
+  // 上报运动提醒到云端（DP 点 113）
+  uploadTipsToCloud(tips) {
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    if (!deviceId) {
+      console.warn('设备ID不存在，无法上报数据到云端');
+      return;
+    }
+
+    try {
+      // 将提醒数组转换为 JSON 字符串
+      const tipsJson = JSON.stringify(tips);
+      
+      console.log('=== 上报运动提醒到云端（DP113）===');
+      console.log('设备ID:', deviceId);
+      console.log('提醒数量:', tips.length);
+      console.log('数据内容:', tipsJson);
+
+      // 通过 publishDps 上报到云端
+      ty.device.publishDps({
+        deviceId: deviceId,
+        dps: {
+          113: tipsJson
+        },
+        mode: 2, // 自动选择最佳通道
+        pipelines: [0, 1, 2, 3, 4, 5, 6], // 所有通道
+        success: (res) => {
+          console.log('✓ 运动提醒已上报到云端（DP113）');
+          console.log('响应数据:', JSON.stringify(res));
+        },
+        fail: (error) => {
+          console.error('✗ 运动提醒上报失败:');
+          console.error('错误详情:', JSON.stringify(error));
+          console.error('错误消息:', error.errorMsg || error.message || error);
+        }
+      });
+    } catch (error) {
+      console.error('上报运动提醒到云端失败:', error);
+    }
+  },
+
+  // 从云端拉取运动提醒（DP 点 113）
+  fetchTipsFromCloud() {
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    if (!deviceId) {
+      console.warn('设备ID不存在，无法从云端拉取数据');
+      return;
+    }
+
+    try {
+      console.log('=== 从云端拉取运动提醒（DP113）===');
+      console.log('设备ID:', deviceId);
+
+      // 获取设备当前状态，触发云端数据下发
+      ty.device.getDpDataFromDevice({
+        deviceId: deviceId,
+        success: (res) => {
+          console.log('✓ 获取设备状态成功');
+          console.log('设备状态:', JSON.stringify(res));
+          
+          // 检查是否有 DP 点 113 数据
+          if (res.dps && res.dps['113']) {
+            const cloudData = res.dps['113'];
+            console.log('收到云端运动提醒数据:', cloudData);
+            
+            try {
+              const tips = JSON.parse(cloudData);
+              
+              if (Array.isArray(tips)) {
+                // 保存到本地存储
+                ty.setStorageSync('tips', tips);
+                
+                // 重新加载提醒列表
+                this.loadTips();
+                
+                console.log('云端提醒数据已同步到本地，共', tips.length, '条');
+              } else {
+                console.warn('云端数据格式错误，应为数组');
+              }
+            } catch (error) {
+              console.error('解析云端提醒数据失败:', error);
+            }
+          } else {
+            console.log('云端暂无运动提醒数据（DP113）');
+          }
+        },
+        fail: (error) => {
+          console.error('✗ 从云端拉取提醒失败:');
+          console.error('错误详情:', JSON.stringify(error));
+          console.error('错误消息:', error.errorMsg || error.message || error);
+          
+          // 如果拉取失败，仍然从本地加载
+          this.loadTips();
+        }
+      });
+    } catch (error) {
+      console.error('从云端拉取运动提醒失败:', error);
+      // 如果出错，从本地加载
+      this.loadTips();
+    }
   },
 
   // 切换标签页
@@ -113,6 +298,11 @@ Page({
       showDatePicker: false,
       showTimePicker: false
     });
+    
+    // 如果切换到"我的日程"，从云端拉取最新数据
+    if (tab === 'schedule') {
+      this.fetchTipsFromCloud();
+    }
   },
 
   // 标题输入
@@ -412,14 +602,15 @@ Page({
     dateTime.setSeconds(0);
     dateTime.setMilliseconds(0);
     
-    const tips = this.data.tips || [];
+    // 获取原始tips数组（不含格式化字段）
+    const rawTips = ty.getStorageSync('tips') || [];
     
     if (editingTipId) {
       // 编辑模式：更新现有提醒
-      const index = tips.findIndex(t => t.id === editingTipId);
+      const index = rawTips.findIndex(t => t.id === editingTipId);
       if (index > -1) {
-        tips[index] = {
-          ...tips[index],
+        rawTips[index] = {
+          ...rawTips[index],
           title: tipTitle.trim(),
           date: selectedDate,
           time: { ...selectedTime },
@@ -435,18 +626,23 @@ Page({
         time: { ...selectedTime },
         dateTime: dateTime
       };
-      tips.push(newTip);
+      rawTips.push(newTip);
     }
     
     // 保存到本地存储
-    ty.setStorageSync('tips', tips);
+    ty.setStorageSync('tips', rawTips);
     
-    // 更新数据
+    // 上报到云端（DP 点 113）
+    this.uploadTipsToCloud(rawTips);
+    
+    // 保存到本地存储后重新加载（会自动格式化日期和时间）
+    this.loadTips();
+    
+    // 重置表单
     const now = new Date();
     const hour = now.getHours();
     const minute = now.getMinutes();
     this.setData({
-      tips: tips,
       tipTitle: '',
       editingTipId: null,
       selectedDate: now,
@@ -507,14 +703,23 @@ Page({
       content: '确定要删除这个提醒吗？',
       success: (res) => {
         if (res.confirm) {
-          const tips = this.data.tips.filter(t => t.id !== editingTipId);
-          ty.setStorageSync('tips', tips);
+          // 获取原始tips数组（不含格式化字段）
+          const rawTips = ty.getStorageSync('tips') || [];
+          const updatedTips = rawTips.filter(t => t.id !== editingTipId);
+          
+          // 保存到本地存储
+          ty.setStorageSync('tips', updatedTips);
+          
+          // 上报到云端（DP 点 113）
+          this.uploadTipsToCloud(updatedTips);
+          
+          // 重新加载提醒列表
+          this.loadTips();
           
           const now = new Date();
           const hour = now.getHours();
           const minute = now.getMinutes();
           this.setData({
-            tips: tips,
             tipTitle: '',
             editingTipId: null,
             selectedDate: now,
@@ -536,37 +741,27 @@ Page({
     });
   },
 
-  // 格式化日程卡片中的日期
-  formatScheduleDate(tip) {
-    const date = new Date(tip.dateTime);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    const weekday = weekdays[date.getDay()];
-    
-    return `${year}.${month}.${day}.${weekday}`;
-  },
-
-  // 格式化日程卡片中的时间
-  formatScheduleTime(tip) {
-    const date = new Date(tip.dateTime);
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
-    return `${hours}:${minutes}`;
-  },
 
   // 返回
   onBack() {
-    ty.navigateBack();
+    const { activeTab } = this.data;
+    
+    // 如果在 Tips 标签页，先切换到日程列表
+    if (activeTab === 'tips') {
+      this.setData({ 
+        activeTab: 'schedule',
+        showDatePicker: false,
+        showTimePicker: false
+      });
+    } else {
+      // 如果在日程列表页，才真正返回
+      ty.navigateBack();
+    }
   },
 
   // 阻止事件冒泡
   stopPropagation(e) {
-    // 阻止事件冒泡到外层
-    if (e) {
-      e.stopPropagation();
-    }
+    // catchtap 本身已经阻止了冒泡，这个方法只需要是空函数
+    // 不需要调用 e.stopPropagation()，因为在涂鸦小程序框架中这不是一个有效的方法
   }
 });

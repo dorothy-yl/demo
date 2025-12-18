@@ -156,8 +156,8 @@
         >
           <text class="schedule-card-title">{{item.title}}</text>
           <view class="schedule-card-footer">
-            <text class="schedule-card-date">{{formatScheduleDate(item)}}</text>
-            <text class="schedule-card-time">{{formatScheduleTime(item)}}</text>
+            <text class="schedule-card-date">{{item.formattedDate}}</text>
+            <text class="schedule-card-time">{{item.formattedTime}}</text>
           </view>
         </view>
         

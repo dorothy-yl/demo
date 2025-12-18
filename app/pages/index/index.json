@@ -1,6 +1,7 @@
 {
   "navigationStyle": "custom",
   "navigationBarTitleText": "单车",
+  "backgroundColor": "#2C3A4A", 
   "usingComponents": {
     "bottom-nav": "/components/bottom-nav/bottom-nav"
   }
