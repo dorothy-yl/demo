@@ -63,8 +63,8 @@ Page({
       timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
     });
     
-    // 加载已保存的提醒
-    this.loadTips();
+    // 从云端拉取提醒数据（如果失败会自动降级到本地加载）
+    this.fetchTipsFromCloud();
     
     // 生成日历
     this.generateCalendar();
@@ -74,8 +74,8 @@ Page({
   },
 
   onShow() {
-    // 每次显示页面时重新加载提醒
-    this.loadTips();
+    // 每次显示页面时从云端拉取最新数据
+    this.fetchTipsFromCloud();
   },
 
   // 初始化时间选择器数据
@@ -612,9 +612,9 @@ Page({
         rawTips[index] = {
           ...rawTips[index],
           title: tipTitle.trim(),
-          date: selectedDate,
+          date: selectedDate.toISOString ? selectedDate.toISOString() : selectedDate,
           time: { ...selectedTime },
-          dateTime: dateTime
+          dateTime: dateTime.toISOString()
         };
       }
     } else {
@@ -622,9 +622,9 @@ Page({
       const newTip = {
         id: Date.now().toString(),
         title: tipTitle.trim(),
-        date: selectedDate,
+        date: selectedDate.toISOString ? selectedDate.toISOString() : selectedDate,
         time: { ...selectedTime },
-        dateTime: dateTime
+        dateTime: dateTime.toISOString()
       };
       rawTips.push(newTip);
     }
