@@ -122,15 +122,50 @@ Page({
     });
   },
 
-  // 显示日期选择器
+  // 关闭所有选择器（点击外部区域）
+  closeAllPickers() {
+    if (this.data.showDatePicker || this.data.showTimePicker) {
+      this.setData({
+        showDatePicker: false,
+        showTimePicker: false
+      });
+    }
+  },
+
+  // 切换日期选择器
+  toggleDatePicker() {
+    const newShowState = !this.data.showDatePicker;
+    
+    if (newShowState && this.data.selectedDate) {
+      const date = new Date(this.data.selectedDate);
+      this.setData({
+        calendarCurrentDate: new Date(date.getFullYear(), date.getMonth(), 1),
+        showDatePicker: true,
+        showTimePicker: false,
+        dateDisplayText: this.getDateDisplayText(date)
+      });
+      this.generateCalendar();
+    } else {
+      this.setData({
+        showDatePicker: newShowState,
+        showTimePicker: false
+      });
+      if (newShowState) {
+        this.generateCalendar();
+      }
+    }
+  },
+
+  // 显示日期选择器（保留此方法以兼容其他可能的调用）
   showDatePicker() {
-    // 如果已选择日期，设置日历显示为该日期所在月份
+    // 如果已选择日期，设置日历显示为该日期所在月份，并更新日期显示文本
     if (this.data.selectedDate) {
       const date = new Date(this.data.selectedDate);
       this.setData({
         calendarCurrentDate: new Date(date.getFullYear(), date.getMonth(), 1),
         showDatePicker: true,
-        showTimePicker: false // 关闭时间选择器
+        showTimePicker: false, // 关闭时间选择器
+        dateDisplayText: this.getDateDisplayText(date) // 确保显示完整日期格式
       });
     } else {
       this.setData({
@@ -148,7 +183,15 @@ Page({
     });
   },
 
-  // 显示时间选择器
+  // 切换时间选择器
+  toggleTimePicker() {
+    this.setData({
+      showTimePicker: !this.data.showTimePicker,
+      showDatePicker: false
+    });
+  },
+
+  // 显示时间选择器（保留此方法以兼容其他可能的调用）
   showTimePicker() {
     this.setData({
       showTimePicker: true,
@@ -493,18 +536,25 @@ Page({
     });
   },
 
-  // 格式化日程列表中的日期时间
-  formatScheduleDateTime(tip) {
+  // 格式化日程卡片中的日期
+  formatScheduleDate(tip) {
     const date = new Date(tip.dateTime);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
     const weekday = weekdays[date.getDay()];
+    
+    return `${year}.${month}.${day}.${weekday}`;
+  },
+
+  // 格式化日程卡片中的时间
+  formatScheduleTime(tip) {
+    const date = new Date(tip.dateTime);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     
-    return `${year}.${month}.${day}.${weekday} ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
   },
 
   // 返回
@@ -513,7 +563,10 @@ Page({
   },
 
   // 阻止事件冒泡
-  stopPropagation() {
-    // 空函数，仅用于阻止事件冒泡
+  stopPropagation(e) {
+    // 阻止事件冒泡到外层
+    if (e) {
+      e.stopPropagation();
+    }
   }
 });

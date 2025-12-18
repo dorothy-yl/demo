@@ -5,7 +5,7 @@
       <image class="back-icon" src="../../../assets/icons/Vector.svg" />
     </view>
     <view class="header-center">
-      <text class="header-title">Tips</text>
+      <text class="header-title">{{activeTab === 'schedule' ? '我的日程' : 'Tips'}}</text>
     </view>
     
     <view class="header-right">
@@ -24,12 +24,12 @@
   </view>
 
   <!-- Content Wrapper -->
-  <view class="content-wrapper">
+  <view class="content-wrapper" bindtap="closeAllPickers">
     <!-- Tips 标签页 -->
     <view class="tips-content" ty:if="{{activeTab === 'tips'}}">
       <scroll-view class="tips-scroll-view" scroll-y="true">
         <!-- 标题输入 -->
-        <view class="form-item-rect">
+        <view class="form-item-rect" catchtap="stopPropagation">
           <input 
             class="form-input-rect" 
             type="text" 
@@ -41,8 +41,8 @@
         </view>
 
         <!-- 日期选择 -->
-        <view class="form-item-wrapper">
-          <view class="form-item-rect" bindtap="showDatePicker">
+        <view class="form-item-wrapper {{showDatePicker ? 'picker-expanded' : ''}}" catchtap="stopPropagation">
+          <view class="form-item-rect" bindtap="toggleDatePicker">
             <image class="form-icon-left" src="../../../assets/icons/calendar.svg" mode="aspectFit" />
             <text class="form-label-rect">日期</text>
             <text class="form-value-text-rect {{selectedDate ? 'selected' : ''}}">
@@ -56,16 +56,16 @@
             <view class="calendar-year-month-header">
               <view class="calendar-year-month-left">
                 <text class="calendar-year-month-text">{{currentMonthText}}</text>
-                <view class="calendar-year-select-btn" bindtap="showYearPicker" catchtap="stopPropagation">
+                <view class="calendar-year-select-btn" bindtap="showYearPicker">
                   <text class="calendar-year-arrow">›</text>
                 </view>
               </view>
               <!-- 月份切换导航 -->
               <view class="calendar-month-nav-inline">
-                <view class="calendar-month-nav-btn" bindtap="prevMonth" catchtap="stopPropagation">
+                <view class="calendar-month-nav-btn" bindtap="prevMonth">
                   <text class="calendar-nav-arrow">‹</text>
                 </view>
-                <view class="calendar-month-nav-btn" bindtap="nextMonth" catchtap="stopPropagation">
+                <view class="calendar-month-nav-btn" bindtap="nextMonth">
                   <text class="calendar-nav-arrow">›</text>
                 </view>
               </view>
@@ -85,7 +85,6 @@
                 ty:for="{{calendarDays}}" 
                 ty:key="index"
                 bindtap="selectDateFromCalendar"
-                catchtap="stopPropagation"
                 data-date="{{item.date}}"
                 data-is-empty="{{item.isEmpty}}"
               >
@@ -96,8 +95,8 @@
         </view>
 
         <!-- 时间选择 -->
-        <view class="form-item-wrapper">
-          <view class="form-item-rect" bindtap="showTimePicker">
+        <view class="form-item-wrapper {{showTimePicker ? 'picker-expanded' : ''}}" catchtap="stopPropagation">
+          <view class="form-item-rect" bindtap="toggleTimePicker">
             <image class="form-icon-left" src="../../../assets/icons/clock.svg" mode="aspectFit" />
             <text class="form-label-rect">时间</text>
             <text class="form-value-text-rect selected">{{timeDisplayText}}</text>
@@ -105,41 +104,40 @@
           
           <!-- 内联时间选择器 -->
           <view class="inline-time-picker {{showTimePicker ? 'expanded' : ''}}">
-            <view class="time-picker-container">
+            <view class="time-picker-wrapper">
+              
+              <!-- 时间选择器容器 -->
+              <view class="time-picker-container">
               <picker-view 
                 class="time-picker-view"
                 value="{{timePickerIndex}}"
                 bindchange="onTimePickerChange"
-                indicator-style="height: 40px; background-color: rgba(82, 196, 26, 0.1); border-top: 1px solid rgba(82, 196, 26, 0.3); border-bottom: 1px solid rgba(82, 196, 26, 0.3);"
-                mask-style="opacity: 0.3;"
+                indicator-style="height: 40px; background-color: rgba(255, 255, 255, 0.3); border-radius: 6px;"
+                mask-style="opacity: 0;"
               >
-                <!-- 小时选择器 -->
-                <picker-view-column>
-                  <view 
-                    class="time-picker-item"
-                    ty:for="{{timePickerHours}}"
-                    ty:key="*this"
-                  >
-                    <text class="time-picker-text">{{item}}</text>
-                  </view>
-                </picker-view-column>
-                
-                <!-- 分钟选择器 -->
-                <picker-view-column>
-                  <view 
-                    class="time-picker-item"
-                    ty:for="{{timePickerMinutes}}"
-                    ty:key="*this"
-                  >
-                    <text class="time-picker-text">{{item}}</text>
-                  </view>
-                </picker-view-column>
-              </picker-view>
-            </view>
-            
-            <!-- 显示选中的时间 -->
-            <view class="time-picker-display">
-              <text class="time-picker-display-text">{{timeDisplayText}}</text>
+                  <!-- 小时选择器 -->
+                  <picker-view-column class="time-picker-column time-picker-column-left ">
+                    <view 
+                      class="time-picker-item"
+                      ty:for="{{timePickerHours}}"
+                      ty:key="*this"
+                    >
+                      <text class="time-picker-text">{{item}}</text>
+                    </view>
+                  </picker-view-column>
+                  
+                  <!-- 分钟选择器 -->
+                  <picker-view-column class="time-picker-column time-picker-column-right">
+                    <view 
+                      class="time-picker-item"
+                      ty:for="{{timePickerMinutes}}"
+                      ty:key="*this"
+                    >
+                      <text class="time-picker-text">{{item}}</text>
+                    </view>
+                  </picker-view-column>
+                </picker-view>
+              </view>
             </view>
           </view>
         </view>
@@ -150,14 +148,17 @@
     <view class="schedule-content" ty:if="{{activeTab === 'schedule'}}">
       <scroll-view class="schedule-list" scroll-y="true">
         <view 
-          class="schedule-item" 
+          class="schedule-card" 
           ty:for="{{tips}}" 
           ty:key="id"
           bindtap="editTip"
           data-id="{{item.id}}"
         >
-          <text class="schedule-title">{{item.title}}</text>
-          <text class="schedule-datetime">{{formatScheduleDateTime(item)}}</text>
+          <text class="schedule-card-title">{{item.title}}</text>
+          <view class="schedule-card-footer">
+            <text class="schedule-card-date">{{formatScheduleDate(item)}}</text>
+            <text class="schedule-card-time">{{formatScheduleTime(item)}}</text>
+          </view>
         </view>
         
         <!-- 空状态 -->

@@ -1,6 +1,6 @@
 .container {
   background-color: #2C3A4A;
-  min-height: 100vh;
+  height: 100vh;
   color: #fff;
   padding-bottom: 120px; /* 为固定按钮留出空间 */
 }
@@ -103,7 +103,7 @@
 
 .form-item-wrapper {
   position: relative;
-  margin-bottom: 16px;
+  
 }
 
 .form-item {
@@ -127,6 +127,18 @@
   margin-bottom: 16px;
   box-sizing: border-box;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* 当选择器展开时，移除间隙 */
+.form-item-wrapper.picker-expanded .form-item-rect {
+  margin-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.form-item-rect:active {
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .form-input-rect {
@@ -156,9 +168,11 @@ color: #9E9E9E;
 }
 
 .form-value-text-rect {
-  font-size: 16px;
+  font-size: 18px;
   color: #8E8E93;
   margin-left: auto;
+    white-space: nowrap;
+
 }
 
 .form-value-text-rect.selected {
@@ -205,22 +219,26 @@ color: #9E9E9E;
 .inline-date-picker {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
-  background-color: #2C3A4A;
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
 }
 
 .inline-date-picker.expanded {
-  max-height: 389px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 400px;
+  padding-bottom: 16px;
   overflow-y: visible;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding-top: 8px;
+  margin-bottom: 16px;
 }
 
 /* 年份和月份显示行 */
 .calendar-year-month-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
 }
 
 .calendar-year-month-left {
@@ -318,7 +336,6 @@ color: #9E9E9E;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
   position: relative;
   min-height: 40px;
   border: 2px solid transparent;
@@ -333,17 +350,21 @@ color: #9E9E9E;
 }
 
 .calendar-day.today {
-  background-color: rgba(82, 196, 26, 0.15);
+  border: 2px solid rgba(82, 196, 26, 0.5);
 }
 
 .calendar-day.selected {
   border: 2px solid #52C41A;
-  background-color: rgba(82, 196, 26, 0.3);
+  background-color: rgba(82, 196, 26, 0.2);
 }
 
 .calendar-day.selected.today {
   border: 2px solid #52C41A;
   background-color: rgba(82, 196, 26, 0.4);
+}
+
+.calendar-day:active:not(.empty) {
+  transform: scale(0.95);
 }
 
 .calendar-day-number {
@@ -356,28 +377,55 @@ color: #9E9E9E;
 .inline-time-picker {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
-  background-color: #2C3A4A;
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
 }
 
 .inline-time-picker.expanded {
-  max-height: 300px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 350px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.time-picker-wrapper {
+  width: 329px;
+  position: relative;
+  padding: 16px 8px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding-top: 8px;
 }
 
 .time-picker-container {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  height: 200px;
   position: relative;
+  box-sizing: border-box;
+}
+
+.time-picker-container::before {
+  display: none;
 }
 
 .time-picker-view {
   width: 100%;
-  height: 200px;
+  height: 120px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+}
+
+.time-picker-column {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  padding:0;
+  margin:0;
 }
 
 .time-picker-item {
@@ -390,21 +438,8 @@ color: #9E9E9E;
 
 .time-picker-text {
   font-size: 18px;
-  color: #8E8E93;
+  color: rgba(255, 255, 255, 0.9);
   transition: all 0.2s;
-}
-
-.time-picker-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 0;
-}
-
-.time-picker-display-text {
-  font-size: 20px;
-  color: #A2E525;
-  font-weight: 600;
 }
 
 /* 固定底部按钮 */
@@ -443,30 +478,49 @@ color: #9E9E9E;
 .schedule-list {
   width: 100%;
   height: 100%;
-  padding: 0 16px;
+  padding: 16px;
 }
 
-.schedule-item {
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.schedule-card {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.schedule-item:active {
-  opacity: 0.7;
+.schedule-card:active {
+  opacity: 0.8;
+  transform: scale(0.98);
 }
 
-.schedule-title {
+.schedule-card-title {
   display: block;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 8px;
 }
 
-.schedule-datetime {
-  display: block;
+.schedule-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.schedule-card-date {
   font-size: 14px;
-  color: #8E8E93;
+  color: #FFFFFF;
+  opacity: 0.7;
+}
+
+.schedule-card-time {
+  font-size: 14px;
+  color: #FFFFFF;
+  opacity: 0.7;
 }
 
 .empty-state {
