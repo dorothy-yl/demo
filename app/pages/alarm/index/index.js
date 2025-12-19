@@ -1,4 +1,9 @@
+function formatDpState(dpState) {
+  return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+}
 
+// 导入云端同步工具
+const { formatTipsForDp113 } = require('../../../utils/cloudSync.js');
 Page({
   data: {
     // 标签页
@@ -64,21 +69,16 @@ Page({
       timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
     });
     
-    // 参照 exercise.js 的逻辑：先加载本地数据，确保即使云端拉取失败也能显示数据
     this.loadTips();
     
-    // 从云端拉取提醒数据（如果失败会自动降级到本地加载）
     this.fetchTipsFromCloud();
     
-    // 生成日历
     this.generateCalendar();
     
-    // 设置 DP 点 113 监听（运动提醒云端同步）
     this.setupDp113Listener();
   },
 
   onShow() {
-    // 参照 exercise.js 的逻辑：先加载本地数据，再尝试从云端拉取最新数据
     this.loadTips();
     this.fetchTipsFromCloud();
   },
@@ -102,6 +102,51 @@ Page({
     });
   },
 
+  // 格式化提醒数据用于页面显示（提取为独立方法）
+  formatTipsForDisplay(tips) {
+    if (!Array.isArray(tips) || tips.length === 0) {
+      return [];
+    }
+
+    // 按日期和时间排序（最新的在前）
+    const sortedTips = [...tips].sort((a, b) => {
+      const dateA = new Date(a.dateTime || a.date || 0).getTime();
+      const dateB = new Date(b.dateTime || b.date || 0).getTime();
+      return dateB - dateA;
+    });
+
+    // 格式化每个提醒的日期和时间用于显示
+    const formattedTips = sortedTips.map(tip => {
+      // 确保 tip 是有效对象
+      if (!tip || typeof tip !== 'object') {
+        return null;
+      }
+      
+      const date = new Date(tip.dateTime || tip.date);
+      // 检查日期是否有效
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date for tip:', tip);
+        return null;
+      }
+      
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekday = weekdays[date.getDay()];
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+      return {
+        ...tip,
+        formattedDate: `${year}.${month}.${day}.${weekday}`,
+        formattedTime: `${hours}:${minutes}`
+      };
+    }).filter(tip => tip !== null); // 过滤掉无效的提醒
+
+    return formattedTips;
+  },
+
   // 加载提醒列表
   loadTips() {
     try {
@@ -115,41 +160,8 @@ Page({
         tips = [];
       }
       
-      // 按日期和时间排序（最新的在前）
-      tips.sort((a, b) => {
-        const dateA = new Date(a.dateTime || a.date || 0).getTime();
-        const dateB = new Date(b.dateTime || b.date || 0).getTime();
-        return dateB - dateA;
-      });
-      
-      // 格式化每个提醒的日期和时间用于显示
-      const formattedTips = tips.map(tip => {
-        // 确保 tip 是有效对象
-        if (!tip || typeof tip !== 'object') {
-          return null;
-        }
-        
-        const date = new Date(tip.dateTime || tip.date);
-        // 检查日期是否有效
-        if (isNaN(date.getTime())) {
-          console.warn('Invalid date for tip:', tip);
-          return null;
-        }
-        
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-        const weekday = weekdays[date.getDay()];
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        
-        return {
-          ...tip,
-          formattedDate: `${year}.${month}.${day}.${weekday}`,
-          formattedTime: `${hours}:${minutes}`
-        };
-      }).filter(tip => tip !== null); // 过滤掉无效的提醒
+      // 使用统一的格式化方法
+      const formattedTips = this.formatTipsForDisplay(tips);
       
       console.log('加载提醒列表，共', formattedTips.length, '条');
       this.setData({ tips: formattedTips });
@@ -301,19 +313,24 @@ Page({
     }
 
     try {
-      // 将提醒数组转换为 JSON 字符串
-      const tipsJson = JSON.stringify(tips);
+      // 格式化为 DP 点 113 需要的 JSON 字符串
+      const dp113Value = formatTipsForDp113(tips);
       
+      if (!dp113Value || dp113Value === '[]') {
+        console.error('提醒数据格式化失败，无法上报');
+        return;
+      }
+
       console.log('=== 上报运动提醒到云端（DP113）===');
       console.log('设备ID:', deviceId);
       console.log('提醒数量:', tips.length);
-      console.log('数据内容:', tipsJson);
+      console.log('DP点113数据:', dp113Value);
 
       // 通过 publishDps 上报到云端
       ty.device.publishDps({
         deviceId: deviceId,
         dps: {
-          113: tipsJson
+          113: dp113Value
         },
         mode: 2, // 自动选择最佳通道
         pipelines: [0, 1, 2, 3, 4, 5, 6], // 所有通道
@@ -354,63 +371,42 @@ Page({
           devId: deviceId,
           dpIds: '113', // DP 点 113
           offset: 0,
-          limit: 10, // 获取最新的10条日志
+          limit: 10 // 获取最新的50条日志（增加数量以获取更多数据）
         })
           .then((response) => {
             console.log('✓ 从日志接口获取数据成功');
             console.log('云端返回的原始数据:', response);
+            console.log('响应数据类型:', typeof response);
+            console.log('响应数据键:', response ? Object.keys(response) : 'null');
             
             // 解析云端日志数据
             const tips = this.parseTipsFromLogs(response);
             
             if (tips && tips.length > 0) {
               console.log('从日志中解析出', tips.length, '条提醒');
-              console.log('解析出的提醒数据预览:', tips.slice(0, 2));
+              console.log('解析出的提醒数据预览:', tips.slice(0, 3));
               
-              // 参照 handleCloudData 方法：使用 setStorage 确保 UTF-8 编码正确处理
+              // 直接格式化并设置到页面（类似历史运动页面）
+              const formattedTips = this.formatTipsForDisplay(tips);
+              console.log('格式化后共', formattedTips.length, '条提醒');
+              
+              // 直接设置到页面
+              this.setData({ tips: formattedTips });
+              
+              // 同时保存到本地存储（用于降级方案）
               ty.setStorage({
                 key: 'tips',
                 data: tips,
                 success: (res) => {
                   console.log('✓ 云端提醒数据已保存到本地存储');
-                  // 重新加载提醒列表
-                  this.loadTips();
                 },
                 fail: (err) => {
-                  console.error('✗ 保存云端数据到本地存储失败:', err);
+                  console.warn('保存云端数据到本地存储失败（不影响显示）:', err);
                   // 降级方案：尝试使用 setStorageSync
                   try {
                     ty.setStorageSync('tips', tips);
-                    console.log('✓ 使用 setStorageSync 保存成功');
-                    this.loadTips();
                   } catch (syncError) {
-                    console.error('✗ setStorageSync 也失败:', syncError);
-                    // 如果都失败了，直接格式化并设置到页面
-                    console.log('直接设置数据到页面...');
-                    const formattedTips = tips.map(tip => {
-                      if (!tip || typeof tip !== 'object') {
-                        return null;
-                      }
-                      const date = new Date(tip.dateTime || tip.date);
-                      if (isNaN(date.getTime())) {
-                        console.warn('无效日期:', tip);
-                        return null;
-                      }
-                      const year = date.getFullYear();
-                      const month = String(date.getMonth() + 1).padStart(2, '0');
-                      const day = String(date.getDate()).padStart(2, '0');
-                      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-                      const weekday = weekdays[date.getDay()];
-                      const hours = String(date.getHours()).padStart(2, '0');
-                      const minutes = String(date.getMinutes()).padStart(2, '0');
-                      return {
-                        ...tip,
-                        formattedDate: `${year}.${month}.${day}.${weekday}`,
-                        formattedTime: `${hours}:${minutes}`
-                      };
-                    }).filter(tip => tip !== null);
-                    console.log('直接设置', formattedTips.length, '条提醒到页面');
-                    this.setData({ tips: formattedTips });
+                    console.warn('setStorageSync 也失败（不影响显示）:', syncError);
                   }
                 }
               });
@@ -458,8 +454,40 @@ Page({
           console.log('收到云端运动提醒数据（从 getDpDataFromDevice）:', cloudData);
           console.log('数据类型:', typeof cloudData);
           
-          // 使用统一的数据处理方法
-          this.handleCloudData(cloudData);
+          // 处理云端数据
+          let tips = [];
+          if (typeof cloudData === 'string') {
+            try {
+              tips = JSON.parse(cloudData);
+            } catch (error) {
+              console.error('解析云端数据失败:', error);
+              this.loadTips();
+              return;
+            }
+          } else if (Array.isArray(cloudData)) {
+            tips = cloudData;
+          } else {
+            console.warn('云端数据格式不正确');
+            this.loadTips();
+            return;
+          }
+          
+          // 直接格式化并设置到页面
+          const formattedTips = this.formatTipsForDisplay(tips);
+          console.log('格式化后共', formattedTips.length, '条提醒');
+          this.setData({ tips: formattedTips });
+          
+          // 同时保存到本地存储
+          ty.setStorage({
+            key: 'tips',
+            data: tips,
+            success: () => {
+              console.log('✓ 云端提醒数据已保存到本地存储');
+            },
+            fail: (err) => {
+              console.warn('保存云端数据到本地存储失败（不影响显示）:', err);
+            }
+          });
         } else {
           console.log('云端暂无运动提醒数据（DP113）');
           console.log('可用的 DP 点:', res.dps ? Object.keys(res.dps) : '无');
@@ -501,6 +529,7 @@ Page({
         logItems = response.dps;
       } else {
         console.warn('云端返回数据格式不正确，无法找到数组字段');
+        console.log('响应数据结构:', Object.keys(response || {}));
         return [];
       }
 
@@ -518,8 +547,10 @@ Page({
             if (typeof eventDetail === 'string' && eventDetail.trim()) {
               try {
                 tipData = JSON.parse(eventDetail);
+                console.log(`解析"事件详情"成功 (记录${index}):`, tipData);
               } catch (parseError) {
                 console.warn(`解析"事件详情"JSON失败 (记录${index}):`, parseError);
+                console.warn('原始数据:', eventDetail);
               }
             } else {
               tipData = eventDetail;
@@ -542,16 +573,84 @@ Page({
               : logItem.detail;
           }
 
+          // 处理解析出的数据，确保格式正确
+          const processTip = (tip) => {
+            if (!tip || !tip.id) {
+              return null;
+            }
+
+            // 确保 dateTime 字段存在且格式正确
+            let dateTime = tip.dateTime;
+            
+            // 如果 dateTime 不存在，尝试根据 date 和 time 字段组合生成
+            if (!dateTime) {
+              if (tip.date && tip.time) {
+                try {
+                  const dateObj = new Date(tip.date);
+                  if (tip.time.hour !== undefined && tip.time.minute !== undefined) {
+                    dateObj.setHours(tip.time.hour);
+                    dateObj.setMinutes(tip.time.minute);
+                    dateObj.setSeconds(0);
+                    dateObj.setMilliseconds(0);
+                    dateTime = dateObj.toISOString();
+                  } else {
+                    dateTime = tip.date;
+                  }
+                } catch (error) {
+                  console.warn('组合 dateTime 失败:', error);
+                  dateTime = tip.date || new Date().toISOString();
+                }
+              } else if (tip.date) {
+                dateTime = tip.date;
+              } else {
+                console.warn('提醒数据缺少日期信息:', tip);
+                dateTime = new Date().toISOString();
+              }
+            }
+
+            // 确保 date 字段存在
+            if (!tip.date && dateTime) {
+              tip.date = dateTime;
+            }
+
+            // 确保 time 字段存在
+            if (!tip.time && dateTime) {
+              try {
+                const dateObj = new Date(dateTime);
+                tip.time = {
+                  hour: dateObj.getHours(),
+                  minute: dateObj.getMinutes()
+                };
+              } catch (error) {
+                console.warn('解析 time 字段失败:', error);
+                tip.time = { hour: 0, minute: 0 };
+              }
+            }
+
+            // 返回格式化的提醒对象
+            return {
+              id: tip.id,
+              title: tip.title || '',
+              date: tip.date || dateTime,
+              time: tip.time || { hour: 0, minute: 0 },
+              dateTime: dateTime
+            };
+          };
+
           // 如果 tipData 是数组，展开为多条记录
           if (Array.isArray(tipData)) {
             tipData.forEach(tip => {
-              if (tip && tip.id) {
-                allTips.push(tip);
+              const processedTip = processTip(tip);
+              if (processedTip) {
+                allTips.push(processedTip);
               }
             });
           } else if (tipData && typeof tipData === 'object' && tipData.id) {
             // 单条记录
-            allTips.push(tipData);
+            const processedTip = processTip(tipData);
+            if (processedTip) {
+              allTips.push(processedTip);
+            }
           }
         } catch (error) {
           console.warn(`解析第 ${index} 条日志记录失败:`, error, logItem);
@@ -568,10 +667,19 @@ Page({
         }
       });
 
+      // 按日期时间排序（最新的在前）
+      uniqueTips.sort((a, b) => {
+        const dateA = new Date(a.dateTime || a.date || 0).getTime();
+        const dateB = new Date(b.dateTime || b.date || 0).getTime();
+        return dateB - dateA;
+      });
+
       console.log(`成功解析 ${uniqueTips.length} 条云端提醒记录`);
+      console.log('解析后的提醒数据预览:', uniqueTips.slice(0, 3));
       return uniqueTips;
     } catch (error) {
       console.error('解析云端日志数据失败:', error);
+      console.error('错误堆栈:', error.stack);
       return [];
     }
   },

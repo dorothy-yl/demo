@@ -48,6 +48,24 @@ function validateHistoryRecord(record) {
 }
 
 /**
+ * 验证提醒记录数据的有效性
+ * @param {Object} tip - 提醒记录对象
+ * @returns {Boolean} 是否有效
+ */
+function validateTipRecord(tip) {
+  if (!tip || typeof tip !== 'object') {
+    return false;
+  }
+  
+  // 至少需要有id字段
+  if (tip.id === undefined || tip.id === null) {
+    return false;
+  }
+  
+  return true;
+}
+
+/**
  * 将历史记录数组或单条记录格式化为 DP 点 112 需要的 JSON 字符串格式
  * @param {Array|Object} historyData - 历史记录数组或单条记录对象
  * @returns {String} JSON 字符串
@@ -172,6 +190,125 @@ function formatHistoryForDp112(historyData) {
     return jsonString;
   } catch (error) {
     console.error('formatHistoryForDp112 error:', error);
+    return JSON.stringify([]);
+  }
+}
+
+/**
+ * 将提醒记录数组或单条记录格式化为 DP 点 113 需要的 JSON 字符串格式
+ * @param {Array|Object} tipsData - 提醒记录数组或单条记录对象
+ * @returns {String} JSON 字符串
+ */
+function formatTipsForDp113(tipsData) {
+  try {
+    // 支持单条记录对象或数组
+    let tipsArray = [];
+    if (Array.isArray(tipsData)) {
+      tipsArray = tipsData;
+    } else if (typeof tipsData === 'object' && tipsData !== null) {
+      // 单条记录，转换为数组
+      tipsArray = [tipsData];
+    } else {
+      console.warn('formatTipsForDp113: tipsData 格式不正确');
+      return JSON.stringify([]);
+    }
+    
+    if (tipsArray.length === 0) {
+      console.warn('formatTipsForDp113: tipsArray is empty');
+      return JSON.stringify([]);
+    }
+    
+    // 格式化每条记录，只保留必要字段
+    const formattedTips = [];
+    tipsArray.forEach((tip, index) => {
+      try {
+        // 验证记录有效性
+        if (!validateTipRecord(tip)) {
+          console.warn(`formatTipsForDp113: 跳过无效记录 [${index}]:`, tip);
+          return;
+        }
+        
+        // 处理日期时间字段
+        let dateTime = tip.dateTime || tip.date || new Date().toISOString();
+        
+        // 确保 date 字段存在
+        let date = tip.date;
+        if (!date && dateTime) {
+          try {
+            const dateObj = new Date(dateTime);
+            date = dateObj.toISOString().split('T')[0] + 'T00:00:00.000Z';
+          } catch (error) {
+            date = new Date().toISOString();
+          }
+        }
+        
+        // 确保 time 字段存在且格式正确
+        let time = tip.time;
+        if (!time || typeof time !== 'object') {
+          try {
+            const dateObj = new Date(dateTime);
+            time = {
+              hour: dateObj.getHours(),
+              minute: dateObj.getMinutes()
+            };
+          } catch (error) {
+            time = { hour: 0, minute: 0 };
+          }
+        }
+        
+        // 确保 time 对象包含 hour 和 minute
+        if (typeof time.hour !== 'number') {
+          time.hour = 0;
+        }
+        if (typeof time.minute !== 'number') {
+          time.minute = 0;
+        }
+        
+        // 生成可读的显示文本，用于设备日志页面显示
+        const displayText = [
+          `标题：${tip.title || ''}`,
+          `日期：${date}`,
+          `时间：${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`
+        ].join(' | ');
+        
+        const formattedTip = {
+          id: tip.id || Date.now().toString(),
+          title: tip.title || '',
+          date: date,
+          time: {
+            hour: time.hour,
+            minute: time.minute
+          },
+          dateTime: dateTime,
+          // 添加可读的显示文本字段，用于设备日志页面显示
+          displayText: displayText
+        };
+        
+        formattedTips.push(formattedTip);
+      } catch (error) {
+        console.error(`formatTipsForDp113: 处理记录 [${index}] 时出错:`, error, tip);
+      }
+    });
+    
+    if (formattedTips.length === 0) {
+      console.warn('formatTipsForDp113: 没有有效的记录可以格式化');
+      return JSON.stringify([]);
+    }
+    
+    const jsonString = JSON.stringify(formattedTips);
+    
+    // 验证JSON字符串是否有效
+    try {
+      JSON.parse(jsonString);
+      console.log(`formatTipsForDp113: 成功格式化 ${formattedTips.length} 条记录，JSON长度: ${jsonString.length} 字节`);
+    } catch (error) {
+      console.error('formatTipsForDp113: 生成的JSON字符串无效:', error);
+      return JSON.stringify([]);
+    }
+    
+    return jsonString;
+  } catch (error) {
+    console.error('formatTipsForDp113 error:', error);
     return JSON.stringify([]);
   }
 }
@@ -548,6 +685,7 @@ function findHistoryRecordFromCloud(deviceId, recordId) {
 // 导出函数
 module.exports = {
   formatHistoryForDp112,
+  formatTipsForDp113,
   saveHistoryToCloud,
   getHistoryFromCloud,
   getDpReportLog,
