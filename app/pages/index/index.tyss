@@ -88,7 +88,7 @@
 }
 
 .summary-value {
-  font-size: 96rpx;
+  font-size: 88rpx;
   font-weight: 700;
   color: #FFFFFF;
   line-height: 1.2;
@@ -97,7 +97,7 @@
 }
 
 .summary-label {
-  font-size: 36rpx;
+  font-size: 32rpx;
   color: #B0B0B0;
   line-height: 1.4;
   margin-top: 8rpx;
@@ -105,7 +105,6 @@
 
 .summary-right {
   flex-shrink: 0;
-  margin-left: 40rpx;
 }
 
 /* 自行车圆形背景 */
@@ -140,7 +139,6 @@
   position: relative;
   margin-top: 40rpx;
 }
-
 /* 常用功能区域 */
 /* 常用功能区域 */
 .common-functions {
