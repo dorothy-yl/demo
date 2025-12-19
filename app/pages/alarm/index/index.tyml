@@ -9,17 +9,21 @@
     </view>
     
     <view class="header-right">
-      <text 
-        class="delete-text" 
+      <!-- 编辑模式：显示删除垃圾桶图标 -->
+      <image 
+        class="delete-icon" 
         ty:if="{{activeTab === 'tips' && editingTipId}}"
+        src="../../../assets/icons/trash.svg" 
         bindtap="deleteTip"
-      >删除</text>
+      />
+      <!-- Tips页面且非编辑模式：显示"我的日程" -->
       <text 
-        class="schedule-link {{activeTab === 'schedule' ? 'active' : ''}}"
-        ty:if="{{!(activeTab === 'tips' && editingTipId)}}"
+        class="schedule-link" 
+        ty:if="{{activeTab === 'tips' && !editingTipId}}"
         bindtap="switchTab"
         data-tab="schedule"
       >我的日程</text>
+      <!-- 我的日程页面：不显示任何内容 -->
     </view>
   </view>
 
@@ -188,7 +192,7 @@
           class="year-picker-view"
           value="{{yearPickerIndex}}"
           bindchange="onYearPickerChange"
-          indicator-style="height: 40px; background-color: rgba(82, 196, 26, 0.1); border-top: 1px solid rgba(82, 196, 26, 0.3); border-bottom: 1px solid rgba(82, 196, 26, 0.3);"
+          indicator-style="height: 40px; background-color: rgba(255,255,255, 0.1); border-top: 1px solid rgba(255,255,255, 0.1); border-bottom: 1px solid rgba(255,255,255, 0.1);"
           mask-style="opacity: 0.3;"
         >
           <picker-view-column>
@@ -203,7 +207,7 @@
         </picker-view>
       </view>
       <view class="year-picker-footer">
-        <button class="year-picker-confirm-btn" bindtap="confirmYear">确定</button>
+        <button class="year-picker-confirm-btn" bindtap="confirmYear">Sure</button>
       </view>
     </view>
   </view>

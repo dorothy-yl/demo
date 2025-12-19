@@ -1,3 +1,4 @@
+
 Page({
   data: {
     // 标签页
@@ -63,6 +64,9 @@ Page({
       timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
     });
     
+    // 参照 exercise.js 的逻辑：先加载本地数据，确保即使云端拉取失败也能显示数据
+    this.loadTips();
+    
     // 从云端拉取提醒数据（如果失败会自动降级到本地加载）
     this.fetchTipsFromCloud();
     
@@ -74,7 +78,8 @@ Page({
   },
 
   onShow() {
-    // 每次显示页面时从云端拉取最新数据
+    // 参照 exercise.js 的逻辑：先加载本地数据，再尝试从云端拉取最新数据
+    this.loadTips();
     this.fetchTipsFromCloud();
   },
 
@@ -99,33 +104,128 @@ Page({
 
   // 加载提醒列表
   loadTips() {
-    const tips = ty.getStorageSync('tips') || [];
-    // 按日期和时间排序（最新的在前）
-    tips.sort((a, b) => {
-      const dateA = new Date(a.dateTime).getTime();
-      const dateB = new Date(b.dateTime).getTime();
-      return dateB - dateA;
-    });
-    
-    // 格式化每个提醒的日期和时间用于显示
-    const formattedTips = tips.map(tip => {
-      const date = new Date(tip.dateTime);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-      const weekday = weekdays[date.getDay()];
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
+    try {
+      // 参照 exercise.js 第762行的逻辑：统一使用字符串key的方式获取存储数据
+      let tips = ty.getStorageSync('tips') || [];
       
-      return {
-        ...tip,
-        formattedDate: `${year}.${month}.${day}.${weekday}`,
-        formattedTime: `${hours}:${minutes}`
-      };
-    });
-    
-    this.setData({ tips: formattedTips });
+      // 参照 exercise.js 第765-768行：确保history是数组
+      if (!Array.isArray(tips)) {
+        console.warn('tips is not an array, resetting to empty array');
+        ty.setStorageSync('tips', []);
+        tips = [];
+      }
+      
+      // 按日期和时间排序（最新的在前）
+      tips.sort((a, b) => {
+        const dateA = new Date(a.dateTime || a.date || 0).getTime();
+        const dateB = new Date(b.dateTime || b.date || 0).getTime();
+        return dateB - dateA;
+      });
+      
+      // 格式化每个提醒的日期和时间用于显示
+      const formattedTips = tips.map(tip => {
+        // 确保 tip 是有效对象
+        if (!tip || typeof tip !== 'object') {
+          return null;
+        }
+        
+        const date = new Date(tip.dateTime || tip.date);
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+          console.warn('Invalid date for tip:', tip);
+          return null;
+        }
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        const weekday = weekdays[date.getDay()];
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return {
+          ...tip,
+          formattedDate: `${year}.${month}.${day}.${weekday}`,
+          formattedTime: `${hours}:${minutes}`
+        };
+      }).filter(tip => tip !== null); // 过滤掉无效的提醒
+      
+      console.log('加载提醒列表，共', formattedTips.length, '条');
+      this.setData({ tips: formattedTips });
+    } catch (error) {
+      console.error('加载提醒列表失败:', error);
+      // 出错时设置为空数组
+      this.setData({ tips: [] });
+    }
+  },
+
+  // 处理云端数据（提取为独立方法，便于复用和调试）
+  handleCloudData(cloudData) {
+    if (!cloudData) {
+      console.warn('云端数据为空，使用本地数据');
+      // 如果云端数据为空，加载本地数据
+      this.loadTips();
+      return;
+    }
+
+    console.log('开始处理云端数据，原始数据:', cloudData);
+    console.log('数据类型:', typeof cloudData);
+
+    try {
+      // 如果已经是对象，直接使用；如果是字符串，先解析
+      let tips;
+      if (typeof cloudData === 'string') {
+        tips = JSON.parse(cloudData);
+      } else if (Array.isArray(cloudData)) {
+        tips = cloudData;
+      } else {
+        console.warn('云端数据格式不正确，期望字符串或数组，实际:', typeof cloudData);
+        // 数据格式不正确时，使用本地数据
+        this.loadTips();
+        return;
+      }
+      
+      if (Array.isArray(tips)) {
+        console.log('解析成功，共', tips.length, '条提醒');
+        console.log('提醒数据详情:', JSON.stringify(tips, null, 2));
+        
+        // 参照 exercise.js 第774-785行：保存到本地存储，使用setStorage确保UTF-8编码正确处理
+        ty.setStorage({
+          key: 'tips',
+          data: tips,
+          success: (res) => {
+            console.log('云端提醒数据已保存到本地存储');
+            // 重新加载提醒列表
+            this.loadTips();
+          },
+          fail: (err) => {
+            console.error('保存云端数据到本地存储失败:', err);
+            // 即使保存失败，也尝试使用 setStorageSync 作为降级方案
+            try {
+              ty.setStorageSync('tips', tips);
+              this.loadTips();
+            } catch (syncError) {
+              console.error('setStorageSync 也失败:', syncError);
+              // 如果都失败了，至少加载本地数据
+              this.loadTips();
+            }
+          }
+        });
+        
+        console.log('云端提醒数据已同步到本地，共', tips.length, '条');
+      } else {
+        console.warn('云端数据格式错误，应为数组，实际:', typeof tips);
+        // 数据格式错误时，使用本地数据
+        this.loadTips();
+      }
+    } catch (error) {
+      console.error('解析云端提醒数据失败:', error);
+      console.error('错误堆栈:', error.stack);
+      console.error('原始数据:', cloudData);
+      // 解析失败时，使用本地数据
+      this.loadTips();
+    }
   },
 
   // 设置 DP 点 113 监听（运动提醒云端同步）
@@ -139,34 +239,39 @@ Page({
       return;
     }
 
+    // formatDpState 辅助函数
+    const formatDpState = (dpState) => {
+      return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+    };
+
     // 监听 DP 点数据变化
     const _onDpDataChange = (event) => {
-      if (!event.dps) return;
+      if (!event.dps) {
+        console.log('onDpDataChange: event.dps 为空');
+        return;
+      }
 
+      console.log('onDpDataChange 收到数据:', JSON.stringify(event.dps));
+      
       const dpState = event.dps;
-      // 检查是否有 DP 点 113（运动提醒）
+      
+      // 方法1: 直接访问（保持兼容性）
       if (dpState['113'] !== undefined) {
         const cloudData = dpState['113'];
-        console.log('收到云端运动提醒数据（DP113）:', cloudData);
-
-        try {
-          // 解析 JSON 字符串
-          const tips = JSON.parse(cloudData);
-          
-          if (Array.isArray(tips)) {
-            // 保存到本地存储
-            ty.setStorageSync('tips', tips);
-            
-            // 重新加载提醒列表
-            this.loadTips();
-            
-            console.log('云端提醒数据已同步到本地，共', tips.length, '条');
-          } else {
-            console.warn('云端数据格式错误，应为数组');
-          }
-        } catch (error) {
-          console.error('解析云端提醒数据失败:', error);
-        }
+        console.log('收到云端运动提醒数据（DP113，方法1）:', cloudData);
+        this.handleCloudData(cloudData);
+        return;
+      }
+      
+      // 方法2: 使用 formatDpState 格式化后查找（更可靠）
+      const dpArray = formatDpState(dpState);
+      const dp113 = dpArray.find(item => item.code === '113' || item.code === 113);
+      
+      if (dp113) {
+        console.log('收到云端运动提醒数据（DP113，方法2）:', dp113.value);
+        this.handleCloudData(dp113.value);
+      } else {
+        console.log('未找到 DP113 数据，可用的 DP 点:', dpArray.map(item => item.code));
       }
     };
 
@@ -234,6 +339,8 @@ Page({
 
     if (!deviceId) {
       console.warn('设备ID不存在，无法从云端拉取数据');
+      // 如果设备ID不存在，仍然从本地加载
+      this.loadTips();
       return;
     }
 
@@ -241,52 +348,231 @@ Page({
       console.log('=== 从云端拉取运动提醒（DP113）===');
       console.log('设备ID:', deviceId);
 
-      // 获取设备当前状态，触发云端数据下发
-      ty.device.getDpDataFromDevice({
-        deviceId: deviceId,
-        success: (res) => {
-          console.log('✓ 获取设备状态成功');
-          console.log('设备状态:', JSON.stringify(res));
-          
-          // 检查是否有 DP 点 113 数据
-          if (res.dps && res.dps['113']) {
-            const cloudData = res.dps['113'];
-            console.log('收到云端运动提醒数据:', cloudData);
+      // 方法1: 尝试从日志接口获取（类似历史运动页面）
+      if (ty.getAnalyticsLogsPublishLog) {
+        ty.getAnalyticsLogsPublishLog({
+          devId: deviceId,
+          dpIds: '113', // DP 点 113
+          offset: 0,
+          limit: 10, // 获取最新的10条日志
+        })
+          .then((response) => {
+            console.log('✓ 从日志接口获取数据成功');
+            console.log('云端返回的原始数据:', response);
             
-            try {
-              const tips = JSON.parse(cloudData);
+            // 解析云端日志数据
+            const tips = this.parseTipsFromLogs(response);
+            
+            if (tips && tips.length > 0) {
+              console.log('从日志中解析出', tips.length, '条提醒');
+              console.log('解析出的提醒数据预览:', tips.slice(0, 2));
               
-              if (Array.isArray(tips)) {
-                // 保存到本地存储
-                ty.setStorageSync('tips', tips);
-                
-                // 重新加载提醒列表
-                this.loadTips();
-                
-                console.log('云端提醒数据已同步到本地，共', tips.length, '条');
-              } else {
-                console.warn('云端数据格式错误，应为数组');
-              }
-            } catch (error) {
-              console.error('解析云端提醒数据失败:', error);
+              // 参照 handleCloudData 方法：使用 setStorage 确保 UTF-8 编码正确处理
+              ty.setStorage({
+                key: 'tips',
+                data: tips,
+                success: (res) => {
+                  console.log('✓ 云端提醒数据已保存到本地存储');
+                  // 重新加载提醒列表
+                  this.loadTips();
+                },
+                fail: (err) => {
+                  console.error('✗ 保存云端数据到本地存储失败:', err);
+                  // 降级方案：尝试使用 setStorageSync
+                  try {
+                    ty.setStorageSync('tips', tips);
+                    console.log('✓ 使用 setStorageSync 保存成功');
+                    this.loadTips();
+                  } catch (syncError) {
+                    console.error('✗ setStorageSync 也失败:', syncError);
+                    // 如果都失败了，直接格式化并设置到页面
+                    console.log('直接设置数据到页面...');
+                    const formattedTips = tips.map(tip => {
+                      if (!tip || typeof tip !== 'object') {
+                        return null;
+                      }
+                      const date = new Date(tip.dateTime || tip.date);
+                      if (isNaN(date.getTime())) {
+                        console.warn('无效日期:', tip);
+                        return null;
+                      }
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                      const weekday = weekdays[date.getDay()];
+                      const hours = String(date.getHours()).padStart(2, '0');
+                      const minutes = String(date.getMinutes()).padStart(2, '0');
+                      return {
+                        ...tip,
+                        formattedDate: `${year}.${month}.${day}.${weekday}`,
+                        formattedTime: `${hours}:${minutes}`
+                      };
+                    }).filter(tip => tip !== null);
+                    console.log('直接设置', formattedTips.length, '条提醒到页面');
+                    this.setData({ tips: formattedTips });
+                  }
+                }
+              });
+            } else {
+              console.log('日志中暂无提醒数据，尝试方法2');
+              // 如果日志中没有数据，尝试方法2
+              this.fetchTipsFromDeviceState();
             }
-          } else {
-            console.log('云端暂无运动提醒数据（DP113）');
-          }
-        },
-        fail: (error) => {
-          console.error('✗ 从云端拉取提醒失败:');
-          console.error('错误详情:', JSON.stringify(error));
-          console.error('错误消息:', error.errorMsg || error.message || error);
-          
-          // 如果拉取失败，仍然从本地加载
-          this.loadTips();
-        }
-      });
+          })
+          .catch((error) => {
+            console.error('从日志接口获取数据失败:', error);
+            // 如果日志接口失败，尝试方法2
+            this.fetchTipsFromDeviceState();
+          });
+      } else {
+        // 如果日志接口不可用，使用设备状态接口
+        console.log('日志接口不可用，使用设备状态接口');
+        this.fetchTipsFromDeviceState();
+      }
     } catch (error) {
       console.error('从云端拉取运动提醒失败:', error);
+      console.error('错误堆栈:', error.stack);
       // 如果出错，从本地加载
       this.loadTips();
+    }
+  },
+
+  // 方法2: 从设备状态获取（备用方案）
+  fetchTipsFromDeviceState() {
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    console.log('尝试从设备状态获取数据...');
+    
+    // 获取设备当前状态
+    ty.device.getDpDataFromDevice({
+      deviceId: deviceId,
+      success: (res) => {
+        console.log('✓ 获取设备状态成功');
+        console.log('完整响应数据:', JSON.stringify(res, null, 2));
+        
+        // 检查是否有 DP 点 113 数据
+        if (res.dps && res.dps['113'] !== undefined) {
+          const cloudData = res.dps['113'];
+          console.log('收到云端运动提醒数据（从 getDpDataFromDevice）:', cloudData);
+          console.log('数据类型:', typeof cloudData);
+          
+          // 使用统一的数据处理方法
+          this.handleCloudData(cloudData);
+        } else {
+          console.log('云端暂无运动提醒数据（DP113）');
+          console.log('可用的 DP 点:', res.dps ? Object.keys(res.dps) : '无');
+          // 如果云端没有数据，从本地加载
+          this.loadTips();
+        }
+      },
+      fail: (error) => {
+        console.error('✗ 从设备状态获取数据失败:');
+        console.error('错误详情:', JSON.stringify(error));
+        console.error('错误消息:', error.errorMsg || error.message || error);
+        
+        // 如果拉取失败，仍然从本地加载
+        this.loadTips();
+      }
+    });
+  },
+
+  // 从日志数据中解析提醒数据
+  parseTipsFromLogs(response) {
+    const allTips = [];
+    
+    try {
+      if (!response) {
+        console.warn('云端返回数据为空');
+        return [];
+      }
+
+      // 如果 response 是数组，直接遍历
+      // 如果 response 有 data 或 list 字段，使用该字段
+      let logItems = [];
+      if (Array.isArray(response)) {
+        logItems = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        logItems = response.data;
+      } else if (response.list && Array.isArray(response.list)) {
+        logItems = response.list;
+      } else if (response.dps && Array.isArray(response.dps)) {
+        logItems = response.dps;
+      } else {
+        console.warn('云端返回数据格式不正确，无法找到数组字段');
+        return [];
+      }
+
+      console.log('找到', logItems.length, '条日志记录');
+
+      logItems.forEach((logItem, index) => {
+        try {
+          // 从日志中提取 DP 点 113 的值
+          // 根据设备日志截图，优先检查"事件详情"字段（中文）
+          let tipData = null;
+          
+          // 优先检查"事件详情"字段（根据截图，这是主要字段）
+          if (logItem['事件详情'] !== undefined && logItem['事件详情'] !== null) {
+            const eventDetail = logItem['事件详情'];
+            if (typeof eventDetail === 'string' && eventDetail.trim()) {
+              try {
+                tipData = JSON.parse(eventDetail);
+              } catch (parseError) {
+                console.warn(`解析"事件详情"JSON失败 (记录${index}):`, parseError);
+              }
+            } else {
+              tipData = eventDetail;
+            }
+          } else if (logItem.eventDetail !== undefined && logItem.eventDetail !== null) {
+            tipData = typeof logItem.eventDetail === 'string' 
+              ? JSON.parse(logItem.eventDetail) 
+              : logItem.eventDetail;
+          } else if (logItem.value !== undefined && logItem.value !== null) {
+            tipData = typeof logItem.value === 'string' 
+              ? JSON.parse(logItem.value) 
+              : logItem.value;
+          } else if (logItem.dpValue !== undefined && logItem.dpValue !== null) {
+            tipData = typeof logItem.dpValue === 'string' 
+              ? JSON.parse(logItem.dpValue) 
+              : logItem.dpValue;
+          } else if (logItem.detail !== undefined && logItem.detail !== null) {
+            tipData = typeof logItem.detail === 'string' 
+              ? JSON.parse(logItem.detail) 
+              : logItem.detail;
+          }
+
+          // 如果 tipData 是数组，展开为多条记录
+          if (Array.isArray(tipData)) {
+            tipData.forEach(tip => {
+              if (tip && tip.id) {
+                allTips.push(tip);
+              }
+            });
+          } else if (tipData && typeof tipData === 'object' && tipData.id) {
+            // 单条记录
+            allTips.push(tipData);
+          }
+        } catch (error) {
+          console.warn(`解析第 ${index} 条日志记录失败:`, error, logItem);
+        }
+      });
+
+      // 去重（根据 id），保留最新的记录
+      const uniqueTips = [];
+      const tipIds = new Set();
+      allTips.forEach(tip => {
+        if (!tipIds.has(tip.id)) {
+          tipIds.add(tip.id);
+          uniqueTips.push(tip);
+        }
+      });
+
+      console.log(`成功解析 ${uniqueTips.length} 条云端提醒记录`);
+      return uniqueTips;
+    } catch (error) {
+      console.error('解析云端日志数据失败:', error);
+      return [];
     }
   },
 
@@ -602,8 +888,14 @@ Page({
     dateTime.setSeconds(0);
     dateTime.setMilliseconds(0);
     
-    // 获取原始tips数组（不含格式化字段）
-    const rawTips = ty.getStorageSync('tips') || [];
+    // 参照 exercise.js 第762行：统一使用字符串key的方式获取存储数据
+    let rawTips = ty.getStorageSync('tips') || [];
+    
+    // 参照 exercise.js 第765-768行：确保history是数组
+    if (!Array.isArray(rawTips)) {
+      console.warn('tips is not an array, resetting to empty array');
+      rawTips = [];
+    }
     
     if (editingTipId) {
       // 编辑模式：更新现有提醒
@@ -629,39 +921,88 @@ Page({
       rawTips.push(newTip);
     }
     
-    // 保存到本地存储
-    ty.setStorageSync('tips', rawTips);
-    
-    // 上报到云端（DP 点 113）
-    this.uploadTipsToCloud(rawTips);
-    
-    // 保存到本地存储后重新加载（会自动格式化日期和时间）
-    this.loadTips();
+    // 参照 exercise.js 第774-785行：保存到storage，使用setStorage确保UTF-8编码正确处理
+    try {
+      ty.setStorage({
+        key: 'tips',
+        data: rawTips,
+        success: (res) => {
+          console.log('提醒保存到本地存储成功');
+          // 上报到云端（DP 点 113）
+          this.uploadTipsToCloud(rawTips);
+          // 保存到本地存储后重新加载（会自动格式化日期和时间）
+          this.loadTips();
+        },
+        fail: (err) => {
+          console.error('提醒保存到本地存储失败:', err);
+          // 降级方案：使用 setStorageSync
+          try {
+            ty.setStorageSync('tips', rawTips);
+            // 上报到云端（DP 点 113）
+            this.uploadTipsToCloud(rawTips);
+            // 保存到本地存储后重新加载（会自动格式化日期和时间）
+            this.loadTips();
+          } catch (syncError) {
+            console.error('setStorageSync 也失败:', syncError);
+            ty.showToast({
+              title: '数据保存失败',
+              icon: 'none'
+            });
+            return;
+          }
+        }
+      });
+    } catch (error) {
+      console.error('保存提醒到本地存储失败:', error);
+      ty.showToast({
+        title: '数据保存失败',
+        icon: 'none'
+      });
+      return;
+    }
     
     // 重置表单
     const now = new Date();
     const hour = now.getHours();
     const minute = now.getMinutes();
-    this.setData({
-      tipTitle: '',
-      editingTipId: null,
-      selectedDate: now,
-      selectedTime: {
-        hour: hour,
-        minute: minute
-      },
-      timePickerIndex: [hour, minute],
-      dateDisplayText: this.getDateDisplayText(now),
-      timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-    });
     
-    // 切换到日程列表
-    this.setData({ activeTab: 'schedule' });
-    
+    // 显示保存成功提示
     ty.showToast({
-      title: editingTipId ? '更新成功' : '保存成功',
-      icon: 'success'
+      title: '保存成功',
+      icon: 'success',
+      duration: 2000
     });
+    
+    // 如果是编辑模式，保存后跳转到我的日程页面
+    if (editingTipId) {
+      this.setData({
+        tipTitle: '',
+        editingTipId: null,
+        selectedDate: now,
+        selectedTime: {
+          hour: hour,
+          minute: minute
+        },
+        timePickerIndex: [hour, minute],
+        dateDisplayText: this.getDateDisplayText(now),
+        timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+        activeTab: 'schedule' // 跳转到我的日程页面
+      });
+    } else {
+      // 新建模式：只重置表单，不跳转（用户需要点击右上角"我的日程"才跳转）
+      this.setData({
+        tipTitle: '',
+        editingTipId: null,
+        selectedDate: now,
+        selectedTime: {
+          hour: hour,
+          minute: minute
+        },
+        timePickerIndex: [hour, minute],
+        dateDisplayText: this.getDateDisplayText(now),
+        timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+      });
+    }
   },
 
   // 编辑提醒
@@ -703,39 +1044,98 @@ Page({
       content: '确定要删除这个提醒吗？',
       success: (res) => {
         if (res.confirm) {
-          // 获取原始tips数组（不含格式化字段）
-          const rawTips = ty.getStorageSync('tips') || [];
+          // 参照 exercise.js 第762行：统一使用字符串key的方式获取存储数据
+          let rawTips = ty.getStorageSync('tips') || [];
+          
+          // 参照 exercise.js 第765-768行：确保history是数组
+          if (!Array.isArray(rawTips)) {
+            console.warn('tips is not an array, resetting to empty array');
+            rawTips = [];
+          }
+          
           const updatedTips = rawTips.filter(t => t.id !== editingTipId);
           
-          // 保存到本地存储
-          ty.setStorageSync('tips', updatedTips);
-          
-          // 上报到云端（DP 点 113）
-          this.uploadTipsToCloud(updatedTips);
-          
-          // 重新加载提醒列表
-          this.loadTips();
-          
-          const now = new Date();
-          const hour = now.getHours();
-          const minute = now.getMinutes();
-          this.setData({
-            tipTitle: '',
-            editingTipId: null,
-            selectedDate: now,
-            selectedTime: {
-              hour: hour,
-              minute: minute
-            },
-            timePickerIndex: [hour, minute],
-            dateDisplayText: this.getDateDisplayText(now),
-            timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-          });
-          
-          ty.showToast({
-            title: '删除成功',
-            icon: 'success'
-          });
+          // 参照 exercise.js 第774-785行：保存到storage，使用setStorage确保UTF-8编码正确处理
+          try {
+            ty.setStorage({
+              key: 'tips',
+              data: updatedTips,
+              success: (res) => {
+                console.log('删除后保存到本地存储成功');
+                // 上报到云端（DP 点 113）
+                this.uploadTipsToCloud(updatedTips);
+                // 重新加载提醒列表
+                this.loadTips();
+                
+                const now = new Date();
+                const hour = now.getHours();
+                const minute = now.getMinutes();
+                this.setData({
+                  tipTitle: '',
+                  editingTipId: null,
+                  selectedDate: now,
+                  selectedTime: {
+                    hour: hour,
+                    minute: minute
+                  },
+                  timePickerIndex: [hour, minute],
+                  dateDisplayText: this.getDateDisplayText(now),
+                  timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+                  activeTab: 'schedule' // 删除后跳转到我的日程页面
+                });
+                
+                ty.showToast({
+                  title: '删除成功',
+                  icon: 'success'
+                });
+              },
+              fail: (err) => {
+                console.error('删除后保存到本地存储失败:', err);
+                // 降级方案：使用 setStorageSync
+                try {
+                  ty.setStorageSync('tips', updatedTips);
+                  // 上报到云端（DP 点 113）
+                  this.uploadTipsToCloud(updatedTips);
+                  // 重新加载提醒列表
+                  this.loadTips();
+                  
+                  const now = new Date();
+                  const hour = now.getHours();
+                  const minute = now.getMinutes();
+                  this.setData({
+                    tipTitle: '',
+                    editingTipId: null,
+                    selectedDate: now,
+                    selectedTime: {
+                      hour: hour,
+                      minute: minute
+                    },
+                    timePickerIndex: [hour, minute],
+                    dateDisplayText: this.getDateDisplayText(now),
+                    timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+                    activeTab: 'schedule' // 删除后跳转到我的日程页面
+                  });
+                  
+                  ty.showToast({
+                    title: '删除成功',
+                    icon: 'success'
+                  });
+                } catch (syncError) {
+                  console.error('setStorageSync 也失败:', syncError);
+                  ty.showToast({
+                    title: '删除失败',
+                    icon: 'none'
+                  });
+                }
+              }
+            });
+          } catch (error) {
+            console.error('删除提醒后保存失败:', error);
+            ty.showToast({
+              title: '删除失败',
+              icon: 'none'
+            });
+          }
         }
       }
     });
