@@ -16,14 +16,14 @@
         src="../../../assets/icons/trash.svg" 
         bindtap="deleteTip"
       />
-      <!-- Tips页面且非编辑模式：显示"我的日程" -->
-      <text 
-        class="schedule-link" 
-        ty:if="{{activeTab === 'tips' && !editingTipId}}"
-        bindtap="switchTab"
-        data-tab="schedule"
-      >我的日程</text>
-      <!-- 我的日程页面：不显示任何内容 -->
+      
+      <!-- 我的日程页面：显示+号按钮 -->
+      <image 
+        class="add-icon" 
+        ty:if="{{activeTab === 'schedule'}}"
+        src="../../../assets/add.svg" 
+        bindtap="goToCreateTip"
+      />
     </view>
   </view>
 
@@ -175,7 +175,7 @@
 
   <!-- 固定底部按钮 -->
   <view class="sure-button-fixed" ty:if="{{activeTab === 'tips'}}" bindtap="saveTip">
-    <text class="sure-button-text">Sure</text>
+    <text class="sure-button-text"> confirm </text>
   </view>
 
   <!-- 年份选择器弹窗 -->

@@ -80,6 +80,17 @@
   opacity: 0.7;
 }
 
+.add-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.add-icon:active {
+  opacity: 0.7;
+}
+
 .schedule-link {
   font-size: 16px;
   color:  #A2E525;
@@ -514,7 +525,7 @@ color: #9E9E9E;
 
 .schedule-card-title {
   display: block;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #FFFFFF;
   margin-bottom: 8px;
@@ -527,13 +538,13 @@ color: #9E9E9E;
 }
 
 .schedule-card-date {
-  font-size: 14px;
+  font-size: 18px;
   color: #FFFFFF;
   opacity: 0.7;
 }
 
 .schedule-card-time {
-  font-size: 14px;
+  font-size: 18px;
   color: #FFFFFF;
   opacity: 0.7;
 }

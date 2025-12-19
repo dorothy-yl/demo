@@ -7,7 +7,7 @@ const { formatTipsForDp113 } = require('../../../utils/cloudSync.js');
 Page({
   data: {
     // 标签页
-    activeTab: 'tips', // 'tips' 或 'schedule'
+    activeTab: 'schedule', // 'tips' 或 'schedule'
     
     // Tips 标签页数据
     tipTitle: '',
@@ -699,6 +699,35 @@ Page({
     }
   },
 
+  // 跳转到创建提醒页面
+  goToCreateTip() {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    
+    this.setData({
+      activeTab: 'tips',
+      tipTitle: '',
+      editingTipId: null,
+      selectedDate: now,
+      selectedTime: {
+        hour: hour,
+        minute: minute
+      },
+      timePickerIndex: [hour, minute],
+      dateDisplayText: this.getDateDisplayText(now),
+      timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+      showDatePicker: false,
+      showTimePicker: false
+    });
+    
+    // 更新日历显示
+    this.setData({
+      calendarCurrentDate: new Date(now.getFullYear(), now.getMonth(), 1)
+    });
+    this.generateCalendar();
+  },
+
   // 标题输入
   onTitleInput(e) {
     this.setData({
@@ -1029,6 +1058,34 @@ Page({
       rawTips.push(newTip);
     }
     
+    // 重置表单并跳转的辅助函数
+    const resetFormAndNavigate = () => {
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      
+      this.setData({
+        tipTitle: '',
+        editingTipId: null,
+        selectedDate: now,
+        selectedTime: {
+          hour: hour,
+          minute: minute
+        },
+        timePickerIndex: [hour, minute],
+        dateDisplayText: this.getDateDisplayText(now),
+        timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+        activeTab: 'schedule' // 跳转到我的日程页面
+      });
+      
+      // 显示保存成功提示
+      ty.showToast({
+        title: '保存成功',
+        icon: 'success',
+        duration: 2000
+      });
+    };
+    
     // 参照 exercise.js 第774-785行：保存到storage，使用setStorage确保UTF-8编码正确处理
     try {
       ty.setStorage({
@@ -1040,6 +1097,8 @@ Page({
           this.uploadTipsToCloud(rawTips);
           // 保存到本地存储后重新加载（会自动格式化日期和时间）
           this.loadTips();
+          // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
+          resetFormAndNavigate();
         },
         fail: (err) => {
           console.error('提醒保存到本地存储失败:', err);
@@ -1050,6 +1109,8 @@ Page({
             this.uploadTipsToCloud(rawTips);
             // 保存到本地存储后重新加载（会自动格式化日期和时间）
             this.loadTips();
+            // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
+            resetFormAndNavigate();
           } catch (syncError) {
             console.error('setStorageSync 也失败:', syncError);
             ty.showToast({
@@ -1067,49 +1128,6 @@ Page({
         icon: 'none'
       });
       return;
-    }
-    
-    // 重置表单
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-    
-    // 显示保存成功提示
-    ty.showToast({
-      title: '保存成功',
-      icon: 'success',
-      duration: 2000
-    });
-    
-    // 如果是编辑模式，保存后跳转到我的日程页面
-    if (editingTipId) {
-      this.setData({
-        tipTitle: '',
-        editingTipId: null,
-        selectedDate: now,
-        selectedTime: {
-          hour: hour,
-          minute: minute
-        },
-        timePickerIndex: [hour, minute],
-        dateDisplayText: this.getDateDisplayText(now),
-        timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-        activeTab: 'schedule' // 跳转到我的日程页面
-      });
-    } else {
-      // 新建模式：只重置表单，不跳转（用户需要点击右上角"我的日程"才跳转）
-      this.setData({
-        tipTitle: '',
-        editingTipId: null,
-        selectedDate: now,
-        selectedTime: {
-          hour: hour,
-          minute: minute
-        },
-        timePickerIndex: [hour, minute],
-        dateDisplayText: this.getDateDisplayText(now),
-        timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-      });
     }
   },
 
@@ -1163,6 +1181,31 @@ Page({
           
           const updatedTips = rawTips.filter(t => t.id !== editingTipId);
           
+          // 重置表单并跳转的辅助函数
+          const resetAndNavigate = () => {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            this.setData({
+              tipTitle: '',
+              editingTipId: null,
+              selectedDate: now,
+              selectedTime: {
+                hour: hour,
+                minute: minute
+              },
+              timePickerIndex: [hour, minute],
+              dateDisplayText: this.getDateDisplayText(now),
+              timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+              activeTab: 'schedule' // 删除后跳转到我的日程页面
+            });
+            
+            ty.showToast({
+              title: '删除成功',
+              icon: 'success'
+            });
+          };
+          
           // 参照 exercise.js 第774-785行：保存到storage，使用setStorage确保UTF-8编码正确处理
           try {
             ty.setStorage({
@@ -1174,28 +1217,8 @@ Page({
                 this.uploadTipsToCloud(updatedTips);
                 // 重新加载提醒列表
                 this.loadTips();
-                
-                const now = new Date();
-                const hour = now.getHours();
-                const minute = now.getMinutes();
-                this.setData({
-                  tipTitle: '',
-                  editingTipId: null,
-                  selectedDate: now,
-                  selectedTime: {
-                    hour: hour,
-                    minute: minute
-                  },
-                  timePickerIndex: [hour, minute],
-                  dateDisplayText: this.getDateDisplayText(now),
-                  timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-                  activeTab: 'schedule' // 删除后跳转到我的日程页面
-                });
-                
-                ty.showToast({
-                  title: '删除成功',
-                  icon: 'success'
-                });
+                // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
+                resetAndNavigate();
               },
               fail: (err) => {
                 console.error('删除后保存到本地存储失败:', err);
@@ -1206,28 +1229,8 @@ Page({
                   this.uploadTipsToCloud(updatedTips);
                   // 重新加载提醒列表
                   this.loadTips();
-                  
-                  const now = new Date();
-                  const hour = now.getHours();
-                  const minute = now.getMinutes();
-                  this.setData({
-                    tipTitle: '',
-                    editingTipId: null,
-                    selectedDate: now,
-                    selectedTime: {
-                      hour: hour,
-                      minute: minute
-                    },
-                    timePickerIndex: [hour, minute],
-                    dateDisplayText: this.getDateDisplayText(now),
-                    timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-                    activeTab: 'schedule' // 删除后跳转到我的日程页面
-                  });
-                  
-                  ty.showToast({
-                    title: '删除成功',
-                    icon: 'success'
-                  });
+                  // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
+                  resetAndNavigate();
                 } catch (syncError) {
                   console.error('setStorageSync 也失败:', syncError);
                   ty.showToast({
@@ -1254,7 +1257,7 @@ Page({
   onBack() {
     const { activeTab } = this.data;
     
-    // 如果在 Tips 标签页，先切换到日程列表
+    // 如果在 Tips 标签页（创建/编辑页面），先切换到日程列表
     if (activeTab === 'tips') {
       this.setData({ 
         activeTab: 'schedule',
