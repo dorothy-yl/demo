@@ -1,7 +1,7 @@
 .container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 90vh;
   overflow: hidden;
   background-color: #2C3A4A;
   font-family: sans-serif;
@@ -162,8 +162,8 @@
 }
 
 .stats-card {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 16rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   box-sizing: border-box;
 }
 
@@ -189,7 +189,7 @@
 
 .stat-label {
   color: #a0a4b0;
-  font-size: 24rpx;
+  font-size: 30rpx;
   margin-top: 8rpx;
 }
 
@@ -200,40 +200,41 @@
 }
 
 .bottom-grid {
-  display: flex;
-  gap: 24rpx;
-  flex: 1;
-}
-
-.big-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 240rpx;
-  padding: 24rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 80px 80px;
+  gap: 12px;
+  width: 100%;
   box-sizing: border-box;
 }
 
-.right-column {
-  flex: 1;
+.big-card {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  position: relative;
+  padding: 16px;
+  box-sizing: border-box;
+  grid-row: span 2;
+}
+
+.right-column {
+  display: contents;
 }
 
 .small-card {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   position: relative;
-  padding: 32rpx;
+  height: 80px;
+  padding: 16px;
   box-sizing: border-box;
 }
 
 .card-title {
-  color: #a0a4b0;
+  font-size: 15px;
+  color: #8E8E93;
+  margin-bottom: 8px;
+  text-align: left;
   font-family: sans-serif;
 }
 
@@ -243,41 +244,61 @@
 }
 
 .card-icon {
-  width: 30px;
-  height: 100px;
-  margin-right: 12rpx;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0;
+  margin-top: 4px;
 }
+
+.card-icon image {
+  width: 100%;
+  height: 100%;
+}
+
 .card-icon-small {
-  width: 32rpx;
-  height: 32rpx;
-  margin-top: 12rpx;
+  width: 24px;
+  height: 24px;
+  margin-bottom: auto;
   opacity: 0.8;
 }
 
+.card-icon-small image {
+  width: 100%;
+  height: 100%;
+}
+
 .big-value-row {
-  margin-top: 32rpx;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
   display: flex;
-  align-items: baseline;
-  justify-content: flex-end; /* Align right like screenshot */
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .small-value-row {
-  margin-top: 16rpx;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: flex-end;
 }
 
 .big-value {
-  color: #ffffff;
-  font-size: 86rpx;
+  font-size: 20px;
   font-weight: bold;
+  color: #FFFFFF;
+  text-align: right;
+  line-height: 1;
 }
 
 .medium-value {
-  color: #ffffff;
-  font-size: 54rpx;
+  font-size: 20px;
   font-weight: bold;
+  color: #FFFFFF;
+  text-align: right;
+  line-height: 1;
 }
 
 .unit {

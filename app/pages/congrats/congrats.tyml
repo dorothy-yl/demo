@@ -44,34 +44,37 @@
 
       <!-- Bottom Grid -->
       <view class="bottom-grid">
-        <!-- Left Big Card -->
+        <!-- Left Big Card - Speed -->
         <view class="stats-card big-card">
-          <view class="card-title-row">
-            <image class="card-icon" src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
-            <text class="card-title">Average speed</text>
+          <text class="card-title">Speed(km/h)</text>
+          <view class="card-icon">
+            <image src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
           </view>
           <view class="big-value-row">
             <text class="big-value">{{avgSpeed}}</text>
-            <text class="unit">km/h</text>
           </view>
         </view>
 
         <!-- Right Column -->
         <view class="right-column">
+          <!-- Power Card -->
           <view class="stats-card small-card">
-            <text class="card-title">Watt</text>
-            <image class="card-icon-small" src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
+            <text class="card-title">Power（W）</text>
+            <view class="card-icon-small">
+              <image src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
+            </view>
             <view class="small-value-row">
               <text class="medium-value">{{watt}}</text>
-              <text class="unit">w</text>
             </view>
           </view>
+          <!-- Distance Card -->
           <view class="stats-card small-card">
-            <text class="card-title">Distance</text>
-            <image class="card-icon-small" src="../../assets/icons/Group 11.svg" mode="aspectFit"></image>
+            <text class="card-title">Distance(km)</text>
+            <view class="card-icon-small">
+              <image src="../../assets/icons/Group 11.svg" mode="aspectFit"></image>
+            </view>
             <view class="small-value-row">
               <text class="medium-value">{{distance}}</text>
-              <text class="unit">km</text>
             </view>
           </view>
         </view>

@@ -136,6 +136,14 @@ Page({
       const rawDate = options.date || '12月11日 12:01:03';
       const formattedDate = this.formatDateString(rawDate);
       
+      // 处理speed值，优先使用URL参数中的speed或speedKmh
+      let speedValue = '19';
+      if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+        speedValue = parseFloat(options.speed).toFixed(1);
+      } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+        speedValue = parseFloat(options.speedKmh).toFixed(1);
+      }
+      
       record = {
         id: parseInt(id) || 1,
         duration: this.formatTime(durationSeconds),
@@ -144,7 +152,7 @@ Page({
         Load: options.Load || '18',
         calories: options.calories || '52',
         distance: distance.toFixed(2),
-        speed: options.speed || '19',
+        speed: speedValue,
         rpm: options.rpm || '52',
         watt: options.watt || '50.1',
         maxResistance: options.maxResistance || '19',
@@ -169,8 +177,13 @@ Page({
       if (!record.Load) {
         record.Load = record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0');
       }
-      // 设置 speed 字段
-      if (!record.speed) {
+      // 优先使用URL参数中的speed值（从exercise页面传递）
+      if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+        record.speed = parseFloat(options.speed).toFixed(1);
+      } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+        record.speed = parseFloat(options.speedKmh).toFixed(1);
+      } else if (!record.speed) {
+        // 如果没有URL参数，才使用record中的speed
         if (record.speedKmh !== undefined) {
           record.speed = parseFloat(record.speedKmh).toFixed(0);
         } else if (record.speed !== undefined) {
@@ -197,6 +210,14 @@ Page({
     
     // 从本地存储加载数据
     const record = this.loadRecordFromFallback(options);
+    
+    // 优先使用URL参数中的speed值（从exercise页面传递的数据）
+    if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+      record.speed = parseFloat(options.speed).toFixed(1);
+    } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+      record.speed = parseFloat(options.speedKmh).toFixed(1);
+    }
+    
     this.setData({
       record: record
     });

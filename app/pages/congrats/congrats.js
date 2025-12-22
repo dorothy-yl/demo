@@ -22,6 +22,7 @@ Page({
       exerciseData = {
         id: options.id,
         duration: parseInt(options.duration) || 0,
+        speed: parseFloat(options.speed) || 0,
         speedKmh: parseFloat(options.speedKmh) || 0,
         calories: parseFloat(options.calories) || 0,
         distance: parseFloat(options.distance) || 0.00,
@@ -58,9 +59,19 @@ Page({
       const rpm = exerciseData.rpm ? exerciseData.rpm : '0';
       const distance = exerciseData.distance ? exerciseData.distance.toFixed(2) : '0.00';
       
-      // 计算平均速度 = 总路程 / 时间（时间从秒转换为小时）
+      // 优先使用传递的speed值，如果没有则使用speedKmh，最后才计算平均速度
       const durationInHours = exerciseData.duration > 0 ? exerciseData.duration / 3600 : 0;
-      const avgSpeed = durationInHours > 0 ? (parseFloat(distance) / durationInHours).toFixed(1) : '0.0';
+      let avgSpeed = '0.0';
+      if (exerciseData.speed && exerciseData.speed > 0) {
+        // 优先使用传递的speed值（与exercise页面显示的值一致）
+        avgSpeed = parseFloat(exerciseData.speed).toFixed(1);
+      } else if (exerciseData.speedKmh && exerciseData.speedKmh > 0) {
+        // 如果没有speed，使用speedKmh
+        avgSpeed = parseFloat(exerciseData.speedKmh).toFixed(1);
+      } else if (durationInHours > 0) {
+        // 最后才使用计算的平均速度作为后备
+        avgSpeed = (parseFloat(distance) / durationInHours).toFixed(1);
+      }
       
       const watt = exerciseData.watt ? exerciseData.watt: '00';
       const date = exerciseData.dateCongrats || exerciseData.dateFormatted || '2025/09/12';
