@@ -132,6 +132,8 @@ function formatHistoryForDp112(historyData) {
         const maxResistanceValue = parseInt(record.maxResistance || 0);
         const minResistanceValue = parseInt(record.minResistance || 0);
         const heartRateValue = parseInt(record.heartRate || 0);
+        // 处理速度字段：支持 speed 和 speedKmh
+        const speedValue = parseFloat(record.speed || record.speedKmh || 0);
         
         // 生成可读的显示文本，用于设备日志页面显示
         const displayText = [
@@ -143,7 +145,10 @@ function formatHistoryForDp112(historyData) {
           `功率：${wattValue}W`,
           `最大阻力：${maxResistanceValue}`,
           `最小阻力：${minResistanceValue}`,
-          `心率：${heartRateValue}`
+          `心率：${heartRateValue}`,
+          `速度：${speedValue}`,
+          `标题：${record.pageTitle}`,
+          `模式：${record.isGoalMode ? '目标模式' : '快速开始'}`
         ].join(' | ');
         
         const formattedRecord = {
@@ -155,14 +160,6 @@ function formatHistoryForDp112(historyData) {
           load: loadValue,
           rpm: rpmValue,
           watt: wattValue,
-          max_load: maxResistanceValue,
-          min_load: minResistanceValue,
-          heart_rate: heartRateValue,
-          avgResistance: record.avgResistance || 0,
-          // 添加可读的显示文本字段，用于设备日志页面显示
-          displayText: displayText,
-          // 添加格式化的时长字符串
-          durationFormatted: formattedDuration
         };
         
         formattedRecords.push(formattedRecord);

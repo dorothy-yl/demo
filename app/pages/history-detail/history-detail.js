@@ -50,13 +50,26 @@ Page({
     const rawDate = logData.date || logData.dateCongrats || logData.cloudTimeStr || this.formatDate(new Date());
     const formattedDate = this.formatDateString(rawDate);
     
+    // 处理速度字段：支持 speed, speedKmh
+    let speedValue = '0';
+    if (logData.speedKmh !== undefined) {
+      speedValue = parseFloat(logData.speedKmh).toFixed(0);
+    } else if (logData.speed !== undefined) {
+      speedValue = parseFloat(logData.speed).toFixed(0);
+    }
+    
+    // 处理标题字段：支持 title, pageTitle
+    const titleValue = logData.title || logData.pageTitle || 'Quick Start';
+    
     return {
       id: parseInt(logData.id) || Date.now(),
       duration: this.formatTime(durationSeconds),
       date: formattedDate,
+      title: titleValue,
       Load: loadValue,
       calories: caloriesValue.toString(),
       distance: distanceValue.toFixed(2),
+      speed: speedValue,
       rpm: logData.rpm ? logData.rpm.toString() : '0',
       watt: logData.watt ? logData.watt.toString() : '0.0',
       maxResistance: logData.maxResistance ? logData.maxResistance.toString() : '0',
@@ -127,9 +140,11 @@ Page({
         id: parseInt(id) || 1,
         duration: this.formatTime(durationSeconds),
         date: formattedDate,
+        title: options.title || 'Quick Start',
         Load: options.Load || '18',
         calories: options.calories || '52',
         distance: distance.toFixed(2),
+        speed: options.speed || '19',
         rpm: options.rpm || '52',
         watt: options.watt || '50.1',
         maxResistance: options.maxResistance || '19',
@@ -153,6 +168,20 @@ Page({
       // 设置 Load 字段（从 load 或 avgResistance 获取）
       if (!record.Load) {
         record.Load = record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0');
+      }
+      // 设置 speed 字段
+      if (!record.speed) {
+        if (record.speedKmh !== undefined) {
+          record.speed = parseFloat(record.speedKmh).toFixed(0);
+        } else if (record.speed !== undefined) {
+          record.speed = parseFloat(record.speed).toFixed(0);
+        } else {
+          record.speed = '0';
+        }
+      }
+      // 设置 title 字段
+      if (!record.title) {
+        record.title = record.pageTitle || 'Quick Start';
       }
     }
     

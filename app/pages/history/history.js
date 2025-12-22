@@ -316,15 +316,28 @@ Page({
         const rawDate = record.dateFormatted || record.date;
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
+        // 根据模式确定标题
+        const title = record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start');
+        
+        // 调试：检查模式信息
+        if (!record.pageTitle && record.isGoalMode === undefined) {
+          console.log('警告：记录缺少模式信息，使用默认值 "Quick Start"', record.id);
+        }
+        
         return {
           id: record.id,
           duration: durationFormatted,
           date: formattedDate,
+          title: title, // 添加标题字段
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories || 0).toString(),
           distance: record.distance ? record.distance.toFixed(2) : '0.0',
           Load: record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0'),
           resistance: record.avgResistance ? record.avgResistance.toFixed(1) : (record.maxResistance ? record.maxResistance.toFixed(1) : '0.0'),
+          // 添加三个数据显示字段
+          heartRate: record.heartRate ? Math.round(record.heartRate).toString() : '0',
+          rpm: record.rpm ? Math.round(record.rpm).toString() : '0',
+          watt: record.watt ? Math.round(record.watt).toString() : '0',
           // 保存完整数据用于详情页
           fullRecord: record
         };
@@ -369,15 +382,24 @@ Page({
         const rawDate = record.dateFormatted || record.date;
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
+        // 根据模式确定标题
+        const title = record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start');
         return {
           id: record.id,
           duration: durationFormatted,
           date: formattedDate,
+          title: title,
           speed: record.speedKmh ? record.speedKmh.toFixed(2) : (record.speed ? record.speed.toFixed(2) : '0.00'),
           calories: Math.round(record.calories).toString(),
           distance: record.distance ? record.distance.toFixed(2) : '0.0',
           Load: record.load ? record.load.toString() : (record.avgResistance ? Math.round(record.avgResistance).toString() : '0'),
           resistance: record.avgResistance ? record.avgResistance.toFixed(1) : (record.maxResistance ? record.maxResistance.toFixed(1) : '0.0'),
+          // 添加三个数据显示字段
+          heartRate: record.heartRate ? Math.round(record.heartRate).toString() : '0',
+          rpm: record.rpm ? Math.round(record.rpm).toString() : '0',
+          watt: record.watt ? Math.round(record.watt).toString() : '0',
+          pageTitle: record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start'),
+          isGoalMode: record.isGoalMode,
           // 保存完整数据用于详情页
           fullRecord: record
         };

@@ -10,69 +10,78 @@
   </view>
 
   <view class="content" ty:if="{{record}}">
-    <!-- 主要信息卡片 -->
-    <view class="main-card">
-      <view class="main-card-left">
-        <text class="duration-value">{{record.duration}}</text>
+    <!-- 顶部卡片（与 history 页面一致） -->
+    <view class="top-card">
+      <view class="card-header">
+        <view class="duration-group">
+          <text class="duration-val">{{record.title || 'Quick Start'}}</text>
+        </view>
+        <text class="record-date">{{record.date}}</text>
       </view>
-      <view class="main-card-right">
-        <text class="record-date-time">{{record.date}}</text>
-      </view>
-      <view class="main-card-stats">
+      <view class="card-stats">
         <view class="stat-item">
-          <text class="stat-label">Load</text>
-          <text class="stat-value">{{record.Load}}</text>
+          <text class="stat-label">HR(BPM)</text>
+          <text class="stat-val">{{record.heartRate || '2'}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
           <text class="stat-label">RPM</text>
-          <text class="stat-value">{{record.rpm || '52'}}</text>
+          <text class="stat-val">{{record.rpm || '52'}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
-          <text class="stat-label">Watt</text>
-          <text class="stat-value">{{record.watt || '50.1'}}</text>
+          <text class="stat-label">Power(W)</text>
+          <text class="stat-val">{{record.watt || '50.1'}}</text>
         </view>
       </view>
     </view>
 
-    <!-- 两列卡片 -->
-    <view class="cards-row">
-      <view class="card-column">
-        <view class="info-card">
-          <view class="card-icon green">
-            <image src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
-          </view>
-          <text class="card-label">Maximum Load</text>
-          <text class="card-value">{{record.maxResistance || '19'}}</text>
+    <!-- Speed、Calories、Distance 卡片 -->
+    <view class="middle-cards-row">
+      <!-- Speed 卡片（左侧，高度等于右侧两个卡片之和） -->
+      <view class="speed-card">
+        <text class="card-label">Speed(km/h)</text>
+        <view class="card-icon green">
+          <image src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
         </view>
-        <view class="info-card">
-          <text class="card-label">Heart rate</text>
-          <text class="card-value">{{record.heartRate || '60'}}</text>
+        <view class="card-value-wrapper">
+          <text class="card-value">{{record.speed || '19'}}</text>
         </view>
       </view>
-      <view class="card-column">
+      
+      <!-- 右侧两个卡片 -->
+      <view class="right-cards-column">
         <view class="info-card">
+          <text class="card-label">Calories</text>
           <view class="card-icon orange">
             <image src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
           </view>
-          <text class="card-label">Calories</text>
-          <text class="card-value">{{record.calories}} kcal</text>
+          <view class="card-value-wrapper">
+            <text class="card-value">{{record.calories}}kcal</text>
+          </view>
         </view>
         <view class="info-card">
+          <text class="card-label">Distance</text>
           <view class="card-icon blue">
             <image src="../../assets/icons/Group 11.svg" mode="aspectFit"></image>
           </view>
-          <text class="card-label">Distance</text>
-          <text class="card-value">{{record.distance}} km</text>
+          <view class="card-value-wrapper">
+            <text class="card-value">{{record.distance}}km</text>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- 底部卡片 -->
-    <view class="bottom-card">
-      <text class="card-label">Minimum Load</text>
-      <text class="card-value">{{record.minResistance || '1.3'}}</text>
+    <!-- 底部三个卡片 -->
+    <view class="bottom-cards">
+      <view class="bottom-card-item">
+        <text class="bottom-card-label">Max Resistance</text>
+        <text class="bottom-card-value">{{record.maxResistance || '60'}}</text>
+      </view>
+      <view class="bottom-card-item">
+        <text class="bottom-card-label">Training duration</text>
+        <text class="bottom-card-value">{{record.duration || '00:20:30'}}</text>
+      </view>
     </view>
   </view>
 </view>

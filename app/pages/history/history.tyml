@@ -22,28 +22,28 @@
     </view>
     
     <!-- 记录卡片列表 -->
-    <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item" bindtap="goToDetail" data-id="{{item.id}}">
+   <view class="record-card" ty:for="{{records}}" ty:key="id" ty:for-item="item" bindtap="goToDetail" data-id="{{item.id}}">
       <view class="card-header">
         <view class="duration-group">
-          <text class="duration-val">{{item.duration}}</text>
+          <text class="duration-val">{{item.title}}</text>
         </view>
         <text class="record-date">{{item.date}}</text>
       </view>
       
       <view class="card-stats">
         <view class="stat-item">
-          <text class="stat-label">Load</text>
-          <text class="stat-val">{{item.Load}}</text>
+          <text class="stat-label">HR(BPM)</text>
+          <text class="stat-val">{{item.heartRate}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
-          <text class="stat-label">Calories</text>
-          <text class="stat-val">{{item.calories}}</text>
+          <text class="stat-label">RPM</text>
+          <text class="stat-val">{{item.rpm}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
-          <text class="stat-label">Distance</text>
-          <text class="stat-val">{{item.distance}}</text>
+          <text class="stat-label">Power(W)</text>
+          <text class="stat-val">{{item.watt}}</text>
         </view>
       </view>
     </view>

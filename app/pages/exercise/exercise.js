@@ -15,6 +15,7 @@ Page({
     formattedTime: '00:00:00',
     calories: 0,
     watt: 0,
+    speed: 0,
     load: 1,
     gaugeProgressStyle: '',
     knobAngle: 225, // Start angle
@@ -134,13 +135,19 @@ dpID.forEach(element => {
         }
         break;
       
-      case 'END': // 硬件上报“结束”（对应之前的STOP）
+        case 'END': // 硬件上报“结束”（对应之前的STOP）
         if (!this.isStopping) {
           this.handleStopExercise(false); // 处理结束逻辑
         }
         break;
     }
     return;
+  }
+  //speed
+  if(element.code == 105) {
+    this.setData({
+      speed: (element.value/1000).toFixed(1)
+    });
   }
   //rpm
   if(element.code == 110) {
@@ -161,13 +168,6 @@ dpID.forEach(element => {
         formattedTime: this.formatTime(element.value)
       });
     }
-  }
-  //速度
-  if(element.code == 105) {
-    console.log('速度:', element.value);
-    this.setData({
-    speed: (element.value/1000).toFixed(1)
-    });
   }
   //心率
   if(element.code == 108) {
@@ -556,6 +556,14 @@ onDpDataChange(_onDpDataChange);
         cancelText: 'Cancel',
         success: (res) => {
           if (res.confirm) {
+            // 先上报数据到云端，再处理停止逻辑
+            const { query: { deviceId } } = ty.getLaunchOptionsSync();
+            if (deviceId) {
+              console.log('目标完成，开始上报数据到云端');
+              this.reportExerciseDataToCloud(deviceId);
+            } else {
+              console.warn('目标完成，但设备ID为空，无法上报数据');
+            }
             // 跳转到congrats页面
             this.handleStopExercise(true);
           } else {
@@ -631,11 +639,16 @@ onDpDataChange(_onDpDataChange);
       
       // 构建运动记录对象
       const finalMaxResistance = this.dpMaxResistance ?? this.maxResistance ?? 0;
+      // 确保 isGoalMode 和 pageTitle 正确传递
+      const isGoalMode = this.data.isGoalMode === true;
+      const pageTitle = this.data.pageTitle || (isGoalMode ? 'Target pattern' : 'Quick Start');
+      
       const exerciseRecord = {
         id: timestamp,
         duration: elapsedSeconds,
         durationFormatted: durationFormatted,
         date: now.toISOString(),
+        speed: parseFloat(this.data.speed) || 0,
         rpm: parseFloat(this.data.rpm) || 0,
         calories: parseFloat(this.data.calories) || 0,
         distance: parseFloat(this.data.distance) || 0,
@@ -644,40 +657,83 @@ onDpDataChange(_onDpDataChange);
         load: this.data.load || 0,
         maxResistance: finalMaxResistance,
         minResistance: this.minResistance || 0,
-        avgResistance: parseFloat(avgResistance) || 0
+        avgResistance: parseFloat(avgResistance) || 0,
+
+        isGoalMode: isGoalMode,
+        pageTitle: pageTitle,
       };
+      
+      console.log('构建运动记录 - isGoalMode:', isGoalMode, 'pageTitle:', pageTitle);
 
       // 格式化为 DP 点 112 需要的 JSON 字符串
       const dp112Value = formatHistoryForDp112(exerciseRecord);
+      console.log('dp112Value:', dp112Value);
       
       if (!dp112Value || dp112Value === '[]') {
         console.error('运动数据格式化失败，无法上报');
         return;
       }
+      
 
-      console.log('=== 上报运动数据到云端 ===');
-      console.log('设备ID:', deviceId);
-      console.log('运动记录ID:', exerciseRecord.id);
-      console.log('DP点112数据:', JSON.stringify(exerciseRecord));
+      // 验证格式化后的数据是否包含标题字段
+      try {
+        const parsedData = JSON.parse(dp112Value);
+      
+        console.log('parsedData:', parsedData);
+        console.log('=== 上报运动数据到云端 ===');
+        console.log('设备ID:', deviceId);
+        console.log('运动记录ID:', exerciseRecord.id);
+        console.log('原始记录数据:', JSON.stringify(exerciseRecord, null, 2));
+        console.log('原始 pageTitle:', exerciseRecord.pageTitle);
+        console.log('原始 isGoalMode:', exerciseRecord.isGoalMode);
+        console.log('格式化后的数据（数组）:', JSON.stringify(parsedData, null, 2));
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          const firstRecord = parsedData[0];
+          console.log('格式化后的第一条记录:', JSON.stringify(firstRecord, null, 2));
+          console.log('是否包含 pageTitle:', 'pageTitle' in firstRecord);
+          console.log('是否包含 isGoalMode:', 'isGoalMode' in firstRecord);
+          console.log('pageTitle 值:', firstRecord.pageTitle);
+          console.log('isGoalMode 值:', firstRecord.isGoalMode);
+          console.log('DP点112数据大小:', dp112Value.length, '字节');
+          console.log('DP点112数据预览 (前500字符):', dp112Value.substring(0, 500));
+          ty.device.publishDps({
+            deviceId: deviceId,
+            dps: {
+              112: JSON.stringify(firstRecord).toString()
+            },
+            mode: 2, // 自动选择最佳通道
+            pipelines: [0, 1, 2, 3, 4, 5, 6], // 所有通道
+            success: (res) => {
+              console.log('✓ 运动数据已下发到设备，等待设备上报到云端');
+              console.log('响应数据:', JSON.stringify(res, null, 2));
+              console.log('--- 重要提示 ---');
+              console.log('1. 数据已成功下发到设备端');
+              console.log('2. 设备端需要监听DP点112的下发事件');
+              console.log('3. 设备端接收到数据后，应主动调用上报接口将数据上报到云端');
+              console.log('4. 请检查设备端固件是否正确实现了上报逻辑');
+              console.log('5. 请在涂鸦开发者平台的设备日志页面查看DP点112的上报记录');
+            },
+            fail: (error) => {
+              console.error('✗ 运动数据下发失败:');
+              console.error('错误详情:', JSON.stringify(error, null, 2));
+              console.error('错误消息:', error.errorMsg || error.message || error);
+              console.error('错误代码:', error.errorCode || error.code);
+            }
+          });
+
+        }
+
+
+      } catch (error) {
+        console.error('解析格式化数据失败:', error);
+      }
 
       // 通过 publishDps 下发到设备，设备会主动上报到云端
-      ty.device.publishDps({
-        deviceId: deviceId,
-        dps: {
-          112: JSON.stringify(exerciseRecord)
-        },
-        mode: 2, // 自动选择最佳通道
-        pipelines: [0, 1, 2, 3, 4, 5, 6], // 所有通道
-        success: (res) => {
-          console.log('✓ 运动数据已下发到设备，等待设备上报到云端');
-          console.log('响应数据:', JSON.stringify(res));
-        },
-        fail: (error) => {
-          console.error('✗ 运动数据下发失败:');
-          console.error('错误详情:', JSON.stringify(error));
-          console.error('错误消息:', error.errorMsg || error.message || error);
-        }
-      });
+      console.log('开始调用 publishDps，下发DP点112数据到设备...');
+      console.log('DP点112数据类型:', typeof dp112Value);
+      console.log('DP点112数据是否为字符串:', typeof dp112Value === 'string');
+      
+
     } catch (error) {
       console.error('上报运动数据到云端失败:', error);
     }
@@ -728,6 +784,10 @@ onDpDataChange(_onDpDataChange);
     
     // 构建运动记录对象
     const finalMaxResistance = this.dpMaxResistance ?? this.maxResistance ?? 0;
+    // 确保 isGoalMode 和 pageTitle 正确传递
+    const isGoalMode = this.data.isGoalMode === true;
+    const pageTitle = this.data.pageTitle || (isGoalMode ? 'Target pattern' : 'Quick Start');
+    
     const exerciseRecord = {
       id: timestamp,
       duration: elapsedSeconds,
@@ -735,6 +795,7 @@ onDpDataChange(_onDpDataChange);
       date: new Date().toISOString(),
       dateFormatted: dateFormatted,
       dateCongrats: dateCongrats,
+      speed: parseFloat(this.data.speed) || 0,
       rpm: parseFloat(this.data.rpm) || 0,
       calories: parseFloat(this.data.calories) || 0,
       distance: parseFloat(this.data.distance) || 0,
@@ -743,7 +804,10 @@ onDpDataChange(_onDpDataChange);
       load: this.data.load || 0,
       maxResistance: finalMaxResistance,
       minResistance: this.minResistance || 0,
-      avgResistance: parseFloat(avgResistance) || 0
+      avgResistance: parseFloat(avgResistance) || 0,
+      // 添加模式信息
+      isGoalMode: isGoalMode,
+      pageTitle: pageTitle
     };
     
     // 验证数据完整性
@@ -801,7 +865,7 @@ onDpDataChange(_onDpDataChange);
     const params = new URLSearchParams({
       id: timestamp.toString(),
       duration: elapsedSeconds.toString(),
-      speed: this.data.speed,
+      speed: parseFloat(this.data.speed) || 0,
       speedKmh: speedKmh,
       calories: this.data.calories,
       distance: this.data.distance,

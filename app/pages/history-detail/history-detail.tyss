@@ -19,7 +19,7 @@
   height: 30px;
   position: absolute;
   margin-top: 53px;
-  left: 8px;
+  left: 25px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -58,79 +58,91 @@
   padding: 0 20px 20px 20px;
 }
 
-.main-card {
+/* 顶部卡片（与 history 页面一致） */
+.top-card {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-.main-card-left {
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.duration-group {
   display: flex;
   align-items: baseline;
-  gap: 4px;
 }
 
-.duration-value {
-  font-size: 32px;
-  font-weight: bold;
+.duration-val {
+  font-size: 20px;
+  font-weight: 400;
   color: #FFFFFF;
 }
 
-.duration-unit {
-  font-size: 16px;
-  color: #8E8E93;
+.record-date {
+  font-size: 15px;
+  color: #B0B0B0;
 }
 
-.main-card-right {
-  align-self: flex-end;
-}
-
-.record-date-time {
-  font-size: 14px;
-  color: #8E8E93;
-}
-
-.main-card-stats {
+.card-stats {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
 }
 
 .stat-item {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
 }
 
 .stat-label {
-  font-size: 12px;
-  color: #8E8E93;
-  margin-bottom: 4px;
+  font-size: 15px;
+  color: #B0B0B0;
+  margin-bottom: 8px;
 }
 
-.stat-value {
-  font-size: 16px;
-  font-weight: bold;
+.stat-val {
+  font-size: 18px;
+  font-weight: 600;
   color: #FFFFFF;
 }
 
 .stat-divider {
   width: 1px;
-  height: 30px;
-  background:#64697c;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.cards-row {
+/* Speed、Calories、Distance 卡片布局 */
+.middle-cards-row {
   display: flex;
   gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.card-column {
+.speed-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex: 1;
+  height: 170px;
+  box-sizing: border-box;
+}
+
+.right-cards-column {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -139,19 +151,26 @@
 
 .info-card {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-height: 100px;
-  justify-content: center;
+  position: relative;
+  height: 80px;
+  box-sizing: border-box;
+}
+
+.card-label {
+  font-size: 15px;
+  color: #8E8E93;
+  margin-bottom: 8px;
+  text-align: left;
 }
 
 .card-icon {
   width: 24px;
   height: 24px;
-  margin-bottom: 8px;
+  margin-bottom: auto;
 }
 
 .card-icon image {
@@ -159,36 +178,47 @@
   height: 100%;
 }
 
-.card-label {
-  font-size: 12px;
-  color: #8E8E93;
-  margin-bottom: 8px;
-  text-align: center;
+.card-value-wrapper {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .card-value {
   font-size: 20px;
   font-weight: bold;
   color: #FFFFFF;
-  text-align: center;
+  text-align: right;
+  line-height: 1;
 }
 
-.bottom-card {
+/* 底部三个卡片 */
+.bottom-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bottom-card-item {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 20px;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.bottom-card .card-label {
-  font-size: 14px;
+.bottom-card-label {
+  font-size: 15px;
   color: #8E8E93;
-  margin-bottom: 12px;
 }
 
-.bottom-card .card-value {
+.bottom-card-value {
   font-size: 24px;
   font-weight: bold;
   color: #FFFFFF;

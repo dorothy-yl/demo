@@ -11,40 +11,47 @@
   <!-- Speed and Heart Rate Row -->
   <view class="top-row">
     <view class="top-stat-item">
-      <text class="top-stat-value">{{rpm}}</text>
-      <text class="top-stat-label">RPM</text>
+      <text class="top-stat-value">{{speed}}</text>
+      <text class="top-stat-label">Speed(km/h)</text>
     </view>
     <view class="vertical-divider"></view>
     <view class="top-stat-item">
       <view class="value-icon-row">
-        <text class="top-stat-value">{{heartRate}}</text>
-        <image class="heart-icon" src="../../assets/icons/love.svg" />
+        <text class="top-stat-value">{{calories}}</text>
+        <image class="heart-icon" src="../../assets/icons/Vector 2.svg" />
       </view>
-      <text class="top-stat-label">Heart Rate</text>
+      <text class="top-stat-label">Calories(kcal)</text>
     </view>
   </view>
 
   <!-- Exercise Time Card -->
   <view class="card timer-card">
-    <text class="card-label">{{isGoalMode ? 'Time' : 'Exercise time'}}</text>
+    <text class="card-label">Workout Time</text>
     <text class="timer-display">{{formattedTime}}</text>
   </view>
 
   <!-- 3-Column Stats Grid -->
   <view class="stats-grid">
     <view class="card stat-card">
-      <text class="card-label">Distance</text>
-      <text class="card-value">{{distance}}</text>
+      <text class="card-label">PRM</text>
+      <text class="card-value">{{rpm}}</text>
     </view>
     <view class="card stat-card">
-      <text class="card-label">Calories</text>
-      <text class="card-value">{{calories}}</text>
+      <text class="card-label">HR(BPM)</text>
+      <text class="card-value">{{heartRate}}</text>
     </view>
     <view class="card stat-card">
-      <text class="card-label">Watt</text>
+      <text class="card-label">Power(W)</text>
       <text class="card-value">{{watt}}</text>
     </view>
   </view>
+
+  <!-- Distance Card -->
+  <view class="card timer-card">
+    <text class="card-label">Distance(km)</text>
+    <text class="timer-display">{{distance}}</text>
+  </view>
+
 
   <!-- Load Gauge Section -->
   <view class="gauge-section">
@@ -71,6 +78,6 @@
 
   <!-- Bottom Button -->
   <view class="footer">
-    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">START/PAUSE</button>
+    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">Start/Hold Stop</button>
   </view>
 </view>
