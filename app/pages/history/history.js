@@ -49,6 +49,59 @@ Page({
     }
   },
 
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('下拉刷新 history 页面');
+    if (this.deviceId) {
+      // 从云端加载数据
+      this.setData({ isLoading: true });
+
+      ty.getAnalyticsLogsPublishLog({
+        devId: this.deviceId,
+        dpIds: '112',
+        offset: 0,
+        limit: 10,
+      })
+        .then((response) => {
+          console.log('云端返回的原始数据（下拉刷新）:', response);
+          
+          // 解析云端数据
+          const allRecords = this.parseCloudData(response);
+          
+          this.setData({
+            cloudRecords: allRecords,
+            isLoading: false
+          });
+          
+          // 加载当前日期的记录
+          const selectedDate = new Date(this.data.currentDateObj);
+          this.loadRecordsForDate(selectedDate);
+          
+          // 刷新完成后停止下拉刷新动画
+          ty.stopPullDownRefresh();
+        })
+        .catch((error) => {
+          console.error('从云端获取数据失败（下拉刷新）:', error);
+          this.setData({
+            isLoading: false
+          });
+          // 如果云端获取失败，降级到本地存储
+          const selectedDate = new Date(this.data.currentDateObj);
+          this.loadRecordsForDateFromLocal(selectedDate);
+          
+          // 刷新完成后停止下拉刷新动画
+          ty.stopPullDownRefresh();
+        });
+    } else {
+      // 如果没有设备ID，从本地加载
+      const selectedDate = new Date(this.data.currentDateObj);
+      this.loadRecordsForDateFromLocal(selectedDate);
+      
+      // 刷新完成后停止下拉刷新动画
+      ty.stopPullDownRefresh();
+    }
+  },
+
   // 格式化日期为 YYYY-MM-DD 字符串
   formatDateString(date) {
     const year = date.getFullYear();

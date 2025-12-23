@@ -82,6 +82,154 @@ Page({
     this.fetchTipsFromCloud();
   },
 
+  // 下拉刷新
+  onPullDownRefresh() {
+    console.log('下拉刷新 alarm 页面');
+    // 先加载本地数据
+    this.loadTips();
+    // 然后从云端拉取最新数据
+    this.fetchTipsFromCloudWithCallback(() => {
+      // 刷新完成后停止下拉刷新动画
+      ty.stopPullDownRefresh();
+    });
+  },
+
+  // 从云端拉取运动提醒（带回调版本，用于下拉刷新）
+  fetchTipsFromCloudWithCallback(callback) {
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    if (!deviceId) {
+      console.warn('设备ID不存在，无法从云端拉取数据');
+      this.loadTips();
+      if (callback) callback();
+      return;
+    }
+
+    try {
+      console.log('=== 从云端拉取运动提醒（DP113，下拉刷新）===');
+      console.log('设备ID:', deviceId);
+
+      // 方法1: 尝试从日志接口获取
+      if (ty.getAnalyticsLogsPublishLog) {
+        ty.getAnalyticsLogsPublishLog({
+          devId: deviceId,
+          dpIds: '113',
+          offset: 0,
+          limit: 10
+        })
+          .then((response) => {
+            console.log('✓ 从日志接口获取数据成功（下拉刷新）');
+            const tips = this.parseTipsFromLogs(response);
+            
+            if (tips && tips.length > 0) {
+              console.log('从日志中解析出', tips.length, '条提醒（下拉刷新）');
+              const formattedTips = this.formatTipsForDisplay(tips);
+              this.setData({ tips: formattedTips });
+              
+              // 保存到本地存储
+              ty.setStorage({
+                key: 'tips',
+                data: tips,
+                success: () => {
+                  console.log('✓ 云端提醒数据已保存到本地存储（下拉刷新）');
+                  if (callback) callback();
+                },
+                fail: (err) => {
+                  console.warn('保存云端数据到本地存储失败（下拉刷新）:', err);
+                  try {
+                    ty.setStorageSync('tips', tips);
+                    if (callback) callback();
+                  } catch (syncError) {
+                    console.warn('setStorageSync 也失败（下拉刷新）:', syncError);
+                    if (callback) callback();
+                  }
+                }
+              });
+            } else {
+              console.log('日志中暂无提醒数据，尝试方法2（下拉刷新）');
+              this.fetchTipsFromDeviceStateWithCallback(callback);
+            }
+          })
+          .catch((error) => {
+            console.error('从日志接口获取数据失败（下拉刷新）:', error);
+            this.fetchTipsFromDeviceStateWithCallback(callback);
+          });
+      } else {
+        this.fetchTipsFromDeviceStateWithCallback(callback);
+      }
+    } catch (error) {
+      console.error('从云端拉取运动提醒失败（下拉刷新）:', error);
+      this.loadTips();
+      if (callback) callback();
+    }
+  },
+
+  // 方法2: 从设备状态获取（带回调版本，用于下拉刷新）
+  fetchTipsFromDeviceStateWithCallback(callback) {
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    console.log('尝试从设备状态获取数据（下拉刷新）...');
+    
+    ty.device.getDpDataFromDevice({
+      deviceId: deviceId,
+      success: (res) => {
+        console.log('✓ 获取设备状态成功（下拉刷新）');
+        
+        if (res.dps && res.dps['113'] !== undefined) {
+          const cloudData = res.dps['113'];
+          console.log('收到云端运动提醒数据（从 getDpDataFromDevice，下拉刷新）:', cloudData);
+          
+          let tips = [];
+          if (typeof cloudData === 'string') {
+            try {
+              tips = JSON.parse(cloudData);
+            } catch (error) {
+              console.error('解析云端数据失败（下拉刷新）:', error);
+              this.loadTips();
+              if (callback) callback();
+              return;
+            }
+          } else if (Array.isArray(cloudData)) {
+            tips = cloudData;
+          } else {
+            console.warn('云端数据格式不正确（下拉刷新）');
+            this.loadTips();
+            if (callback) callback();
+            return;
+          }
+          
+          const formattedTips = this.formatTipsForDisplay(tips);
+          console.log('格式化后共', formattedTips.length, '条提醒（下拉刷新）');
+          this.setData({ tips: formattedTips });
+          
+          ty.setStorage({
+            key: 'tips',
+            data: tips,
+            success: () => {
+              console.log('✓ 云端提醒数据已保存到本地存储（下拉刷新）');
+              if (callback) callback();
+            },
+            fail: (err) => {
+              console.warn('保存云端数据到本地存储失败（下拉刷新）:', err);
+              if (callback) callback();
+            }
+          });
+        } else {
+          console.log('云端暂无运动提醒数据（DP113，下拉刷新）');
+          this.loadTips();
+          if (callback) callback();
+        }
+      },
+      fail: (error) => {
+        console.error('✗ 从设备状态获取数据失败（下拉刷新）:', error);
+        this.loadTips();
+        if (callback) callback();
+      }
+    });
+  },
+
   // 初始化时间选择器数据
   initTimePicker() {
     const hours = [];
