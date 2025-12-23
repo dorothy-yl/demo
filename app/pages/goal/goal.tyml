@@ -48,7 +48,7 @@
           <text class="modal-unit">{{unitText}}</text>
         </view>
       </view>
-      <button class="modal-confirm-btn" bindtap="confirmGoal">Sure</button>
+      <button class="modal-confirm-btn" bindtap="confirmGoal">Confirm</button>
     </view>
   </view>
 </view>

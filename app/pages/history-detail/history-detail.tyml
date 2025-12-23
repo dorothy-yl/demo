@@ -57,7 +57,7 @@
             <image src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
           </view>
           <view class="card-value-wrapper">
-            <text class="card-value">{{record.calories}}kcal</text>
+            <text class="card-values">{{record.calories}}kcal</text>
           </view>
         </view>
         <view class="info-card">
@@ -66,13 +66,13 @@
             <image src="../../assets/icons/Group 11.svg" mode="aspectFit"></image>
           </view>
           <view class="card-value-wrapper">
-            <text class="card-value">{{record.distance}}km</text>
+            <text class="card-values">{{record.distance}}km</text>
           </view>
         </view>
       </view>
     </view>
 
-    <!-- 底部三个卡片 -->
+    <!-- 底部二个卡片 -->
     <view class="bottom-cards">
       <view class="bottom-card-item">
         <text class="bottom-card-label">Max Resistance</text>
