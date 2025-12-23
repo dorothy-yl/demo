@@ -24,7 +24,6 @@ Page({
     // 日历相关
     calendarCurrentDate: new Date(),
     calendarDays: [],
-    weekdays: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
     currentMonthText: '',
     showYearPicker: false,
     yearPickerYears: [],
@@ -132,14 +131,12 @@ Page({
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const weekday = weekdays[date.getDay()];
       const hours = String(date.getHours()).padStart(2, '0');
       const minutes = String(date.getMinutes()).padStart(2, '0');
       
       return {
         ...tip,
-        formattedDate: `${year}.${month}.${day}.${weekday}`,
+        formattedDate: `${year}.${month}.${day}`,
         formattedTime: `${hours}:${minutes}`
       };
     }).filter(tip => tip !== null); // 过滤掉无效的提醒
@@ -834,12 +831,12 @@ Page({
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startWeekday = firstDay.getDay();
+    const startWeekday = firstDay.getDay(); // 用于日历布局对齐（不显示星期）
 
     const calendarDays = [];
     const today = new Date();
 
-    // 只生成当前月的日期，但需要空位来对齐星期
+    // 只生成当前月的日期，但需要空位来对齐日历网格布局
     // 在当月第一天之前添加空位
     for (let i = 0; i < startWeekday; i++) {
       calendarDays.push({
@@ -986,14 +983,12 @@ Page({
       return 'Today';
     }
     
-    // 格式化日期：2025.12.19.星期五
+    // 格式化日期：2025.12.19（只显示年月日）
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const day = String(dateObj.getDate()).padStart(2, '0');
-    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const weekday = weekdays[dateObj.getDay()];
     
-    return `${year}.${month}.${day}.${weekday}`;
+    return `${year}.${month}.${day}`;
   },
 
   // 保存提醒

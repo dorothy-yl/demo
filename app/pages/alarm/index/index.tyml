@@ -75,13 +75,6 @@
               </view>
             </view>
 
-            <!-- 星期标题行 -->
-            <view class="calendar-weekday-headers">
-              <view class="calendar-weekday-header" ty:for="{{weekdays}}" ty:key="*this">
-                <text class="calendar-weekday-text">{{item}}</text>
-              </view>
-            </view>
-
             <!-- 日期网格 -->
             <view class="calendar-grid">
               <view 
