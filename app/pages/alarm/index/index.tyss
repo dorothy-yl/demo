@@ -171,14 +171,12 @@
 .form-input-rect {
   flex: 1;
   font-size: 18px;
-  color: #9E9E9E !important;
+  color: #FFFFFF !important;
   background: transparent;
-  border: none;
-  outline: none;
 }
 
 .form-input-rect::placeholder {
-color: #9E9E9E;
+color: #FFFFFF;
  opacity: 1;
 }
 

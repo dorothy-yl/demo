@@ -18,7 +18,7 @@ Page({
     editingTipId: null, // 编辑模式下的 ID
     
     // 日期显示文本
-    dateDisplayText: '今天',
+    dateDisplayText: 'Today',
     timeDisplayText: '15:00',
     
     // 日历相关
@@ -132,7 +132,7 @@ Page({
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const weekday = weekdays[date.getDay()];
       const hours = String(date.getHours()).padStart(2, '0');
       const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -976,21 +976,21 @@ Page({
 
   // 格式化日期显示
   getDateDisplayText(date) {
-    if (!date) return '今天';
+    if (!date) return 'Today';
     
     const dateObj = new Date(date);
     const today = new Date();
     
-    // 判断是否是今天
+    // 判断是否是Today
     if (this.isSameDate(dateObj, today)) {
-      return '今天';
+      return 'Today';
     }
     
     // 格式化日期：2025.12.19.星期五
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const day = String(dateObj.getDate()).padStart(2, '0');
-    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const weekday = weekdays[dateObj.getDay()];
     
     return `${year}.${month}.${day}.${weekday}`;
@@ -1080,7 +1080,7 @@ Page({
       
       // 显示保存成功提示
       ty.showToast({
-        title: '保存成功',
+        title: 'Saved successfully',
         icon: 'success',
         duration: 2000
       });
