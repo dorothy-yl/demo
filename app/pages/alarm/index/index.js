@@ -949,6 +949,12 @@ Page({
     if (!dateStr) return;
     
     const selectedDate = new Date(dateStr);
+
+    // --- 关键修改：保留当前已经选好的时间 ---
+    const { hour, minute } = this.data.selectedTime;
+    selectedDate.setHours(hour);
+    selectedDate.setMinutes(minute);
+
     this.setData({
       selectedDate: selectedDate,
       showDatePicker: false,
@@ -963,9 +969,15 @@ Page({
     const hour = parseInt(values[0]);
     const minute = parseInt(values[1]);
     
+    // 同步更新 selectedDate 里的时间
+    let newDate = this.data.selectedDate || new Date();
+    newDate.setHours(hour);
+    newDate.setMinutes(minute);
+
     this.setData({
       'selectedTime.hour': hour,
       'selectedTime.minute': minute,
+      selectedDate: newDate,
       timePickerIndex: [hour, minute],
       timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
     });
@@ -1153,101 +1165,84 @@ Page({
     });
     this.generateCalendar();
   },
+// --- 删除提醒 (修正版) ---
+deleteTip(e) {
+  // 1. 获取要删除的 ID
+  const deleteId = e.currentTarget.dataset.id || this.data.editingTipId;
+  if (!deleteId) return;
 
-  // 删除提醒
-  deleteTip() {
-    const { editingTipId } = this.data;
-    
-    if (!editingTipId) return;
-    
-    ty.showModal({
-      title: '确认删除',
-      content: '确定要删除这个提醒吗？',
-      success: (res) => {
-        if (res.confirm) {
-          // 参照 exercise.js 第762行：统一使用字符串key的方式获取存储数据
-          let rawTips = ty.getStorageSync('tips') || [];
-          
-          // 参照 exercise.js 第765-768行：确保history是数组
-          if (!Array.isArray(rawTips)) {
-            console.warn('tips is not an array, resetting to empty array');
-            rawTips = [];
-          }
-          
-          const updatedTips = rawTips.filter(t => t.id !== editingTipId);
-          
-          // 重置表单并跳转的辅助函数
-          const resetAndNavigate = () => {
-            const now = new Date();
-            const hour = now.getHours();
-            const minute = now.getMinutes();
-            this.setData({
-              tipTitle: '',
-              editingTipId: null,
-              selectedDate: now,
-              selectedTime: {
-                hour: hour,
-                minute: minute
-              },
-              timePickerIndex: [hour, minute],
-              dateDisplayText: this.getDateDisplayText(now),
-              timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
-              activeTab: 'schedule' // 删除后跳转到我的日程页面
-            });
-            
-            ty.showToast({
-              title: '删除成功',
-              icon: 'success'
-            });
-          };
-          
-          // 参照 exercise.js 第774-785行：保存到storage，使用setStorage确保UTF-8编码正确处理
-          try {
-            ty.setStorage({
-              key: 'tips',
-              data: updatedTips,
-              success: (res) => {
-                console.log('删除后保存到本地存储成功');
-                // 上报到云端（DP 点 113）
-                this.uploadTipsToCloud(updatedTips);
-                // 重新加载提醒列表
-                this.loadTips();
-                // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
-                resetAndNavigate();
-              },
-              fail: (err) => {
-                console.error('删除后保存到本地存储失败:', err);
-                // 降级方案：使用 setStorageSync
-                try {
-                  ty.setStorageSync('tips', updatedTips);
-                  // 上报到云端（DP 点 113）
-                  this.uploadTipsToCloud(updatedTips);
-                  // 重新加载提醒列表
-                  this.loadTips();
-                  // 重置表单并跳转到我的日程页面（确保在数据加载后执行）
-                  resetAndNavigate();
-                } catch (syncError) {
-                  console.error('setStorageSync 也失败:', syncError);
-                  ty.showToast({
-                    title: '删除失败',
-                    icon: 'none'
-                  });
-                }
-              }
-            });
-          } catch (error) {
-            console.error('删除提醒后保存失败:', error);
-            ty.showToast({
-              title: '删除失败',
-              icon: 'none'
-            });
-          }
+  // 2. 准备数据
+  const originalTips = JSON.parse(JSON.stringify(this.data.tips || []));
+  const updatedTips = originalTips.filter(t => t.id !== deleteId);
+  
+  // 获取原始非格式化的存储数据用于持久化
+  let rawTips = ty.getStorageSync('tips') || [];
+  const newRawTips = rawTips.filter(t => t.id !== deleteId);
+
+  // 3. 【立即更新 UI】实现“秒删”并返回首页（schedule 标签）
+  this.setData({ 
+    tips: updatedTips,
+    activeTab: 'schedule', 
+    editingTipId: null,
+    tipTitle: '',
+    showDatePicker: false,
+    showTimePicker: false
+  });
+
+  // 4. 【静默同步】
+  this.performSilentDelete(newRawTips, originalTips, deleteId);
+},
+// 执行静默同步逻辑
+performSilentDelete(newRawTips, backupTips, deleteId) {
+  const { getLaunchOptionsSync } = ty;
+  const launchOptions = getLaunchOptionsSync();
+  const deviceId = launchOptions.query ? launchOptions.query.deviceId : null;
+
+  if (!deviceId) {
+    console.error('设备ID不存在，无法同步云端');
+    return;
+  }
+
+  // 1. 同步到本地 Storage
+  ty.setStorage({
+    key: 'tips',
+    data: newRawTips,
+    success: () => {
+      console.log('✓ 本地缓存已更新');
+      
+      // 2. 格式化并同步到云端 DP 113
+      // 注意：云端 DP 通常存储的是全量数组，删除即上报剔除后的新数组
+      const dp113Value = formatTipsForDp113(newRawTips);
+
+      ty.device.publishDps({
+        deviceId: deviceId,
+        dps: { '113': dp113Value },
+        mode: 2,
+        success: () => {
+          console.log('✓ 云端 DP113 同步成功');
+        },
+        fail: (error) => {
+          console.error('✗ 云端同步失败:', error);
+          // 这里可以根据业务需求决定是否回滚 UI
+          // this.rollbackDelete(backupTips, 'Cloud sync failed');
         }
-      }
-    });
-  },
+      });
+    },
+    fail: (err) => {
+      console.error('✗ 本地存储失败:', err);
+      this.rollbackDelete(backupTips, 'Local storage failed');
+    }
+  });
+},
 
-
+// 回滚逻辑
+rollbackDelete(backupTips, reason) {
+  this.setData({ tips: backupTips });
+  ty.showToast({
+    title: 'Delete failed',
+    icon: 'none'
+  });
+},
   // 返回
   onBack() {
     const { activeTab } = this.data;

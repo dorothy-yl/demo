@@ -9,13 +9,13 @@
     </view>
     
     <view class="header-right">
-      <!-- 编辑模式：显示删除垃圾桶图标 -->
-      <image 
-        class="delete-icon" 
-        ty:if="{{activeTab === 'tips' && editingTipId}}"
-        src="../../../assets/icons/trash.svg" 
-        bindtap="deleteTip"
-      />
+<image 
+  class="delete-icon" 
+  ty:if="{{activeTab === 'tips' && editingTipId}}"
+  src="../../../assets/icons/trash.svg" 
+  bindtap="deleteTip"
+  data-id="{{editingTipId}}" 
+/>
       
       <!-- 我的日程页面：显示+号按钮 -->
       <image 
