@@ -46,7 +46,8 @@ Page({
     
     // 删除操作相关标记
     skipCloudFetch: false, // 标记是否跳过云端拉取（删除操作后冷却期）
-    deletedTipIds: [] // 记录已删除的 ID 列表（用于过滤云端数据）
+    deletedTipIds: [], // 记录已删除的 ID 列表（用于过滤云端数据）
+    isRefreshing: false // 下拉刷新状态
   },
 
   onLoad() {
@@ -102,14 +103,15 @@ Page({
   },
 
   // 下拉刷新
-  onPullDownRefresh() {
+  onRefresherRefresh() {
     console.log('下拉刷新 alarm 页面');
+    this.setData({ isRefreshing: true });
     // 先加载本地数据
     this.loadTips();
     // 然后从云端拉取最新数据
     this.fetchTipsFromCloudWithCallback(() => {
       // 刷新完成后停止下拉刷新动画
-      ty.stopPullDownRefresh();
+      this.setData({ isRefreshing: false });
     });
   },
 

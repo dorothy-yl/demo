@@ -11,7 +11,8 @@ Page({
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
     currentMonthText: '',
     cloudRecords: [], // 存储从云端获取的所有记录
-    isLoading: false // 加载状态
+    isLoading: false, // 加载状态
+    isRefreshing: false // 下拉刷新状态
   },
 
   onLoad() {
@@ -50,8 +51,9 @@ Page({
   },
 
   // 下拉刷新
-  onPullDownRefresh() {
+  onRefresherRefresh() {
     console.log('下拉刷新 history 页面');
+    this.setData({ isRefreshing: true });
     if (this.deviceId) {
       // 从云端加载数据
       this.setData({ isLoading: true });
@@ -83,7 +85,7 @@ Page({
           }
           
           // 刷新完成后停止下拉刷新动画
-          ty.stopPullDownRefresh();
+          this.setData({ isRefreshing: false });
         })
         .catch((error) => {
           console.error('从云端获取数据失败（下拉刷新）:', error);
@@ -100,7 +102,7 @@ Page({
           }
           
           // 刷新完成后停止下拉刷新动画
-          ty.stopPullDownRefresh();
+          this.setData({ isRefreshing: false });
         });
     } else {
       // 如果没有设备ID，从本地加载
@@ -113,7 +115,7 @@ Page({
       }
       
       // 刷新完成后停止下拉刷新动画
-      ty.stopPullDownRefresh();
+      this.setData({ isRefreshing: false });
     }
   },
 

@@ -31,7 +31,7 @@
   <view class="content-wrapper" bindtap="closeAllPickers">
     <!-- Tips 标签页 -->
     <view class="tips-content" ty:if="{{activeTab === 'tips'}}">
-      <scroll-view class="tips-scroll-view" scroll-y="true">
+      <scroll-view class="tips-scroll-view" scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefreshing}}" bindrefresherrefresh="onRefresherRefresh" refresher-background="#2C3A4A">
         <!-- 标题输入 -->
         <view class="form-item-rect" catchtap="stopPropagation">
           <input 
@@ -143,7 +143,7 @@
 
     <!-- 我的日程标签页 -->
     <view class="schedule-content" ty:if="{{activeTab === 'schedule'}}">
-      <scroll-view class="schedule-list" scroll-y="true">
+      <scroll-view class="schedule-list" scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefreshing}}" bindrefresherrefresh="onRefresherRefresh" refresher-background="#2C3A4A">
         <view 
           class="schedule-card" 
           ty:for="{{tips}}" 

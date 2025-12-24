@@ -15,7 +15,7 @@
     </view>
   </view>
 
-  <scroll-view class="record-list" scroll-y="true">
+  <scroll-view class="record-list" scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefreshing}}" bindrefresherrefresh="onRefresherRefresh" refresher-background="#2C3A4A">
     <!-- 空状态占位 -->
     <view class="empty-placeholder" ty:if="{{records.length === 0}}">
       <text class="empty-text">No exercise records for today</text>
