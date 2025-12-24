@@ -4,6 +4,12 @@ function formatDpState(dpState) {
 
 // 导入云端同步工具
 const { formatTipsForDp113 } = require('../../../utils/cloudSync.js');
+
+// 在 Page 外部定义，它在整个小程序运行期间只初始化一次
+let globalDeleteTimestamp = 0; 
+const COOLDOWN_MS = 5000; // 5秒冷却
+
+
 Page({
   data: {
     // 标签页
@@ -36,7 +42,11 @@ Page({
     timePickerIndex: [15, 0], // [hourIndex, minuteIndex]
     
     // 日程列表
-    tips: [] // 存储所有提醒事项
+    tips: [], // 存储所有提醒事项
+    
+    // 删除操作相关标记
+    skipCloudFetch: false, // 标记是否跳过云端拉取（删除操作后冷却期）
+    deletedTipIds: [] // 记录已删除的 ID 列表（用于过滤云端数据）
   },
 
   onLoad() {
@@ -75,11 +85,20 @@ Page({
     this.generateCalendar();
     
     this.setupDp113Listener();
+  
   },
 
   onShow() {
     this.loadTips();
     this.fetchTipsFromCloud();
+  },
+
+  onUnload() {
+    // 清理删除操作的冷却期定时器
+    if (this._deleteCooldownTimer) {
+      clearTimeout(this._deleteCooldownTimer);
+      this._deleteCooldownTimer = null;
+    }
   },
 
   // 下拉刷新
@@ -96,6 +115,14 @@ Page({
 
   // 从云端拉取运动提醒（带回调版本，用于下拉刷新）
   fetchTipsFromCloudWithCallback(callback) {
+    // 检查是否在删除操作的冷却期内
+    if (this.data.skipCloudFetch) {
+      console.log('跳过云端拉取（删除操作后冷却期，下拉刷新）');
+      this.loadTips();
+      if (callback) callback();
+      return;
+    }
+
     const { getLaunchOptionsSync } = ty;
     const { query: { deviceId } } = getLaunchOptionsSync();
 
@@ -120,9 +147,23 @@ Page({
         })
           .then((response) => {
             console.log('✓ 从日志接口获取数据成功（下拉刷新）');
-            const tips = this.parseTipsFromLogs(response);
+            let tips = this.parseTipsFromLogs(response);
             
             if (tips && tips.length > 0) {
+              // 过滤掉已删除的记录
+              const deletedIds = this.data.deletedTipIds || [];
+              if (deletedIds.length > 0) {
+                const originalCount = tips.length;
+                tips = tips.filter(tip => {
+                  if (!tip || !tip.id) return true;
+                  return !deletedIds.includes(tip.id);
+                });
+                const filteredCount = originalCount - tips.length;
+                if (filteredCount > 0) {
+                  console.log('已过滤', filteredCount, '条已删除的记录（下拉刷新）');
+                }
+              }
+              
               console.log('从日志中解析出', tips.length, '条提醒（下拉刷新）');
               const formattedTips = this.formatTipsForDisplay(tips);
               this.setData({ tips: formattedTips });
@@ -198,6 +239,20 @@ Page({
             this.loadTips();
             if (callback) callback();
             return;
+          }
+          
+          // 过滤掉已删除的记录
+          const deletedIds = this.data.deletedTipIds || [];
+          if (deletedIds.length > 0) {
+            const originalCount = tips.length;
+            tips = tips.filter(tip => {
+              if (!tip || !tip.id) return true;
+              return !deletedIds.includes(tip.id);
+            });
+            const filteredCount = originalCount - tips.length;
+            if (filteredCount > 0) {
+              console.log('已过滤', filteredCount, '条已删除的记录（下拉刷新）');
+            }
           }
           
           const formattedTips = this.formatTipsForDisplay(tips);
@@ -345,6 +400,22 @@ Page({
       
       if (Array.isArray(tips)) {
         console.log('解析成功，共', tips.length, '条提醒');
+        
+        // 过滤掉已删除的记录
+        const deletedIds = this.data.deletedTipIds || [];
+        if (deletedIds.length > 0) {
+          const originalCount = tips.length;
+          tips = tips.filter(tip => {
+            if (!tip || !tip.id) return true; // 保留无效记录（后续会被其他逻辑过滤）
+            return !deletedIds.includes(tip.id);
+          });
+          const filteredCount = originalCount - tips.length;
+          if (filteredCount > 0) {
+            console.log('已过滤', filteredCount, '条已删除的记录');
+          }
+        }
+        
+        console.log('过滤后剩余', tips.length, '条提醒');
         console.log('提醒数据详情:', JSON.stringify(tips, null, 2));
         
         // 参照 exercise.js 第774-785行：保存到本地存储，使用setStorage确保UTF-8编码正确处理
@@ -496,6 +567,13 @@ Page({
 
   // 从云端拉取运动提醒（DP 点 113）
   fetchTipsFromCloud() {
+    // 检查是否在删除操作的冷却期内
+    if (this.data.skipCloudFetch) {
+      console.log('跳过云端拉取（删除操作后冷却期）');
+      this.loadTips(); // 只加载本地数据
+      return;
+    }
+
     const { getLaunchOptionsSync } = ty;
     const { query: { deviceId } } = getLaunchOptionsSync();
 
@@ -525,9 +603,23 @@ Page({
             console.log('响应数据键:', response ? Object.keys(response) : 'null');
             
             // 解析云端日志数据
-            const tips = this.parseTipsFromLogs(response);
+            let tips = this.parseTipsFromLogs(response);
             
             if (tips && tips.length > 0) {
+              // 过滤掉已删除的记录
+              const deletedIds = this.data.deletedTipIds || [];
+              if (deletedIds.length > 0) {
+                const originalCount = tips.length;
+                tips = tips.filter(tip => {
+                  if (!tip || !tip.id) return true;
+                  return !deletedIds.includes(tip.id);
+                });
+                const filteredCount = originalCount - tips.length;
+                if (filteredCount > 0) {
+                  console.log('已过滤', filteredCount, '条已删除的记录');
+                }
+              }
+              
               console.log('从日志中解析出', tips.length, '条提醒');
               console.log('解析出的提醒数据预览:', tips.slice(0, 3));
               
@@ -581,6 +673,13 @@ Page({
 
   // 方法2: 从设备状态获取（备用方案）
   fetchTipsFromDeviceState() {
+    // 检查是否在删除操作的冷却期内
+    if (this.data.skipCloudFetch) {
+      console.log('跳过从设备状态获取数据（删除操作后冷却期）');
+      this.loadTips(); // 只加载本地数据
+      return;
+    }
+
     const { getLaunchOptionsSync } = ty;
     const { query: { deviceId } } = getLaunchOptionsSync();
 
@@ -615,6 +714,20 @@ Page({
             console.warn('云端数据格式不正确');
             this.loadTips();
             return;
+          }
+          
+          // 过滤掉已删除的记录
+          const deletedIds = this.data.deletedTipIds || [];
+          if (deletedIds.length > 0) {
+            const originalCount = tips.length;
+            tips = tips.filter(tip => {
+              if (!tip || !tip.id) return true;
+              return !deletedIds.includes(tip.id);
+            });
+            const filteredCount = originalCount - tips.length;
+            if (filteredCount > 0) {
+              console.log('已过滤', filteredCount, '条已删除的记录');
+            }
           }
           
           // 直接格式化并设置到页面
@@ -838,9 +951,14 @@ Page({
       showTimePicker: false
     });
     
-    // 如果切换到"我的日程"，从云端拉取最新数据
+    // 如果切换到"我的日程"，检查冷却期后决定是否从云端拉取
     if (tab === 'schedule') {
-      this.fetchTipsFromCloud();
+      if (this.data.skipCloudFetch) {
+        console.log('删除操作后冷却期内，优先使用本地数据');
+        this.loadTips();
+      } else {
+        this.fetchTipsFromCloud();
+      }
     }
   },
 
@@ -1313,6 +1431,7 @@ Page({
     });
     this.generateCalendar();
   },
+  
 // --- 删除提醒 (修正版) ---
 deleteTip(e) {
   // 1. 获取要删除的 ID
@@ -1327,17 +1446,34 @@ deleteTip(e) {
   let rawTips = ty.getStorageSync('tips') || [];
   const newRawTips = rawTips.filter(t => t.id !== deleteId);
 
-  // 3. 【立即更新 UI】实现“秒删”并返回首页（schedule 标签）
+  // 3. 记录已删除的 ID（用于过滤云端数据）
+  const deletedIds = [...(this.data.deletedTipIds || [])];
+  if (!deletedIds.includes(deleteId)) {
+    deletedIds.push(deleteId);
+  }
+
+  // 4. 【立即更新 UI】实现"秒删"并返回首页（schedule 标签）
   this.setData({ 
     tips: updatedTips,
     activeTab: 'schedule', 
     editingTipId: null,
     tipTitle: '',
     showDatePicker: false,
-    showTimePicker: false
+    showTimePicker: false,
+    deletedTipIds: deletedIds,
+    skipCloudFetch: true  // 标记跳过云端拉取（冷却期）
   });
 
-  // 4. 【静默同步】
+  // 5. 设置冷却期：5秒后恢复云端拉取
+  if (this._deleteCooldownTimer) {
+    clearTimeout(this._deleteCooldownTimer);
+  }
+  this._deleteCooldownTimer = setTimeout(() => {
+    this.setData({ skipCloudFetch: false });
+    console.log('删除操作冷却期结束，恢复云端拉取');
+  }, 5000);
+
+  // 6. 【静默同步】
   this.performSilentDelete(newRawTips, originalTips, deleteId);
 },
 // 执行静默同步逻辑
