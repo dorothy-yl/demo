@@ -78,14 +78,16 @@ Page({
     };
   },
 
-  // 格式化日期为 "MM月DD日 HH:mm:ss" 格式
+  // 格式化日期为 "Dec 24 18:08:48" 格式
   formatDate(date) {
-    const month = date.getMonth() + 1;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = date.getMonth();
     const day = date.getDate();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+    return `${monthNames[month]} ${day} ${hours}:${minutes}:${seconds}`;
   },
 
   // 将 ISO 格式字符串转换为友好的显示格式
@@ -133,7 +135,7 @@ Page({
       // 从历史列表页的数据结构构建记录
       const distance = parseFloat(options.distance) || 0.7;
       const durationSeconds = parseInt(options.duration) || 0;
-      const rawDate = options.date || '12月11日 12:01:03';
+      const rawDate = options.date || 'Dec 11 12:01:03';
       const formattedDate = this.formatDateString(rawDate);
       
       // 处理speed值，优先使用URL参数中的speed或speedKmh

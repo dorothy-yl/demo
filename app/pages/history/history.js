@@ -8,7 +8,7 @@ Page({
     // Calendar data
     calendarCurrentDate: new Date(),
     calendarDays: [],
-    weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+    weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     currentMonthText: '',
     cloudRecords: [], // 存储从云端获取的所有记录
     isLoading: false, // 加载状态
@@ -127,21 +127,25 @@ Page({
     return `${year}-${month}-${day}`;
   },
 
-  // 格式化日期为显示格式 "12月24日"
+  // 格式化日期为显示格式 "Dec 24"
   formatDateDisplay(date) {
-    const month = date.getMonth() + 1;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = date.getMonth();
     const day = date.getDate();
-    return `${month}月${day}日`;
+    return `${monthNames[month]} ${day}`;
   },
 
-  // 格式化日期时间为 "MM月DD日 HH:mm:ss" 格式
+  // 格式化日期时间为 "Dec 24 18:08:48" 格式
   formatDateTime(date) {
-    const month = date.getMonth() + 1;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = date.getMonth();
     const day = date.getDate();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+    return `${monthNames[month]} ${day} ${hours}:${minutes}:${seconds}`;
   },
 
   // 将 ISO 格式字符串转换为友好的显示格式
@@ -583,7 +587,9 @@ Page({
     const year = calendarCurrentDate.getFullYear();
     const month = calendarCurrentDate.getMonth();
     
-    const monthText = `${year}年${month + 1}月`;
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthText = `${monthNames[month]} ${year}`;
     this.setData({ currentMonthText: monthText });
 
     const firstDay = new Date(year, month, 1);
