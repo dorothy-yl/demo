@@ -182,17 +182,22 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 16px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .calendar-modal-content {
   background-color: #2C3A4A;
   border-radius: 16px;
-  padding: 20px;
+  padding: 16px;
   width: 100%;
   max-width: 400px;
+  max-height: calc(100vh - 32px);
   box-sizing: border-box;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Calendar Month Header */
@@ -200,8 +205,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  margin-bottom: 15px;
+  padding: 8px 0;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .calendar-month-nav-btn {
@@ -231,19 +237,20 @@
 .calendar-weekday-headers {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .calendar-weekday-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .calendar-weekday-text {
-  font-size: 18px;
+  font-size: 16px;
   color: #8E8E93;
   font-weight: 500;
 }
@@ -252,7 +259,8 @@
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 3px;
+  flex-shrink: 0;
 }
 
 .calendar-day {
@@ -260,10 +268,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.05);
   position: relative;
-  min-height: 40px;
+  min-height: 32px;
+  max-height: 44px;
   border: 2px solid transparent;
   transition: all 0.2s ease;
 }
@@ -287,7 +296,18 @@
 }
 
 .calendar-day-number {
-  font-size: 16px;
+  font-size: 14px;
   color: #FFFFFF;
   font-weight: 500;
+}
+
+.calendar-day-dot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
 }

@@ -77,6 +77,11 @@ Page({
           const selectedDate = new Date(this.data.currentDateObj);
           this.loadRecordsForDate(selectedDate);
           
+          // 如果日历已打开，重新生成日历以更新标记
+          if (this.data.showCalendar) {
+            this.generateCalendar();
+          }
+          
           // 刷新完成后停止下拉刷新动画
           ty.stopPullDownRefresh();
         })
@@ -89,6 +94,11 @@ Page({
           const selectedDate = new Date(this.data.currentDateObj);
           this.loadRecordsForDateFromLocal(selectedDate);
           
+          // 如果日历已打开，重新生成日历以更新标记
+          if (this.data.showCalendar) {
+            this.generateCalendar();
+          }
+          
           // 刷新完成后停止下拉刷新动画
           ty.stopPullDownRefresh();
         });
@@ -96,6 +106,11 @@ Page({
       // 如果没有设备ID，从本地加载
       const selectedDate = new Date(this.data.currentDateObj);
       this.loadRecordsForDateFromLocal(selectedDate);
+      
+      // 如果日历已打开，重新生成日历以更新标记
+      if (this.data.showCalendar) {
+        this.generateCalendar();
+      }
       
       // 刷新完成后停止下拉刷新动画
       ty.stopPullDownRefresh();
@@ -245,6 +260,11 @@ Page({
         // 加载当前日期的记录
         const selectedDate = new Date(this.data.currentDateObj);
         this.loadRecordsForDate(selectedDate);
+        
+        // 如果日历已打开，重新生成日历以更新标记
+        if (this.data.showCalendar) {
+          this.generateCalendar();
+        }
       })
       .catch((error) => {
         console.error('从云端获取数据失败:', error);
@@ -525,6 +545,36 @@ Page({
     this.hideCalendar();
   },
 
+  // 检查指定日期是否有历史记录
+  checkDateHasRecord(dateStr) {
+    try {
+      // 优先检查云端记录
+      const cloudRecords = this.data.cloudRecords || [];
+      if (cloudRecords.length > 0) {
+        const hasRecord = cloudRecords.some(record => {
+          const recordDateStr = this.getDateStringFromRecord(record);
+          return recordDateStr === dateStr;
+        });
+        if (hasRecord) return true;
+      }
+
+      // 降级到本地存储
+      const history = ty.getStorageSync('exerciseHistory') || [];
+      if (Array.isArray(history) && history.length > 0) {
+        const hasRecord = history.some(record => {
+          const recordDateStr = this.getDateStringFromRecord(record);
+          return recordDateStr === dateStr;
+        });
+        if (hasRecord) return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error checking date has record:', error);
+      return false;
+    }
+  },
+
   // 生成日历
   generateCalendar() {
     const { calendarCurrentDate, selectedDateStr } = this.data;
@@ -552,7 +602,8 @@ Page({
         date: dateStr,
         isCurrentMonth: false,
         isToday: false,
-        isSelected: dateStr === selectedDateStr
+        isSelected: dateStr === selectedDateStr,
+        hasRecord: this.checkDateHasRecord(dateStr)
       });
     }
 
@@ -567,7 +618,8 @@ Page({
         date: dateStr,
         isCurrentMonth: true,
         isToday: dateStr === todayStr,
-        isSelected: dateStr === selectedDateStr
+        isSelected: dateStr === selectedDateStr,
+        hasRecord: this.checkDateHasRecord(dateStr)
       });
     }
 
@@ -581,7 +633,8 @@ Page({
         date: dateStr,
         isCurrentMonth: false,
         isToday: false,
-        isSelected: dateStr === selectedDateStr
+        isSelected: dateStr === selectedDateStr,
+        hasRecord: this.checkDateHasRecord(dateStr)
       });
     }
 

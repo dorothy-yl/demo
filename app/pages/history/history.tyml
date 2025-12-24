@@ -80,6 +80,7 @@
           data-date="{{item.date}}"
         >
           <text class="calendar-day-number">{{item.day}}</text>
+          <view class="calendar-day-dot" ty:if="{{item.hasRecord}}"></view>
         </view>
       </view>
     </view>
