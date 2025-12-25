@@ -160,6 +160,14 @@ function formatHistoryForDp112(historyData) {
           load: loadValue,
           rpm: rpmValue,
           watt: wattValue,
+          // 添加模式识别字段
+          isGoalMode: record.isGoalMode === true,
+          pageTitle: record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start'),
+          // 添加其他可能需要的字段
+          heartRate: heartRateValue,
+          speed: speedValue,
+          maxResistance: maxResistanceValue,
+          minResistance: minResistanceValue,
         };
         
         formattedRecords.push(formattedRecord);

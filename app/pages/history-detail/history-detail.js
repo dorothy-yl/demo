@@ -58,8 +58,12 @@ Page({
       speedValue = parseFloat(logData.speed).toFixed(0);
     }
     
-    // 处理标题字段：支持 title, pageTitle
-    const titleValue = logData.title || logData.pageTitle || 'Quick Start';
+    // 处理标题字段：支持 title, pageTitle，并根据 isGoalMode 判断
+    let titleValue = logData.title || logData.pageTitle;
+    if (!titleValue) {
+      // 如果没有 title 或 pageTitle，根据 isGoalMode 判断
+      titleValue = logData.isGoalMode === true ? 'Target pattern' : 'Quick Start';
+    }
     
     return {
       id: parseInt(logData.id) || Date.now(),
@@ -74,7 +78,10 @@ Page({
       watt: logData.watt ? logData.watt.toString() : '0.0',
       maxResistance: logData.maxResistance ? logData.maxResistance.toString() : '0',
       minResistance: logData.minResistance ? logData.minResistance.toString() : '0',
-      heartRate: logData.heartRate ? logData.heartRate.toString() : '0'
+      heartRate: logData.heartRate ? logData.heartRate.toString() : '0',
+      // 保存模式信息
+      isGoalMode: logData.isGoalMode === true,
+      pageTitle: titleValue
     };
   },
 
@@ -118,6 +125,130 @@ Page({
     return dateString;
   },
 
+  // 从云端查找记录（优先方案）
+  loadRecordFromCloud(recordId, callback) {
+    const { query: { deviceId } } = ty.getLaunchOptionsSync();
+    
+    if (!deviceId) {
+      console.log('设备ID不存在，跳过云端查找');
+      if (callback) callback(null);
+      return;
+    }
+
+    // 优先使用 ty.getAnalyticsLogsPublishLog API
+    if (ty.getAnalyticsLogsPublishLog) {
+      ty.getAnalyticsLogsPublishLog({
+        devId: deviceId,
+        dpIds: '112',
+        offset: 0,
+        limit: 10,
+      })
+        .then((response) => {
+          console.log('从云端查找记录，原始响应:', response);
+          
+          // 解析日志数据
+          const allRecords = this.parseHistoryFromLogsForDetail(response);
+          
+          // 查找匹配的记录
+          const recordIdNum = typeof recordId === 'string' ? parseInt(recordId) : recordId;
+          const matchedRecord = allRecords.find(record => {
+            const id = typeof record.id === 'string' ? parseInt(record.id) : record.id;
+            return id === recordIdNum;
+          });
+
+          if (matchedRecord) {
+            console.log('从云端找到匹配的记录:', matchedRecord);
+            const formattedRecord = this.parseSingleRecord(matchedRecord);
+            if (callback) callback(formattedRecord);
+          } else {
+            console.log('云端未找到匹配的记录，ID:', recordId);
+            if (callback) callback(null);
+          }
+        })
+        .catch((error) => {
+          console.error('从云端查找记录失败:', error);
+          if (callback) callback(null);
+        });
+    } else {
+      console.log('getAnalyticsLogsPublishLog API 不可用');
+      if (callback) callback(null);
+    }
+  },
+
+  // 解析云端日志数据（用于详情页）
+  parseHistoryFromLogsForDetail(response) {
+    const allRecords = [];
+    
+    try {
+      if (!response) {
+        return [];
+      }
+
+      let logItems = [];
+      if (Array.isArray(response)) {
+        logItems = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        logItems = response.data;
+      } else if (response.list && Array.isArray(response.list)) {
+        logItems = response.list;
+      } else if (response.dps && Array.isArray(response.dps)) {
+        logItems = response.dps;
+      } else {
+        return [];
+      }
+
+      logItems.forEach((logItem) => {
+        try {
+          let historyData = null;
+          
+          if (logItem['事件详情'] !== undefined && logItem['事件详情'] !== null) {
+            const eventDetail = logItem['事件详情'];
+            if (typeof eventDetail === 'string' && eventDetail.trim()) {
+              try {
+                historyData = JSON.parse(eventDetail);
+              } catch (parseError) {
+                console.warn('解析"事件详情"JSON失败:', parseError);
+              }
+            } else {
+              historyData = eventDetail;
+            }
+          } else if (logItem.eventDetail !== undefined && logItem.eventDetail !== null) {
+            historyData = typeof logItem.eventDetail === 'string' 
+              ? JSON.parse(logItem.eventDetail) 
+              : logItem.eventDetail;
+          } else if (logItem.value !== undefined && logItem.value !== null) {
+            historyData = typeof logItem.value === 'string' 
+              ? JSON.parse(logItem.value) 
+              : logItem.value;
+          }
+
+          if (Array.isArray(historyData)) {
+            historyData.forEach(record => {
+              if (record && record.id) {
+                allRecords.push({
+                  ...record,
+                  cloudTime: logItem['时间(GMT+8)'] || logItem.time || logItem.timeStr
+                });
+              }
+            });
+          } else if (historyData && typeof historyData === 'object' && historyData.id) {
+            allRecords.push({
+              ...historyData,
+              cloudTime: logItem['时间(GMT+8)'] || logItem.time || logItem.timeStr
+            });
+          }
+        } catch (error) {
+          console.warn('解析日志记录失败:', error);
+        }
+      });
+
+      return allRecords;
+    } catch (error) {
+      console.error('解析云端数据失败:', error);
+      return [];
+    }
+  },
+
   // 从本地存储或URL参数获取数据
   loadRecordFromFallback(options) {
     const id = options.id;
@@ -146,11 +277,15 @@ Page({
         speedValue = parseFloat(options.speedKmh).toFixed(1);
       }
       
+      // 根据 title 判断模式
+      const titleValue = options.title || 'Quick Start';
+      const isGoalMode = titleValue === 'Target pattern';
+      
       record = {
         id: parseInt(id) || 1,
         duration: this.formatTime(durationSeconds),
         date: formattedDate,
-        title: options.title || 'Quick Start',
+        title: titleValue,
         Load: options.Load || '18',
         calories: options.calories || '52',
         distance: distance.toFixed(2),
@@ -159,7 +294,9 @@ Page({
         watt: options.watt || '50.1',
         maxResistance: options.maxResistance || '19',
         minResistance: options.minResistance || '1.3',
-        heartRate: options.heartRate || '60'
+        heartRate: options.heartRate || '60',
+        isGoalMode: isGoalMode,
+        pageTitle: titleValue
       };
     } else {
       // 确保距离格式正确
@@ -196,7 +333,14 @@ Page({
       }
       // 设置 title 字段
       if (!record.title) {
-        record.title = record.pageTitle || 'Quick Start';
+        record.title = record.pageTitle || (record.isGoalMode === true ? 'Target pattern' : 'Quick Start');
+      }
+      // 确保模式信息存在
+      if (record.isGoalMode === undefined) {
+        record.isGoalMode = record.title === 'Target pattern';
+      }
+      if (!record.pageTitle) {
+        record.pageTitle = record.title;
       }
     }
     
@@ -210,19 +354,57 @@ Page({
       console.log('hideMenuButton fail', error);
     } });
     
-    // 从本地存储加载数据
-    const record = this.loadRecordFromFallback(options);
+    const id = options.id;
     
-    // 优先使用URL参数中的speed值（从exercise页面传递的数据）
-    if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
-      record.speed = parseFloat(options.speed).toFixed(1);
-    } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
-      record.speed = parseFloat(options.speedKmh).toFixed(1);
+    // 优先从云端查找记录（如果URL参数中没有完整数据）
+    // 检查URL参数是否包含完整数据（通过检查是否有title字段）
+    const hasCompleteData = options.title && options.duration && options.distance;
+    
+    if (id && !hasCompleteData) {
+      // 尝试从云端查找
+      this.loadRecordFromCloud(id, (cloudRecord) => {
+        if (cloudRecord) {
+          // 优先使用URL参数中的speed值（从exercise页面传递的数据）
+          if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+            cloudRecord.speed = parseFloat(options.speed).toFixed(1);
+          } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+            cloudRecord.speed = parseFloat(options.speedKmh).toFixed(1);
+          }
+          
+          this.setData({
+            record: cloudRecord
+          });
+        } else {
+          // 云端未找到，降级到本地存储
+          const record = this.loadRecordFromFallback(options);
+          
+          // 优先使用URL参数中的speed值
+          if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+            record.speed = parseFloat(options.speed).toFixed(1);
+          } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+            record.speed = parseFloat(options.speedKmh).toFixed(1);
+          }
+          
+          this.setData({
+            record: record
+          });
+        }
+      });
+    } else {
+      // 如果URL参数中有完整数据，直接使用
+      const record = this.loadRecordFromFallback(options);
+      
+      // 优先使用URL参数中的speed值（从exercise页面传递的数据）
+      if (options.speed !== undefined && options.speed !== null && options.speed !== '') {
+        record.speed = parseFloat(options.speed).toFixed(1);
+      } else if (options.speedKmh !== undefined && options.speedKmh !== null && options.speedKmh !== '') {
+        record.speed = parseFloat(options.speedKmh).toFixed(1);
+      }
+      
+      this.setData({
+        record: record
+      });
     }
-    
-    this.setData({
-      record: record
-    });
   },
   
   goBack() {
