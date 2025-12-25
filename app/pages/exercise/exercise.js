@@ -236,10 +236,11 @@ dpID.forEach(element => {
   // 最大阻力
   if(element.code == 111) {
     console.log('设备上报最大阻力:', element.value);
-    this.dpMaxResistance = element.value;
-    // 同步覆盖本地最大阻力，确保记录使用硬件值
-    this.maxResistance = element.value;
+    this.setData({
+      dpMaxResistance: element.value
+    });
   }
+
   //阻力
 if(element.code == 102) {
   console.log('阻力:', element.value);

@@ -1,3 +1,7 @@
+function formatDpState(dpState) {
+  return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
+}
+
 Page({
   data: {
     record: null
@@ -347,6 +351,53 @@ Page({
     return record;
   },
   
+  // 设置 dp 点监听（实时更新最大阻力）
+  setupDpListener() {
+    const { onDpDataChange, registerDeviceListListener } = ty.device;
+    const { getLaunchOptionsSync } = ty;
+    const { query: { deviceId } } = getLaunchOptionsSync();
+
+    if (!deviceId) {
+      console.log('设备ID不存在，跳过dp点监听');
+      return;
+    }
+
+    // 监听 DP 点数据变化
+    const _onDpDataChange = (event) => {
+      if (!event.dps) {
+        return;
+      }
+
+      const dpID = formatDpState(event.dps);
+      dpID.forEach(element => {
+        // 最大阻力 - dp 点 111
+        if (element.code == 111) {
+          console.log('历史详情页收到设备上报最大阻力:', element.value);
+          // 实时更新最大阻力
+          if (this.data.record) {
+            this.setData({
+              'record.maxResistance': element.value.toString()
+            });
+          }
+        }
+      });
+    };
+
+    // 注册设备监听
+    registerDeviceListListener({
+      deviceIdList: [deviceId],
+      success: () => {
+        console.log('历史详情页dp点监听注册成功');
+      },
+      fail: (error) => {
+        console.error('历史详情页dp点监听注册失败:', error);
+      }
+    });
+
+    // 监听 DP 点变化
+    onDpDataChange(_onDpDataChange);
+  },
+
   onLoad(options) {
     ty.hideMenuButton({ success: () => {
       console.log('hideMenuButton success');
@@ -374,6 +425,9 @@ Page({
           this.setData({
             record: cloudRecord
           });
+          
+          // 设置 dp 点监听（在数据加载后）
+          this.setupDpListener();
         } else {
           // 云端未找到，降级到本地存储
           const record = this.loadRecordFromFallback(options);
@@ -388,6 +442,9 @@ Page({
           this.setData({
             record: record
           });
+          
+          // 设置 dp 点监听（在数据加载后）
+          this.setupDpListener();
         }
       });
     } else {
@@ -404,6 +461,9 @@ Page({
       this.setData({
         record: record
       });
+      
+      // 设置 dp 点监听（在数据加载后）
+      this.setupDpListener();
     }
   },
   

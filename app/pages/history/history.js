@@ -67,7 +67,7 @@ Page({
           devId: this.deviceId,
           dpIds: '112',
           offset: 0,
-          limit: 10,
+          limit: 100,
         })
           .then((response) => {
             console.log('✓ 从日志接口获取历史记录成功（下拉刷新）');
@@ -123,7 +123,7 @@ Page({
   loadRecordsFromCloudFallbackForRefresh() {
     getHistoryFromCloud(this.deviceId, {
       offset: 0,
-      limit: 10,
+      limit: 100,
       sortType: 'DESC'
     })
       .then((result) => {
@@ -294,7 +294,7 @@ Page({
         devId: this.deviceId,
         dpIds: '112',
         offset: 0,
-        limit: 10, // 可以根据需要调整，最大4000
+        limit: 100, // 可以根据需要调整，最大4000
       })
         .then((response) => {
           console.log('✓ 从日志接口获取历史记录成功');
@@ -334,7 +334,7 @@ Page({
   loadRecordsFromCloudFallback() {
     getHistoryFromCloud(this.deviceId, {
       offset: 0,
-      limit: 10,
+      limit: 100,
       sortType: 'DESC'
     })
       .then((result) => {
