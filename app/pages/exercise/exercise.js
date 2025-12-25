@@ -18,7 +18,7 @@ Page({
     speed: 0,
     load: 1,
     gaugeProgressStyle: '',
-    knobAngle: 225, // Start angle
+    knobAngle: 220, // Start angle
     // 目标模式相关
     isGoalMode: false,
     goalType: null, // 'time', 'distance', 'calories'
@@ -104,6 +104,12 @@ Page({
       this.updateGaugeVisual(value);
     }, 100);
 
+    this.debouncedUpdateLoadNumber = this.debounce((finalLoad) => {
+      // 这里的逻辑：松手后更新load对应的数字（如果有单独的数字展示，可在此处修改）
+      // 若load本身就是要显示的数字，此函数内可无需额外逻辑（因为handleTouchEnd已更新load）
+      // 若有其他数字需要同步更新，在此处添加 setData 即可，例如：
+      // this.setData({ loadNumber: finalLoad });
+    }, 200);
     // 原生调用方式
 const { onDpDataChange, registerDeviceListListener } = ty.device;
 const { getLaunchOptionsSync } = ty;
@@ -235,14 +241,13 @@ dpID.forEach(element => {
     this.maxResistance = element.value;
   }
   //阻力
-  if(element.code == 102) {
-    console.log('阻力:', element.value);
-    const loadValue = element.value;
-    this.setData({
-      load: loadValue
-    });
-    this.updateGauge(loadValue);
-  } 
+if(element.code == 102) {
+  console.log('阻力:', element.value);
+  const loadValue = element.value;
+  this.setData({
+    load: loadValue
+  });
+}
 });
 }
 
@@ -295,42 +300,33 @@ onDpDataChange(_onDpDataChange);
     const m = minutes.toString().padStart(2, '0');
     const s = secs.toString().padStart(2, '0');
     
-    if (hours > 0) {
-      return `${h}:${m}:${s}`;
-    }
-    return `${m}:${s}`; // Or keep 00:XX:XX format if desired, screenshot shows 00:52:06 so HH:MM:SS preferred
+    // 强制返回 HH:MM:SS 格式，不随小时是否为0变化
+    return `${h}:${m}:${s}`; 
   },
 
   startTimer() {
     if (this.timer) return;
     this.timer = setInterval(() => {
       if (!this.data.isPaused && !this.data.goalCompleted) {
+        // 仅在「时间目标模式」下，使用本地定时器更新倒计时
         if (this.data.isGoalMode && this.data.goalType === 'time') {
-          // 倒计时模式
           const newCountdown = this.data.countdownTime - 1;
           if (newCountdown <= 0) {
             this.setData({
               countdownTime: 0,
               formattedTime: this.formatTime(0),
-              elapsedTime: this.data.goalValue * 60 // 记录实际运动时间
+              elapsedTime: this.data.goalValue * 60
             });
-            // 目标完成
             this.checkGoalCompleted();
           } else {
             this.setData({
               countdownTime: newCountdown,
               formattedTime: this.formatTime(newCountdown),
-              elapsedTime: this.data.goalValue * 60 - newCountdown // 记录已运动时间
+              elapsedTime: this.data.goalValue * 60 - newCountdown
             });
           }
-        } else {
-          // 正常计时模式
-          const newTime = this.data.elapsedTime + 1;
-          this.setData({
-            elapsedTime: newTime,
-            formattedTime: this.formatTime(newTime),
-          });
         }
+        // 非时间目标模式下，不执行本地时间更新，避免与硬件上报冲突
       }
     }, 1000);
   },
@@ -896,13 +892,24 @@ onDpDataChange(_onDpDataChange);
     }).exec();
   },
 
-  // 节流函数
-  throttle(func, delay) {
+// 节流函数，改为真正的固定间隔节流
+throttle(func, delay) {
+  let lastExecTime = 0; // 记录上一次执行时间
+  return (...args) => {
+    const now = Date.now();
+    // 只有当前时间与上一次执行时间的间隔 >= delay，才执行函数
+    if (now - lastExecTime >= delay) {
+      func.apply(this, args);
+      lastExecTime = now;
+    }
+  };
+},
+
+  debounce(func, delay) {
+    let debounceTimer = null;
     return (...args) => {
-      if (this.throttleTimer) {
-        clearTimeout(this.throttleTimer);
-      }
-      this.throttleTimer = setTimeout(() => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
         func.apply(this, args);
       }, delay);
     };
@@ -914,7 +921,7 @@ onDpDataChange(_onDpDataChange);
     const currentValue = Math.min(Math.max(value, 0), maxLoad);
     const maxAngle = 270;
     const progressAngle = (currentValue / maxLoad) * maxAngle;
-    const startAngle = 225;
+    const startAngle = 220;
     const knobAngle = startAngle + progressAngle;
 
     this.setData({
@@ -924,74 +931,54 @@ onDpDataChange(_onDpDataChange);
       knobAngle: knobAngle
     });
   },
-
   handleTouchMove(e) {
     if (!this.gaugeCenter) return;
-
+  
     const touch = e.touches[0];
     const dx = touch.clientX - this.gaugeCenter.x;
     const dy = touch.clientY - this.gaugeCenter.y;
-
-    // Calculate angle in degrees
-    // Math.atan2(dy, dx) returns angle from X-axis (3 o'clock).
-    // We want 0 to be Y-axis (12 o'clock) for consistency with CSS rotate.
-    // So we add 90 degrees.
+  
     let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
     if (angle < 0) angle += 360;
-
-    // Our gauge starts at 225deg (bottom-left) and goes 270deg to 135deg (bottom-right)
-    // 225 -> 0 (start)
-    // 360/0 -> transition
-    // 135 -> end
-    
-    // Normalize angle relative to start (225)
-    // If angle is between 0 and 135, add 360 to make it continuous with 225-360
-    // Range becomes 225 (start) to 495 (end)
-    
+  
     let adjustedAngle = angle;
-    if (angle >= 0 && angle <= 135) {
+    if (angle >= 0 && angle <= 220) {
       adjustedAngle = angle + 360;
     }
-
-    // Clamping
-    const startAngle = 225;
+  
+    const startAngle = 220;
     const maxSweep = 270;
-    const endAngle = startAngle + maxSweep; // 495
-
+    const endAngle = startAngle + maxSweep;
     if (adjustedAngle < startAngle) adjustedAngle = startAngle;
     if (adjustedAngle > endAngle) adjustedAngle = endAngle;
-
-    // Calculate progress (0 to 1)
+  
     const progress = (adjustedAngle - startAngle) / maxSweep;
-    
-    // Map to Load (0-32)
     const maxLoad = 32;
-    const newLoad = Math.round(progress * maxLoad);
-
-    // 存储临时值
+    const newLoad = Math.min(Math.floor(progress * maxLoad), maxLoad);
+  
     this.tempLoad = newLoad;
-
-    // 使用节流更新视觉位置（不更新load数据和发送命令）
+  
+    // 仅执行视觉更新，不触发其他逻辑，避免冲突
     if (this.throttledUpdateVisual) {
       this.throttledUpdateVisual(newLoad);
     }
   },
 
   handleTouchEnd(e) {
-    // 清除节流定时器，避免延迟更新
     if (this.throttleTimer) {
       clearTimeout(this.throttleTimer);
       this.throttleTimer = null;
     }
     
-    // 手指放开时，提交最终值
     if (this.tempLoad !== null && this.tempLoad !== this.data.load) {
       const finalLoad = this.tempLoad;
+      // 添加 50ms 延迟，平滑过渡视觉更新
+      setTimeout(() => {
+        this.updateGauge(finalLoad);
+        this.debouncedUpdateLoadNumber(finalLoad);
+      }, 50);
       
-      // 更新完整显示（包括load数据）
-      this.updateGauge(finalLoad);
-      
-      // 发送设备命令
+      // 设备命令发送逻辑不变
       const { query: { deviceId } } = ty.getLaunchOptionsSync();
       if (deviceId) {
         ty.device.publishDps({
@@ -1001,17 +988,12 @@ onDpDataChange(_onDpDataChange);
           pipelines: [0, 1, 2, 3, 4, 5, 6],
           success: () => {
             console.log('Load updated to:', finalLoad);
-            // 如果运动已经开始且未暂停，设置阻力后应该能收到RPM和Watt数据
-            // 如果运动还没开始且未暂停，先开始运动以确保数据上报
             if (this.isRunning && !this.data.isPaused) {
-              // 运动已在进行中，阻力设置后硬件会开始上报RPM和Watt
-              console.log('运动进行中，阻力已更新，等待硬件上报RPM和Watt数据');
+              console.log('运动进行中，阻力已更新');
             } else if (!this.isRunning && !this.data.isPaused) {
-              // 运动还没开始，先开始运动以确保数据上报
               console.log('运动未开始，阻力设置后自动开始运动');
               this.handleStartExercise(true);
             }
-            // 如果运动已暂停，不自动开始，等待用户手动继续
           },
           fail: (err) => {
             console.error('Failed to update load:', err);
@@ -1020,7 +1002,6 @@ onDpDataChange(_onDpDataChange);
       }
     }
     
-    // 清除临时值
     this.tempLoad = null;
   },
 
@@ -1029,7 +1010,7 @@ onDpDataChange(_onDpDataChange);
     const currentValue = Math.min(Math.max(value, 0), maxLoad); // Ensure bounds
     const maxAngle = 270;
     const progressAngle = (currentValue / maxLoad) * maxAngle;
-    const startAngle = 225;
+    const startAngle = 220;
     const knobAngle = startAngle + progressAngle;
 
     // 更新阻力跟踪
