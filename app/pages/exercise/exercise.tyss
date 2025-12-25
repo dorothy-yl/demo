@@ -2,13 +2,17 @@
 .container {
   display: flex;
   flex-direction: column;
-  background-color:#2C3A4A; /* Dark Blue/Gray Background */
+  background-color: #2C3A4A; /* Dark Blue/Gray Background */
   height: 100vh;
   overflow: hidden;
   color: #FFFFFF;
-  padding: 0 20px;
+  padding: 0 40rpx;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* 平板适配：限制最大宽度并居中 */
+  max-width: 750rpx;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Header */
@@ -16,17 +20,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 44px 0 12px 0; /* Top padding for status bar area */
+  padding: 88rpx 0 24rpx 0; /* Top padding for status bar area */
   position: relative; /* Needed for absolute positioning of title */
   flex-shrink: 0;
 }
 
 .back-btn {
-  width: 30px; /* Increased touch area */
-  height: 30px;
+  width: 60rpx; /* Increased touch area */
+  height: 60rpx;
   position: absolute;
-  margin-top: 53px;
-  left: 8px;
+  margin-top: 106rpx;
+  left: 16rpx;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -34,15 +38,15 @@
 }
 
 .back-icon {
-  width: 9px;
-  height: 18px;
+  width: 18rpx;
+  height: 36rpx;
 }
 
 .header-title {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: 500;
   color: #FFFFFF;
-  margin-top: 53px;
+  margin-top: 106rpx;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -50,8 +54,8 @@
 }
 
 .header-placeholder {
-  width: 30px; /* Match back-btn width for symmetry if we weren't using absolute */
-  height: 25px;
+  width: 60rpx; /* Match back-btn width for symmetry if we weren't using absolute */
+  height: 50rpx;
   visibility: hidden;
 }
 
@@ -60,8 +64,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 16px;
-  margin-top: 16px;
+  margin-bottom: 32rpx;
+  margin-top: 32rpx;
   flex-shrink: 0;
 }
 
@@ -75,38 +79,38 @@
 .value-icon-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16rpx;
 }
 
 .heart-icon {
-  width: 20px;
-  height: 20px;
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .top-stat-value {
-  font-size: 48px;
+  font-size: 96rpx;
   font-weight: bold;
   line-height: 1.2;
 }
 
 .top-stat-label {
-  font-size: 14px;
+  font-size: 28rpx;
   color: #8E97A3;
-  margin-top: 4px;
+  margin-top: 8rpx;
 }
 
 .vertical-divider {
-  width: 1px;
-  height: 40px;
+  width: 2rpx;
+  height: 80rpx;
   background-color: #3A4452;
-  margin: 0 20px;
+  margin: 0 40rpx;
 }
 
 /* Cards Common */
 .card {
   background-color: #2B3240;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 24rpx;
+  padding: 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,46 +118,47 @@
 }
 
 .card-label {
-  font-size: 14px;
-  color:#BABABA;
-  margin-bottom: 8px;
+  font-size: 28rpx;
+  color: #BABABA;
+  margin-bottom: 16rpx;
 }
 
 /* Timer Card */
 .timer-card {
-  height:99px;
-  display:flex;
+  height: 198rpx;
+  display: flex;
   justify-content: center; /* 修正错误写法：justify -> justify-content */
   align-items: center;
   flex-direction: column; /* 让标签和时间垂直排列 */
-  background-color:#151F2F;
-  margin-bottom: 12px;
-  padding: 25px 20px;
+  background-color: #151F2F;
+  margin-bottom: 24rpx;
+  padding: 50rpx 40rpx;
   flex-shrink: 0;
 }
 
 .timer-display {
-  font-size: 48px;
+  font-size: 96rpx;
   font-weight: bold;
   font-family: monospace;
-  letter-spacing: 2px;
+  letter-spacing: 4rpx;
   text-align: center; /* 文本自身水平居中兜底 */
 }
+
 /* Stats Grid */
 .stats-grid {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
   flex-shrink: 0;
 }
 
 .stat-card {
   flex: 1;
-  padding: 15px 10px;
+  padding: 30rpx 20rpx;
 }
 
 .card-value {
-  font-size: 32px;
+  font-size: 64rpx;
   font-weight: bold;
 }
 
@@ -170,8 +175,8 @@
 }
 
 .gauge-wrapper {
-  width: 190px;
-  height: 190px;
+  width: 380rpx;
+  height: 380rpx;
   position: relative;
   display: flex;
   align-items: center;
@@ -207,15 +212,15 @@
 }
 
 .gauge-center-value {
-  font-size: 56px;
+  font-size: 112rpx;
   font-weight: bold;
   line-height: 1;
 }
 
 .gauge-center-label {
-  font-size: 16px;
+  font-size: 32rpx;
   color: #8E97A3;
-  margin-top: 5px;
+  margin-top: 10rpx;
 }
 
 /* Knob styles */
@@ -230,15 +235,15 @@
 }
 
 .gauge-knob {
-  width: 24px;
-  height: 24px;
+  width: 48rpx;
+  height: 48rpx;
   background-color: #FFFFFF;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.2);
   position: absolute;
-  top: -5px; /* Adjust based on radius to sit on the arc */
+  top: -10rpx; /* Adjust based on radius to sit on the arc */
   left: 50%;
-  margin-left: -8px; /* Center the knob */
+  margin-left: -16rpx; /* Center the knob */
   /* This positioning places it at the top (0 deg in CSS usually), we rotate the container to move it */
 }
 
@@ -255,12 +260,12 @@
 */
 
 .gauge-labels {
-  width: 240px;
+  width: 480rpx;
   display: flex;
   justify-content: space-between;
   position: absolute;
-  bottom: 25px;
-  font-size: 24px;
+  bottom: 50rpx;
+  font-size: 48rpx;
   color: #FFFFFF;
   font-weight: bold;
 }
@@ -268,19 +273,30 @@
 /* Footer Button */
 .footer {
   width: 100%;
-  padding-bottom: 20px;
+  padding-bottom: 40rpx;
   flex-shrink: 0;
 }
 
 .main-action-btn {
   background-color: #FFFFFF;
   color: #000000;
-  border-radius: 30px;
-  height: 56px;
-  font-size: 18px;
+  border-radius: 60rpx;
+  height: 112rpx;
+  font-size: 36rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
+}
+
+/* 平板适配 */
+@media screen and (min-width: 768px) {
+  .gauge-wrapper {
+    width: 750rpx;
+    height: 750rpx;
+  }
+  .gauge-center-value {
+    font-size: 36rpx;
+  }
 }

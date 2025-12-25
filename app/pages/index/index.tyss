@@ -2,10 +2,15 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(180deg,#2C3A4A 0%,#2C3A4A 100%);
   padding: 0;
   padding-bottom: 160rpx;
   box-sizing: border-box;
+  /* 平板适配：限制最大宽度并居中 */
+  max-width: 750rpx;
+  margin: 0 auto;
+  width: 100%;
 }
 
 
@@ -73,6 +78,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 40rpx 50rpx;
+  /* 平板适配：确保内容不超出容器 */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .summary-left {
@@ -176,7 +184,7 @@
   height: 320rpx;
   /* 移除硬编码的left/width/justify-self，改用Grid自适应 */
   width: 100%; /* 占满Grid列宽 */
-  max-width: 360rpx; /* 限制最大宽度，避免大屏拉伸 */
+  /* 平板适配：移除固定最大宽度限制，让Grid自动分配 */
 }
 
 /* 单独保留每个item的圆角设计（修复你原有的语法错误：30 → 30px） */

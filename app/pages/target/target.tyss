@@ -54,8 +54,6 @@
   transition: opacity 0.3s ease;
 }
 
-
-
 .back-icon {
   width: 18rpx;
   height: 36rpx;
@@ -89,8 +87,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12rpx;
-  margin: 50px 30px;
+  padding: 24rpx;
+  margin: 100rpx 60rpx;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 32rpx;
   position: relative;
@@ -117,7 +115,7 @@
 }
 
 .tab-text {
-  font-size: 18px;
+  font-size: 36rpx;
   color: #8E8E93;
   transition: color 0.3s ease;
 }
@@ -145,11 +143,12 @@
 
 /* Picker Container */
 .picker-container {
-  width: 250px;
-  height: 440px;
-  margin: 20rpx auto;
+  width: 90%;
+  max-width: 500rpx;
+  height: 880rpx;
+  margin: 40rpx auto;
   position: relative;
-  border-radius: 16rpx;
+  border-radius: 32rpx;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -181,20 +180,10 @@
 
 .unit-overlay {
   position: absolute;
-  right: -80rpx; /* Position outside or inside? */
+  right: 40rpx;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 30px;
-  color: #8E8E93;
-  white-space: nowrap;
-}
-
-.unit-overlay {
-  position: absolute;
-  right: 20rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 30px;
+  font-size: 60rpx;
   color: #C8C8CC;
   pointer-events: none;
 }

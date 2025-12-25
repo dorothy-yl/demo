@@ -1,25 +1,25 @@
 .container {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg,#2C3A4A  0%,#2C3A4A 100%);
-  padding:50px 0 0 0;
+  background: linear-gradient(180deg, #2C3A4A 0%, #2C3A4A 100%);
+  padding: 100rpx 0 0 0;
 }
 
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 48rpx;
   position: relative;
-  padding: 0 20px;
-  height: 88px;
+  padding: 0 40rpx;
+  height: 176rpx;
 }
 
 .back-btn {
-  width: 30px; /* Increased touch area */
-  height: 30px;
+  width: 60rpx; /* Increased touch area */
+  height: 60rpx;
   position: absolute;
-  margin-top: 24px;
-  left: 25px;
+  margin-top: 48rpx;
+  left: 50rpx;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -27,8 +27,8 @@
 }
 
 .back-icon {
-  width: 15px;
-  height: 20px;
+  width: 30rpx;
+  height: 40rpx;
 }
 
 .header-title {
@@ -39,33 +39,33 @@
 }
 
 .page-title {
-  font-size: 20px;
-  font-weight: 500px;
+  font-size: 40rpx;
+  font-weight: 500;
   color: #FFFFFF;
-  margin-bottom: 4px;
-  margin-top: 53px;
+  margin-bottom: 8rpx;
+  margin-top: 106rpx;
 }
 
 .page-subtitle {
-  font-size: 20px;
+  font-size: 40rpx;
   color: #FFFFFF;
-  margin-top:10px;
-  margin-bottom:10px;
-  font-weight:500px;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
+  font-weight: 500;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 0 20px 20px 20px;
+  gap: 32rpx;
+  padding: 0 40rpx 40rpx 40rpx;
 }
 
 /* 顶部卡片（与 history 页面一致） */
 .top-card {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 32rpx;
+  padding: 40rpx;
   display: flex;
   flex-direction: column;
 }
@@ -74,7 +74,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 40rpx;
 }
 
 .duration-group {
@@ -83,13 +83,13 @@
 }
 
 .duration-val {
-  font-size: 20px;
+  font-size: 40rpx;
   font-weight: 400;
   color: #FFFFFF;
 }
 
 .record-date {
-  font-size: 15px;
+  font-size: 30rpx;
   color: #B0B0B0;
 }
 
@@ -107,27 +107,27 @@
 }
 
 .stat-label {
-  font-size: 15px;
+  font-size: 30rpx;
   color: #B0B0B0;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
 }
 
 .stat-val {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: 600;
   color: #FFFFFF;
 }
 
 .stat-divider {
-  width: 1px;
-  height: 24px;
+  width: 2rpx;
+  height: 48rpx;
   background: rgba(255, 255, 255, 0.2);
 }
 
 /* Speed、Calories、Distance 卡片布局 */
 .middle-cards-row {
   display: flex;
-  gap: 12px;
+  gap: 24rpx;
   align-items: flex-start;
   width: 100%;
   box-sizing: border-box;
@@ -135,13 +135,13 @@
 
 .speed-card {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 16px;
+  border-radius: 40rpx;
+  padding: 32rpx;
   display: flex;
   flex-direction: column;
   position: relative;
   flex: 1;
-  height: 170px;
+  height: 340rpx;
   box-sizing: border-box;
 }
 
@@ -149,36 +149,36 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24rpx;
 }
 
 .info-card {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 16px;
+  border-radius: 40rpx;
+  padding: 32rpx;
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 80px;
+  height: 160rpx;
   box-sizing: border-box;
 }
 
 .card-label {
-  font-size: 15px;
+  font-size: 30rpx;
   color: #8E8E93;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
   text-align: left;
 }
 
 .card-icon {
-  width: 24px;
-  height: 24px;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: auto;
 }
 
 .speed-card .card-icon {
   margin-bottom: 0;
-  margin-top: 4px;
+  margin-top: 8rpx;
 }
 
 .card-icon image {
@@ -188,43 +188,44 @@
 
 .card-value-wrapper {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: 32rpx;
+  right: 32rpx;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
 }
 
 .speed-card .card-value-wrapper {
-  bottom: 12px;
+  bottom: 24rpx;
 }
 
 .card-value {
-  font-size: 35px;
+  font-size: 70rpx;
   font-weight: bold;
   color: #FFFFFF;
   text-align: right;
   line-height: 1;
 }
 
-.card-values{
-  font-size: 18px;
+.card-values {
+  font-size: 36rpx;
   font-weight: bold;
   color: #FFFFFF;
   text-align: right;
   line-height: 1;
 }
+
 /* 底部三个卡片 */
 .bottom-cards {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24rpx;
 }
 
 .bottom-card-item {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 24rpx;
+  padding: 40rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -233,13 +234,12 @@
 }
 
 .bottom-card-label {
-  font-size: 15px;
+  font-size: 30rpx;
   color: #8E8E93;
 }
 
 .bottom-card-value {
-  font-size: 24px;
+  font-size: 48rpx;
   font-weight: bold;
   color: #FFFFFF;
 }
-
