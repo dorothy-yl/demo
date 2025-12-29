@@ -14,8 +14,17 @@ Page({
     editingTipId: null, // 编辑模式下的 ID
     
     // 日期显示文本
-    dateDisplayText: 'Today',
+    dateDisplayText: I18n.t('today'),
     timeDisplayText: '15:00',
+    
+    // 国际化文本
+    schedulesLabel: I18n.t('schedules'),
+    tipsLabel: I18n.t('tips'),
+    dateLabel: I18n.t('date'),
+    timeLabel: I18n.t('time'),
+    titlePlaceholder: I18n.t('title_placeholder'),
+    confirmLabel: I18n.t('confirm'),
+    chooseYearLabel: I18n.t('choose_year'),
     
     // 日历相关
     calendarCurrentDate: new Date(),
@@ -62,7 +71,15 @@ Page({
       },
       timePickerIndex: [hour, minute],
       dateDisplayText: this.getDateDisplayText(now),
-      timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+      timeDisplayText: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+      // 初始化国际化文本
+      schedulesLabel: I18n.t('schedules'),
+      tipsLabel: I18n.t('tips'),
+      dateLabel: I18n.t('date'),
+      timeLabel: I18n.t('time'),
+      titlePlaceholder: I18n.t('title_placeholder'),
+      confirmLabel: I18n.t('confirm'),
+      chooseYearLabel: I18n.t('choose_year')
     });
     
     this.loadTips();
@@ -305,10 +322,13 @@ Page({
     const year = calendarCurrentDate.getFullYear();
     const month = calendarCurrentDate.getMonth();
     
-    // 格式化月份文本：October 2022
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-    const monthText = `${monthNames[month]} ${year}`;
+    // 格式化月份文本：使用国际化
+    const monthKeys = [
+      'month_january', 'month_february', 'month_march', 'month_april',
+      'month_may', 'month_june', 'month_july', 'month_august',
+      'month_september', 'month_october', 'month_november', 'month_december'
+    ];
+    const monthText = `${I18n.t(monthKeys[month])} ${year}`;
     this.setData({ currentMonthText: monthText });
 
     const firstDay = new Date(year, month, 1);
@@ -468,14 +488,14 @@ Page({
 
   // 格式化日期显示
   getDateDisplayText(date) {
-    if (!date) return 'Today';
+    if (!date) return I18n.t('today');
     
     const dateObj = new Date(date);
     const today = new Date();
     
     // 判断是否是Today
     if (this.isSameDate(dateObj, today)) {
-      return 'Today';
+      return I18n.t('today');
     }
     
     // 格式化日期：2025.12.19（只显示年月日）
@@ -493,7 +513,7 @@ Page({
     // 验证标题
     if (!tipTitle || tipTitle.trim() === '') {
       ty.showToast({
-        title: '请输入标题',
+        title: I18n.t('please_enter_title'),
         icon: 'none'
       });
       return;
@@ -502,7 +522,7 @@ Page({
     // 验证日期
     if (!selectedDate) {
       ty.showToast({
-        title: '请选择日期',
+        title: I18n.t('please_select_date'),
         icon: 'none'
       });
       return;
@@ -576,7 +596,7 @@ Page({
       
       // 显示保存成功提示
       ty.showToast({
-        title: 'Saved successfully',
+        title: I18n.t('saved_successfully'),
         icon: 'success',
         duration: 2000
       });
@@ -602,7 +622,7 @@ Page({
           } catch (syncError) {
             console.error('setStorageSync 也失败:', syncError);
             ty.showToast({
-              title: '数据保存失败',
+              title: I18n.t('save_failed'),
               icon: 'none'
             });
             return;
@@ -612,7 +632,7 @@ Page({
     } catch (error) {
       console.error('保存提醒到本地存储失败:', error);
       ty.showToast({
-        title: '数据保存失败',
+        title: I18n.t('save_failed'),
         icon: 'none'
       });
       return;
@@ -691,7 +711,7 @@ Page({
             // 回滚 UI
             this.setData({ tips: originalTips });
             ty.showToast({
-              title: '删除失败',
+              title: I18n.t('delete_failed'),
               icon: 'none'
             });
           }
@@ -702,7 +722,7 @@ Page({
       // 回滚 UI
       this.setData({ tips: originalTips });
       ty.showToast({
-        title: '删除失败',
+        title: I18n.t('delete_failed'),
         icon: 'none'
       });
     }

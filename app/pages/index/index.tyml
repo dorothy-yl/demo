@@ -1,18 +1,14 @@
 <view class="container">
-  <!-- 顶部状态栏 -->
-  <!-- 页面标题 -->
-  <view class="page-title">Front page</view>
-
-  <!-- 运动数据摘要区域 -->
+<view class="page-title">{{I18n.t('page_title_home')}}</view>
   <view class="exercise-summary">
     <view class="summary-left">
       <view class="summary-item">
         <text class="summary-value">{{exerciseTime}}</text>
-        <text class="summary-label">Exercise time</text>
+        <text class="summary-label">{{exerciseTimeLabel}}</text>
       </view>
       <view class="summary-item">
         <text class="summary-value">{{distance}}</text>
-        <text class="summary-label">Distance (km)</text>
+        <text class="summary-label">{{distanceLabel}}</text>
       </view>
     </view>
     <view class="summary-right">
@@ -24,46 +20,38 @@
     </view>
   </view>
 
-  <!-- 常用功能区域 -->
- <!-- 常用功能区域 -->
-<view class="common-functions">
-  <view class="section-title">Common functions</view>
-  <view class="function-grid">
-    <view class="function-item1" bindtap="goToExercise">
-      <view class="function-icon-wrapper">
-        <image class="function-icon" src="../../assets/icons/Quick Start.svg" mode="aspectFit"></image>
+  <view class="common-functions">
+    <view class="section-title">{{commonFunctionsLabel}}</view>
+    <view class="function-grid">
+      <view class="function-item1" bindtap="goToExercise">
+        <view class="function-icon-wrapper">
+          <image class="function-icon" src="../../assets/icons/Quick Start.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">{{quickStartLabel}}</text>
       </view>
-      <text class="function-label">Quick Start</text>
-    </view>
-    
-    <view class="function-item2" bindtap="goToGoal">
-      <view class="function-icon-wrapper target-pattern">
-        <image class="function-icon" src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
+      
+      <view class="function-item2" bindtap="goToGoal">
+        <view class="function-icon-wrapper target-pattern">
+          <image class="function-icon" src="../../assets/icons/Target patterm.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">{{targetPatternLabel}}</text>
       </view>
-      <text class="function-label">Target pattern</text>
-    </view>
-    
-    <view class="function-item3" bindtap="goToFTMS">
-      <view class="function-icon-wrapper ftms">
-        <image class="function-icon" src="../../assets/icons/ftms.svg" mode="aspectFit"></image>
+      
+      <view class="function-item3" bindtap="goToFTMS">
+        <view class="function-icon-wrapper ftms">
+          <image class="function-icon" src="../../assets/icons/ftms.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">{{ftmsLabel}}</text>
       </view>
-      <text class="function-label">FTMS</text>
-    </view>
-    
-    <view class="function-item4" bindtap="goToTirp">
-      <view class="function-icon-wrapper tirp">
-        <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
+      
+      <view class="function-item4" bindtap="goToTirp">
+        <view class="function-icon-wrapper tirp">
+          <image class="function-icon" src="../../assets/icons/Trip.svg" mode="aspectFit"></image>
+        </view>
+        <text class="function-label">{{tipsLabel}}</text>
       </view>
-      <text class="function-label">Tips</text>
     </view>
   </view>
-</view>
-
-  <!-- 连接状态 -->
-  <!-- <view class="connection-status">
-    <view class="status-indicator"></view>
-    <text class="status-text">已连接</text>
-  </view> -->
 
   <bottom-nav activeTab="home" />
 </view>

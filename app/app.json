@@ -12,7 +12,8 @@
   ],
 
   "window": {
-    "navigationStyle": "custom"
+    "navigationStyle": "custom",
+      "navigationBarTitleText": "@I18n.t('title')"
   }
 }
 

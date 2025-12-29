@@ -17,7 +17,7 @@
 /* 页面标题和右上角操作 */
 .page-title {
   font-size: 36rpx;
-  font-weight: 600;
+  font-weight: 400;
   color: #FFFFFF;
   text-align: center;
   padding: 0 0 48rpx;
@@ -97,7 +97,7 @@
 
 .summary-value {
   font-size: 88rpx;
-  font-weight: 700;
+  font-weight: 400;
   color: #FFFFFF;
   line-height: 1.2;
   margin-bottom: 0;

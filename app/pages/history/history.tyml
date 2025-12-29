@@ -1,6 +1,6 @@
 <view class="container">
   <view class="header">
-    <text class="page-title">Sports records</text>
+    <text class="page-title">{{I18n.t('sports_records')}}</text>
   </view>
   <view class="date-selector">
     <view class="arrow-btn left" bindtap="prevDate">
@@ -18,7 +18,7 @@
   <scroll-view class="record-list" scroll-y="true" refresher-enabled="true" refresher-triggered="{{isRefreshing}}" bindrefresherrefresh="onRefresherRefresh" refresher-background="#2C3A4A">
     <!-- 空状态占位 -->
     <view class="empty-placeholder" ty:if="{{records.length === 0}}">
-      <text class="empty-text">No exercise records for today</text>
+      <text class="empty-text">{{I18n.t('no_records_today')}}</text>
     </view>
     
     <!-- 记录卡片列表 -->
@@ -32,17 +32,17 @@
       
       <view class="card-stats">
         <view class="stat-item">
-          <text class="stat-label">HR(BPM)</text>
+          <text class="stat-label">{{I18n.t('hr_bpm')}}</text>
           <text class="stat-val">{{item.heartRate}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
-          <text class="stat-label">RPM</text>
+          <text class="stat-label">{{I18n.t('rpm')}}</text>
           <text class="stat-val">{{item.rpm}}</text>
         </view>
         <view class="stat-divider"></view>
         <view class="stat-item">
-          <text class="stat-label">Power(W)</text>
+          <text class="stat-label">{{I18n.t('power_w')}}</text>
           <text class="stat-val">{{item.watt}}</text>
         </view>
       </view>

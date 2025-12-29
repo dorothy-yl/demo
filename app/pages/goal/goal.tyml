@@ -8,16 +8,16 @@
       <view class="back-btn" bindtap="goBack">
         <image src="../../assets/icons/Vector.svg" class="back-icon" ></image>
       </view>
-      <text class="nav-title">Set goals</text>
+      <text class="nav-title">{{I18n.t('set_goals')}}</text>
     </view>
   </view>
 
   <!-- Goal Selection View -->
   <view class="content">
     <view class="goal-buttons">
-      <button class="goal-btn {{activeButton === 'time' ? 'primary' : 'secondary'}}" bindtap="showTimePicker">Time</button>
-      <button class="goal-btn {{activeButton === 'calories' ? 'primary' : 'secondary'}}" bindtap="showCaloriesPicker">Calories</button>
-      <button class="goal-btn {{activeButton === 'distance' ? 'primary' : 'secondary'}}" bindtap="showDistancePicker">Distance</button>
+      <button class="goal-btn {{activeButton === 'time' ? 'primary' : 'secondary'}}" bindtap="showTimePicker">{{I18n.t('time')}}</button>
+      <button class="goal-btn {{activeButton === 'calories' ? 'primary' : 'secondary'}}" bindtap="showCaloriesPicker">{{I18n.t('calories')}}</button>
+      <button class="goal-btn {{activeButton === 'distance' ? 'primary' : 'secondary'}}" bindtap="showDistancePicker">{{I18n.t('distance')}}</button>
     </view>
   </view>
 
@@ -48,7 +48,7 @@
           <text class="modal-unit">{{unitText}}</text>
         </view>
       </view>
-      <button class="modal-confirm-btn" bindtap="confirmGoal">Confirm</button>
+      <button class="modal-confirm-btn" bindtap="confirmGoal">{{I18n.t('confirm')}}</button>
     </view>
   </view>
 </view>

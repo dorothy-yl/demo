@@ -12,7 +12,7 @@
   <view class="top-row">
     <view class="top-stat-item">
       <text class="top-stat-value">{{speed}}</text>
-      <text class="top-stat-label">Speed(km/h)</text>
+      <text class="top-stat-label">{{I18n.t('speed_kmh')}}</text>
     </view>
     <view class="vertical-divider"></view>
     <view class="top-stat-item">
@@ -20,35 +20,35 @@
         <text class="top-stat-value">{{calories}}</text>
         <image class="heart-icon" src="../../assets/icons/Vector 2.svg" />
       </view>
-      <text class="top-stat-label">Calories(kcal)</text>
+      <text class="top-stat-label">{{I18n.t('calories_kcal')}}</text>
     </view>
   </view>
 
   <!-- Exercise Time Card -->
   <view class="card timer-card">
-    <text class="card-label">Workout Time</text>
+    <text class="card-label">{{I18n.t('workout_time')}}</text>
     <text class="timer-display">{{formattedTime}}</text>
   </view>
 
   <!-- 3-Column Stats Grid -->
   <view class="stats-grid">
     <view class="card stat-card">
-      <text class="card-label">PRM</text>
+      <text class="card-label">{{I18n.t('rpm')}}</text>
       <text class="card-value">{{rpm}}</text>
     </view>
     <view class="card stat-card">
-      <text class="card-label">HR(BPM)</text>
+      <text class="card-label">{{I18n.t('hr_bpm')}}</text>
       <text class="card-value">{{heartRate}}</text>
     </view>
     <view class="card stat-card">
-      <text class="card-label">Power(W)</text>
+      <text class="card-label">{{I18n.t('power_w')}}</text>
       <text class="card-value">{{watt}}</text>
     </view>
   </view>
 
   <!-- Distance Card -->
   <view class="card timer-card">
-    <text class="card-label">Distance(km)</text>
+    <text class="card-label">{{I18n.t('distance_km')}}</text>
     <text class="timer-display">{{distance}}</text>
   </view>
 
@@ -63,7 +63,7 @@
       <!-- Center Text -->
       <view class="gauge-center-cover">
         <text class="gauge-center-value">{{load}}</text>
-        <text class="gauge-center-label">Load</text>
+        <text class="gauge-center-label">{{I18n.t('load')}}</text>
       </view>
       <!-- Gauge Knob -->
       <view class="gauge-knob-container" style="transform: rotate({{knobAngle}}deg);">
@@ -78,6 +78,6 @@
 
   <!-- Bottom Button -->
   <view class="footer">
-    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">Start/Hold Stop</button>
+    <button class="main-action-btn" bindlongpress="stopExercise" bindtap="togglePause">{{I18n.t('start_hold_stop')}}</button>
   </view>
 </view>

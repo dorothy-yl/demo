@@ -3,7 +3,7 @@
   <view class="overlay"></view>
 
   <view class="content">
-    <text class="page-title">Congratulations!</text>
+    <text class="page-title">{{pageTitle}}</text>
 
     <view class="top-card">
       <view class="user-header">
@@ -21,9 +21,9 @@
         <view class="ring-content">
           <view class="ring-value-row">
              <text class="ring-value">{{caloriesBurned}}</text>
-             <text class="ring-unit">kcal</text>
+             <text class="ring-unit">{{kcalUnit}}</text>
           </view>
-          <text class="ring-label">Burn calories</text>
+          <text class="ring-label">{{burnCaloriesLabel}}</text>
         </view>
       </view>
     </view>
@@ -33,12 +33,12 @@
       <view class="stats-card wide-card">
         <view class="stat-item">
           <text class="stat-value">{{duration}}</text>
-          <text class="stat-label">Total duration</text>
+          <text class="stat-label">{{totalDurationLabel}}</text>
         </view>
         <view class="vertical-line"></view>
         <view class="stat-item">
           <text class="stat-value">{{rpm}}</text>
-          <text class="stat-label">RPM</text>
+          <text class="stat-label">{{rpmLabel}}</text>
         </view>
       </view>
 
@@ -46,7 +46,7 @@
       <view class="bottom-grid">
         <!-- Left Big Card - Speed -->
         <view class="stats-card big-card">
-          <text class="card-title">Speed(km/h)</text>
+          <text class="card-title">{{speedLabel}}</text>
           <view class="card-icon">
             <image src="../../assets/icons/Vector 1.svg" mode="aspectFit"></image>
           </view>
@@ -59,7 +59,7 @@
         <view class="right-column">
           <!-- Power Card -->
           <view class="stats-card small-card">
-            <text class="card-title">Power（W）</text>
+            <text class="card-title">{{powerLabel}}</text>
             <view class="card-icon-small">
               <image src="../../assets/icons/Vector 2.svg" mode="aspectFit"></image>
             </view>
@@ -69,7 +69,7 @@
           </view>
           <!-- Distance Card -->
           <view class="stats-card small-card">
-            <text class="card-title">Distance(km)</text>
+            <text class="card-title">{{distanceLabel}}</text>
             <view class="card-icon-small">
               <image src="../../assets/icons/Group 11.svg" mode="aspectFit"></image>
             </view>

@@ -66,7 +66,7 @@ Page({
     let titleValue = logData.title || logData.pageTitle;
     if (!titleValue) {
       // 如果没有 title 或 pageTitle，根据 isGoalMode 判断
-      titleValue = logData.isGoalMode === true ? 'Target pattern' : 'Quick Start';
+      titleValue = logData.isGoalMode === true ? I18n.t('target_pattern') : I18n.t('quick_start');
     }
     
     return {
@@ -282,8 +282,10 @@ Page({
       }
       
       // 根据 title 判断模式
-      const titleValue = options.title || 'Quick Start';
-      const isGoalMode = titleValue === 'Target pattern';
+      const titleValue = options.title || I18n.t('quick_start');
+      // 注意：这里不能通过 titleValue 字符串比较来判断 isGoalMode
+      // 因为不同语言的翻译文本不同，应该通过 URL 参数或其他方式传递 isGoalMode
+      const isGoalMode = options.isGoalMode === 'true' || options.isGoalMode === true;
       
       record = {
         id: parseInt(id) || 1,
@@ -337,11 +339,16 @@ Page({
       }
       // 设置 title 字段
       if (!record.title) {
-        record.title = record.pageTitle || (record.isGoalMode === true ? 'Target pattern' : 'Quick Start');
+        record.title = record.pageTitle || (record.isGoalMode === true ? I18n.t('target_pattern') : I18n.t('quick_start'));
       }
       // 确保模式信息存在
       if (record.isGoalMode === undefined) {
-        record.isGoalMode = record.title === 'Target pattern';
+        // 如果 isGoalMode 未定义，尝试从 pageTitle 判断（如果 pageTitle 是翻译后的值）
+        // 注意：这种方法不够可靠，最好直接传递 isGoalMode 字段
+        if (record.isGoalMode === undefined && record.pageTitle) {
+          // 如果 pageTitle 等于当前语言的 target_pattern，则认为是目标模式
+          record.isGoalMode = record.pageTitle === I18n.t('target_pattern');
+        }
       }
       if (!record.pageTitle) {
         record.pageTitle = record.title;

@@ -7,7 +7,15 @@ Page({
     rpm: '61',
     avgSpeed: '1.3',
     watt: '152',
-    distance: '2.37'
+    distance: '2.37',
+    pageTitle: I18n.t('congratulations'),
+    kcalUnit: I18n.t('kcal'),
+    burnCaloriesLabel: I18n.t('burn_calories'),
+    totalDurationLabel: I18n.t('total_duration'),
+    rpmLabel: I18n.t('rpm'),
+    speedLabel: I18n.t('speed_kmh_label'),
+    powerLabel: I18n.t('power_w_label'),
+    distanceLabel: I18n.t('distance_km_label')
   },
   onLoad(options) {
     ty.hideMenuButton({ success: () => {

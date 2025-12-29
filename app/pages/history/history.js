@@ -11,7 +11,15 @@ Page({
     // Calendar data
     calendarCurrentDate: new Date(),
     calendarDays: [],
-    weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    weekdays: [
+      I18n.t('week_sunday'),
+      I18n.t('week_monday'),
+      I18n.t('week_tuesday'),
+      I18n.t('week_wednesday'),
+      I18n.t('week_thursday'),
+      I18n.t('week_friday'),
+      I18n.t('week_saturday')
+    ],
     currentMonthText: '',
     cloudRecords: [], // 存储从云端获取的所有记录
     isLoading: false, // 加载状态
@@ -34,7 +42,17 @@ Page({
     today.setHours(0, 0, 0, 0);
     this.setData({
       currentDateObj: today.getTime(),
-      selectedDateStr: this.formatDateString(today)
+      selectedDateStr: this.formatDateString(today),
+      // 初始化星期名称
+      weekdays: [
+        I18n.t('week_sunday'),
+        I18n.t('week_monday'),
+        I18n.t('week_tuesday'),
+        I18n.t('week_wednesday'),
+        I18n.t('week_thursday'),
+        I18n.t('week_friday'),
+        I18n.t('week_saturday')
+      ]
     });
     this.updateDateDisplay(today);
     this.generateCalendar();
@@ -172,23 +190,29 @@ Page({
 
   // 格式化日期为显示格式 "Dec 24"
   formatDateDisplay(date) {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthKeys = [
+      'month_january_short', 'month_february_short', 'month_march_short', 'month_april_short',
+      'month_may_short', 'month_june_short', 'month_july_short', 'month_august_short',
+      'month_september_short', 'month_october_short', 'month_november_short', 'month_december_short'
+    ];
     const month = date.getMonth();
     const day = date.getDate();
-    return `${monthNames[month]} ${day}`;
+    return `${I18n.t(monthKeys[month])} ${day}`;
   },
 
   // 格式化日期时间为 "Dec 24 18:08:48" 格式
   formatDateTime(date) {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthKeys = [
+      'month_january_short', 'month_february_short', 'month_march_short', 'month_april_short',
+      'month_may_short', 'month_june_short', 'month_july_short', 'month_august_short',
+      'month_september_short', 'month_october_short', 'month_november_short', 'month_december_short'
+    ];
     const month = date.getMonth();
     const day = date.getDate();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${monthNames[month]} ${day} ${hours}:${minutes}:${seconds}`;
+    return `${I18n.t(monthKeys[month])} ${day} ${hours}:${minutes}:${seconds}`;
   },
 
   // 将 ISO 格式字符串转换为友好的显示格式
@@ -512,7 +536,7 @@ Page({
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
         // 根据模式确定标题
-        const title = record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start');
+        const title = record.pageTitle || (record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start'));
         
         // 调试：检查模式信息
         if (!record.pageTitle && record.isGoalMode === undefined) {
@@ -578,7 +602,7 @@ Page({
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
         // 根据模式确定标题
-        const title = record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start');
+        const title = record.pageTitle || (record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start'));
         return {
           id: record.id,
           duration: durationFormatted,
@@ -593,7 +617,7 @@ Page({
           heartRate: record.heartRate ? Math.round(record.heartRate).toString() : '0',
           rpm: record.rpm ? Math.round(record.rpm).toString() : '0',
           watt: record.watt ? Math.round(record.watt).toString() : '0',
-          pageTitle: record.pageTitle || (record.isGoalMode ? 'Target pattern' : 'Quick Start'),
+          pageTitle: record.pageTitle || (record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start')),
           isGoalMode: record.isGoalMode,
           // 保存完整数据用于详情页
           fullRecord: record
@@ -703,9 +727,12 @@ Page({
     const year = calendarCurrentDate.getFullYear();
     const month = calendarCurrentDate.getMonth();
     
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-    const monthText = `${monthNames[month]} ${year}`;
+    const monthKeys = [
+      'month_january', 'month_february', 'month_march', 'month_april',
+      'month_may', 'month_june', 'month_july', 'month_august',
+      'month_september', 'month_october', 'month_november', 'month_december'
+    ];
+    const monthText = `${I18n.t(monthKeys[month])} ${year}`;
     this.setData({ currentMonthText: monthText });
 
     const firstDay = new Date(year, month, 1);
@@ -803,7 +830,7 @@ Page({
     if (record && record.fullRecord) {
       const fullRecord = record.fullRecord;
       // 确定标题，优先使用 pageTitle，其次根据 isGoalMode 判断
-      const title = fullRecord.pageTitle || (fullRecord.isGoalMode === true ? 'Target pattern' : 'Quick Start');
+      const title = fullRecord.pageTitle || (fullRecord.isGoalMode === true ? I18n.t('target_pattern') : I18n.t('quick_start'));
       
       const params = new URLSearchParams({
         id: id.toString(),

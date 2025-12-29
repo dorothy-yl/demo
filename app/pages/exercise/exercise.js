@@ -23,7 +23,7 @@ Page({
     isGoalMode: false,
     goalType: null, // 'time', 'distance', 'calories'
     goalValue: 0,
-    pageTitle: 'Quick Start',
+    pageTitle: I18n.t('quick_start'),
     // 倒计时相关
     countdownTime: 0, // 倒计时剩余时间（秒）
     // 初始值记录（用于计算从0开始的距离和卡路里）
@@ -60,7 +60,7 @@ Page({
         isGoalMode: true,
         goalType: goalType,
         goalValue: goalValue,
-        pageTitle: 'Target pattern'
+        pageTitle: I18n.t('target_pattern')
       });
       
       // 如果是时间目标，初始化倒计时
@@ -475,11 +475,11 @@ onDpDataChange(_onDpDataChange);
             pipelines: [0, 1, 2, 3, 4, 5, 6],
             success: () => {
               this.setData({ isPaused: false });
-              ty.showToast({ title: '已继续', icon: 'none' });
+              ty.showToast({ title: I18n.t('resumed'), icon: 'none' });
             },
             fail: (err) => {
               console.error('继续运动命令发送失败:', err);
-              ty.showToast({ title: '操作失败', icon: 'none' });
+              ty.showToast({ title: I18n.t('operation_failed'), icon: 'none' });
             }
           });
         },
@@ -493,11 +493,11 @@ onDpDataChange(_onDpDataChange);
             pipelines: [0, 1, 2, 3, 4, 5, 6],
             success: () => {
               this.setData({ isPaused: false });
-              ty.showToast({ title: '已继续', icon: 'none' });
+              ty.showToast({ title: I18n.t('resumed'), icon: 'none' });
             },
             fail: (err) => {
               console.error('继续运动命令发送失败:', err);
-              ty.showToast({ title: '操作失败', icon: 'none' });
+              ty.showToast({ title: I18n.t('operation_failed'), icon: 'none' });
             }
           });
         }
@@ -512,7 +512,7 @@ onDpDataChange(_onDpDataChange);
         success: () => {
           this.setData({ isPaused: true });
           this.isPausing = true;
-          ty.showToast({ title: '已暂停', icon: 'none' });
+          ty.showToast({ title: I18n.t('paused'), icon: 'none' });
         },
         fail: (err) => {
           console.error('暂停命令发送失败:', err);
@@ -547,10 +547,10 @@ onDpDataChange(_onDpDataChange);
       
       // 显示完成提示框
       ty.showModal({
-        title: 'Goal Completed',
-        content: 'You have completed your goal. Do you want to end the workout?',
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
+        title: I18n.t('goal_completed'),
+        content: I18n.t('goal_completed_message'),
+        confirmText: I18n.t('confirm'),
+        cancelText: I18n.t('cancel'),
         success: (res) => {
           if (res.confirm) {
             // 先上报数据到云端，再处理停止逻辑
@@ -577,10 +577,10 @@ onDpDataChange(_onDpDataChange);
 
   stopExercise() {
     ty.showModal({
-      title: 'End Workout',
-      content: 'Are you sure you want to end this workout?',
-      confirmText: 'Confirm',
-      cancelText: 'Cancel',
+      title: I18n.t('end_workout'),
+      content: I18n.t('end_workout_confirm'),
+      confirmText: I18n.t('confirm'),
+      cancelText: I18n.t('cancel'),
       success: (res) => {
         if (res.confirm) {
           // 向硬件发送停止命令
@@ -638,7 +638,7 @@ onDpDataChange(_onDpDataChange);
       const finalMaxResistance = this.dpMaxResistance ?? this.maxResistance ?? 0;
       // 确保 isGoalMode 和 pageTitle 正确传递
       const isGoalMode = this.data.isGoalMode === true;
-      const pageTitle = this.data.pageTitle || (isGoalMode ? 'Target pattern' : 'Quick Start');
+      const pageTitle = this.data.pageTitle || (isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start'));
       
       const exerciseRecord = {
         id: timestamp,
@@ -760,7 +760,7 @@ onDpDataChange(_onDpDataChange);
     if (!exerciseRecord.id || exerciseRecord.duration < 0) {
       console.error('Invalid exercise record data');
       ty.showToast({
-        title: '数据保存失败：数据不完整',
+        title: I18n.t('data_save_failed_incomplete'),
         icon: 'none'
       });
       saveSuccess = false;
@@ -797,7 +797,7 @@ onDpDataChange(_onDpDataChange);
       } catch (error) {
         console.error('Error saving exercise record to storage:', error);
         ty.showToast({
-          title: '数据保存失败',
+          title: I18n.t('data_save_failed'),
           icon: 'none'
         });
         saveSuccess = false;

@@ -1,3 +1,4 @@
+
 function formatDpState(dpState) {
   return Object.keys(dpState).map(dpCode => ({ code: dpCode, value: dpState[dpCode] }));
 }
@@ -6,9 +7,18 @@ Page({
   data: {
     exerciseTime: '05:04',
     distance: '23',
-    currentTime: '9:42'
+    currentTime: '9:42',
+    pageTitle: I18n.t('page_title_home'),
+    exerciseTimeLabel: I18n.t('exercise_time'),
+    distanceLabel: I18n.t('distance_km'),
+    commonFunctionsLabel: I18n.t('common_functions'),
+    quickStartLabel: I18n.t('quick_start'),
+    targetPatternLabel: I18n.t('target_pattern'),
+    ftmsLabel: I18n.t('ftms'),
+    tipsLabel: I18n.t('tips')
   },
   onLoad() {
+    console.log(I18n.t('title'));
     ty.hideMenuButton({ success: () => {
       console.log('hideMenuButton success');
     }, fail: (error) => {

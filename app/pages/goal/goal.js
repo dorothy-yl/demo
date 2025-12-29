@@ -83,7 +83,7 @@ Page({
         maxValue = 60;
         step = 1;
         unitText = 'min';
-        titleText = 'Time';
+        titleText = I18n.t('time');
         if (!selectedValue) selectedValue = 1;
         break;
       case 'calories':
@@ -91,7 +91,7 @@ Page({
         maxValue = 1500;
         step = 100;
         unitText = 'kcal';
-        titleText = 'Calories';
+        titleText = I18n.t('calories');
         if (!selectedValue) selectedValue = 100;
         break;
       case 'distance':
@@ -99,7 +99,7 @@ Page({
         maxValue = 50.0;
         step = 0.5;
         unitText = 'km';
-        titleText = 'Distance';
+        titleText = I18n.t('distance');
         if (!selectedValue) selectedValue = 0.5;
         break;
     }
