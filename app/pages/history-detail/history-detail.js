@@ -89,16 +89,26 @@ Page({
     };
   },
 
-  // 格式化日期为 "Dec 24 18:08:48" 格式
+  // 格式化日期为 "12月29日 16:53:07" 格式 (中文) 或 "Dec 29 16:53:07" 格式 (英文)
   formatDate(date) {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthKeys = [
+      'month_january_short', 'month_february_short', 'month_march_short', 'month_april_short',
+      'month_may_short', 'month_june_short', 'month_july_short', 'month_august_short',
+      'month_september_short', 'month_october_short', 'month_november_short', 'month_december_short'
+    ];
     const month = date.getMonth();
     const day = date.getDate();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${monthNames[month]} ${day} ${hours}:${minutes}:${seconds}`;
+    const monthText = I18n.t(monthKeys[month]);
+    // 检查翻译后的文本是否包含"月"字来判断是否为中文
+    const isChinese = monthText.includes('月');
+    if (isChinese) {
+      return `${monthText}${day}日 ${hours}:${minutes}:${seconds}`;
+    } else {
+      return `${monthText} ${day} ${hours}:${minutes}:${seconds}`;
+    }
   },
 
   // 将 ISO 格式字符串转换为友好的显示格式

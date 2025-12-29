@@ -82,7 +82,10 @@
     "month_september_short": "9月",
     "month_october_short": "10月",
     "month_november_short": "11月",
-    "month_december_short": "12月"
+    "month_december_short": "12月",
+    "details": "运动详情",
+    "max_resistance": "最大阻力",
+    "training_duration": "训练时长"
   },
   "en": {
     "title": "title",
@@ -167,7 +170,10 @@
     "month_september_short": "Sep",
     "month_october_short": "Oct",
     "month_november_short": "Nov",
-    "month_december_short": "Dec"
+    "month_december_short": "Dec",
+    "details": "Details",
+    "max_resistance": "Max Resistance",
+    "training_duration": "Training duration"
   }
 }
 

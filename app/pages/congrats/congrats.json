@@ -3,6 +3,5 @@
   "navigationBarTextStyle": "white",
   "disableScroll": true,
   "usingComponents": {
-    "bottom-nav": "/components/bottom-nav/bottom-nav"
   }
 }

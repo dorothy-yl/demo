@@ -188,7 +188,7 @@ Page({
     return `${year}-${month}-${day}`;
   },
 
-  // 格式化日期为显示格式 "Dec 24"
+  // 格式化日期为显示格式 "12月29日" (中文) 或 "Dec 29" (英文)
   formatDateDisplay(date) {
     const monthKeys = [
       'month_january_short', 'month_february_short', 'month_march_short', 'month_april_short',
@@ -197,10 +197,17 @@ Page({
     ];
     const month = date.getMonth();
     const day = date.getDate();
-    return `${I18n.t(monthKeys[month])} ${day}`;
+    const monthText = I18n.t(monthKeys[month]);
+    // 检查翻译后的文本是否包含"月"字来判断是否为中文
+    const isChinese = monthText.includes('月');
+    if (isChinese) {
+      return `${monthText}${day}日`;
+    } else {
+      return `${monthText} ${day}`;
+    }
   },
 
-  // 格式化日期时间为 "Dec 24 18:08:48" 格式
+  // 格式化日期时间为 "12月29日 16:53:07" 格式 (中文) 或 "Dec 29 16:53:07" 格式 (英文)
   formatDateTime(date) {
     const monthKeys = [
       'month_january_short', 'month_february_short', 'month_march_short', 'month_april_short',
@@ -212,7 +219,14 @@ Page({
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${I18n.t(monthKeys[month])} ${day} ${hours}:${minutes}:${seconds}`;
+    const monthText = I18n.t(monthKeys[month]);
+    // 检查翻译后的文本是否包含"月"字来判断是否为中文
+    const isChinese = monthText.includes('月');
+    if (isChinese) {
+      return `${monthText}${day}日 ${hours}:${minutes}:${seconds}`;
+    } else {
+      return `${monthText} ${day} ${hours}:${minutes}:${seconds}`;
+    }
   },
 
   // 将 ISO 格式字符串转换为友好的显示格式
@@ -535,8 +549,18 @@ Page({
         const rawDate = record.dateFormatted || record.date;
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
-        // 根据模式确定标题
-        const title = record.pageTitle || (record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start'));
+        // 根据模式确定标题，确保总是使用翻译后的值
+        let title = record.pageTitle;
+        if (!title || title === 'quick_start' || title === 'target_pattern') {
+          // 如果 title 是键名而不是翻译后的值，进行翻译
+          if (title === 'quick_start' || (!record.pageTitle && !record.isGoalMode)) {
+            title = I18n.t('quick_start');
+          } else if (title === 'target_pattern' || record.isGoalMode) {
+            title = I18n.t('target_pattern');
+          } else {
+            title = record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start');
+          }
+        }
         
         // 调试：检查模式信息
         if (!record.pageTitle && record.isGoalMode === undefined) {
@@ -601,8 +625,18 @@ Page({
         const rawDate = record.dateFormatted || record.date;
         const formattedDate = this.formatDateStringForDisplay(rawDate);
         
-        // 根据模式确定标题
-        const title = record.pageTitle || (record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start'));
+        // 根据模式确定标题，确保总是使用翻译后的值
+        let title = record.pageTitle;
+        if (!title || title === 'quick_start' || title === 'target_pattern') {
+          // 如果 title 是键名而不是翻译后的值，进行翻译
+          if (title === 'quick_start' || (!record.pageTitle && !record.isGoalMode)) {
+            title = I18n.t('quick_start');
+          } else if (title === 'target_pattern' || record.isGoalMode) {
+            title = I18n.t('target_pattern');
+          } else {
+            title = record.isGoalMode ? I18n.t('target_pattern') : I18n.t('quick_start');
+          }
+        }
         return {
           id: record.id,
           duration: durationFormatted,

@@ -4,7 +4,7 @@
       <image class="back-icon" src="../../assets/icons/Vector.svg" mode="aspectFit"></image>
     </view>
     <view class="header-title">
-      <text class="page-title">Details</text>
+      <text class="page-title">{{I18n.t('details')}}</text>
       <text class="page-subtitle">{{record.title || I18n.t('quick_start')}}</text>
     </view>
   </view>
@@ -75,11 +75,11 @@
     <!-- 底部二个卡片 -->
     <view class="bottom-cards">
       <view class="bottom-card-item">
-        <text class="bottom-card-label">Max Resistance</text>
+        <text class="bottom-card-label">{{I18n.t('max_resistance')}}</text>
         <text class="bottom-card-value">{{record.maxResistance || '60'}}</text>
       </view>
       <view class="bottom-card-item">
-        <text class="bottom-card-label">Training duration</text>
+        <text class="bottom-card-label">{{I18n.t('training_duration')}}</text>
         <text class="bottom-card-value">{{record.duration || '00:20:30'}}</text>
       </view>
     </view>
