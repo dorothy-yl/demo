@@ -248,6 +248,8 @@ if(element.code == 102) {
   this.setData({
     load: loadValue
   });
+  // 同步更新滑块的视觉位置
+  this.updateGauge(loadValue);
 }
 });
 }
